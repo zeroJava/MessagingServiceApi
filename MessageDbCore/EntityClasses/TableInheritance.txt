@@ -1,0 +1,66 @@
+﻿Table Inheritance
+
+In entity, we have three ways of dealing with inheritance regards
+to domain/entit classes. 
+
+-- Table-per-heirachy --
+
+The first: table-per-heirancy, were multiple domain/entity classes
+point and store their data to one single shared table. Using the table-
+per-heirachy, we have one base class, and we'll have multiple class 
+inherit from this class; but we'll only have one table, which will hold
+the properties of the base, but should will also hold the properties of
+the sub-classes.
+
+e.g. We have table called ... // finish this of
+
+|table : Emloyee |
+
+|Baseclass : Employee		|
+|	+ subclass : contracter |
+|	+ subclass : intern		|
+
+Because we have multiple classes saving into one table, the question 
+arises, how does entity framework know the between different type of
+data inserted, e.g. how does know differeniate between intern and 
+contracter. Well this is done through a discriminator column, which 
+holds the value to determine the type of data the table is holding.
+Using the discriminator, we can now differentiate a row holding intern
+data with one holding contracter data.
+
+
+-- Table-per-type aka table-per-subtype --
+
+Unlike table-per-heirachy, which stores all your data from your base 
+or sub domain/entity class into one table; the table-per-type 
+architecture allows each domain/entity class to have its own table
+in the database. Side note, the abstarct class your base class, it
+has a table is the database.
+
+This were the inheritance part comes in; all the tables associated
+with base and sub domain class share the same primary key, i.e. the
+employeed_pid in base employee table, is also the primary key in sub 
+domain table: intern and contractor. There's a little twist, the 
+primary key in the sub class table is also a foreign key pointing to
+the primary key in the base class table.
+
+| table |
+	+ Employee		--> pid: employee_id
+	+ Contractor	--> pid: employee_id
+					--> col: startdate
+					--> col: enddate
+					// these new column, they will only reside in the
+					// sub class.
+	+ Intern		--> pid: employee_id
+					--> col: university
+
+| class |
+	+ Abstract EmployeeClass	--> pid: employee_id
+	+ Concrete Contractor		--> pid: employee_id
+								--> col: startdate
+								--> col: enddate
+								// these new column, they will only reside in the
+								// sub class.
+	+ Concrete Intern			--> pid: employee_id
+								--> col: university
+
