@@ -13,6 +13,14 @@ namespace AuthorisationServer.Access
 	{
 		public AccessToken GetAccessToken(AccessRequest accessRequest)
 		{
+			try
+			{
+
+			}
+			catch (Exception exception)
+			{
+
+			}
 			return null;
 		}
 	}

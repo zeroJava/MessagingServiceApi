@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessageDbLib.DbRepository
+namespace MessageDbLib.DbRepository.ADO
 {
 	public class AccessRepositoryMsSql : IAccessRepository
 	{
@@ -99,7 +99,7 @@ namespace MessageDbLib.DbRepository
 			};
 
 			string columns = GetSelectColumns();
-			string query = string.Format("SELECT {0} FROM {1} WHERE {2}", columns,
+			string query = string.Format("SELECT {0} FROM {1} WHERE ID = {2}", columns,
 				TableName,
 				AccessParameter.ID);
 			return Tuple.Create(query, parameters);
@@ -267,6 +267,7 @@ namespace MessageDbLib.DbRepository
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
+				new SqlParameter(AccessParameter.ID, GetDBValue(access.Id)),
 				new SqlParameter(AccessParameter.ORGANISATION, GetDBValue(access.Organisation)),
 				new SqlParameter(AccessParameter.TOKEN, GetDBValue(access.Token)),
 				new SqlParameter(AccessParameter.USER_ID, GetDBValue(access.UserId)),

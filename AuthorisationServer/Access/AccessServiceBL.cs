@@ -9,6 +9,9 @@ namespace AuthorisationServer.Access
 	{
 		public AccessToken GetAccessToken(AccessRequest accessRequest)
 		{
+			// check if key is valid;
+			// get authorisation object
+
 			return null;
 		}
 	}
