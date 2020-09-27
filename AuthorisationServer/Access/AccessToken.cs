@@ -15,8 +15,8 @@ namespace AuthorisationServer.Access
 		[DataMember(Name = "Token")]
 		public string Token { get; set; }
 
-		[DataMember(Name = "UserId")]
-		public long UserId { get; set; }
+		//[DataMember(Name = "UserId")]
+		//public long UserId { get; set; }
 
 		[DataMember(Name = "StartTime")]
 		public DateTime StartTime { get; set; }
