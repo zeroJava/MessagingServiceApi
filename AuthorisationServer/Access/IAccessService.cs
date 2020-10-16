@@ -13,5 +13,8 @@ namespace AuthorisationServer.Access
 	{
 		[OperationContract]
 		AccessToken GetAccessToken(AccessRequest accessRequest);
+
+		[OperationContract]
+		ValidationResult CheckAccessTokenValid(string encryptedToken);
 	}
 }

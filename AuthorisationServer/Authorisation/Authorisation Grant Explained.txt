@@ -62,5 +62,7 @@
      * Client Credentials are used as an authorization grant typically
      * when the client is acting on its own behalf (the client is also
      * the resource owner).
+     *
+     * The Client Credentials grant is used when applications request an access token to access their own resources, not on behalf of a user.
      * 
      * */

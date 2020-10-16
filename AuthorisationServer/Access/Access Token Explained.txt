@@ -1,0 +1,30 @@
+﻿
+/* 
+ * Access Token
+ * 
+ * Access Token is a string value creditential used to
+ * access the resource server, which is the server that
+ * host resource owner (user) data (resource).
+ *
+ * An Access Token is a hashed string value that has
+ * been issued by the authorisation server in exchange
+ * for the authorisation code (authorisation grant).
+ *
+ * So, using the Authorisation-Code flow, the resource
+ * -owner logs-in, onto the Authorisation-Server, which
+ * returns the Authorisation-Code.
+ * The client then exchanges the Authorisation-Code for
+ * the Access-Code, which is then used to access the
+ * resource.
+ *
+ * The Access Token contains information such as an ind-
+ * entifier, scope, expiry date etc. 
+ *
+ */
+
+/*
+ * Refresh Token
+ * 
+ * Refresh Token are creditentials, which are used to get
+ * a new Access-Token, when the previous one expires
+ */

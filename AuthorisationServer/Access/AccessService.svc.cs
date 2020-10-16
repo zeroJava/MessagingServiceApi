@@ -15,13 +15,28 @@ namespace AuthorisationServer.Access
 		{
 			try
 			{
-
+				AccessServiceBL accessService = new AccessServiceBL();
+				AccessToken accessToken = accessService.GetAccessToken(accessRequest);
+				return accessToken;
 			}
 			catch (Exception exception)
 			{
-
+				throw new FaultException(exception.ToString());
 			}
-			return null;
+		}
+
+		public ValidationResult CheckAccessTokenValid(string encryptedToken)
+		{
+			try
+			{
+				AccessServiceBL accessService = new AccessServiceBL();
+				ValidationResult result = accessService.CheckAccessTokenValid(encryptedToken);
+				return result;
+			}
+			catch (Exception exception)
+			{
+				throw new FaultException(exception.ToString());
+			}
 		}
 	}
 }
