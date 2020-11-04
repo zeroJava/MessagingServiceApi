@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="fcfd7625-5ae5-43b8-8860-9207709603c4" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://192.168.0.12/Authorisation/Services/AccessService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="AccessService.xsd" MetadataType="Schema" ID="94853615-a311-4a8b-8970-37cacbfd070d" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?xsd=xsd0" />
+    <MetadataFile FileName="AccessService1.xsd" MetadataType="Schema" ID="5ed765a3-5c31-4aa2-81fd-b4ea5ff5f741" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?xsd=xsd3" />
+    <MetadataFile FileName="AccessService2.xsd" MetadataType="Schema" ID="fafc96ec-04e2-4fe4-831a-fd1650e2923f" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?xsd=xsd2" />
+    <MetadataFile FileName="AccessService.wsdl" MetadataType="Wsdl" ID="50164d6d-42fe-4c76-bb11-5381e87f65ac" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?wsdl" />
+    <MetadataFile FileName="AccessService.disco" MetadataType="Disco" ID="eb5d0c48-a59e-4a7f-b208-ce58e2b4f260" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?disco" />
+    <MetadataFile FileName="AccessService3.xsd" MetadataType="Schema" ID="045c4ce9-bdaa-44e8-97e1-57633a6724a8" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?xsd=xsd1" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

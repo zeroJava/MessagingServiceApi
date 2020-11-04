@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 using System;
 using AuthorisationEntity = MessageDbCore.EntityClasses.Authorisation;
 using AccessEnity = MessageDbCore.EntityClasses.Access;
+using MessageDbCore.DbRepositoryInterfaces;
+using MessageDbCore.Exceptions;
+using MessageDbCore.Enumerations;
 
 namespace AuthorisationServer.Access
 {
@@ -27,7 +30,7 @@ namespace AuthorisationServer.Access
 				throw new ApplicationException("Could not find Authorisation entry in the database.");
 			}
 
-			AccessEnity access = CreateAccess(authorisation, accessRequest,
+			AccessEnity access = CreateAccess(authorisation.UserId, accessRequest.Scope,
 				organisationKey.Name);
 			PersistAccess(access);
 			DeleteAuthorisation(authorisation);
@@ -36,6 +39,11 @@ namespace AuthorisationServer.Access
 			return accessToken;
 		}
 
+		/*
+		 * Oraganisation-key is the license key provide to the
+		 * client, which a encrypted json string containing the
+		 * username and OKey.
+		 */
 		private OrganisationKeySerDes ExtractOrganisationKey(string encryptedKey)
 		{
 			string decryptedKey = SymmetricEncryption.Decrypt(encryptedKey);
@@ -81,19 +89,18 @@ namespace AuthorisationServer.Access
 			return authorisation;
 		}
 
-		private AccessEnity CreateAccess(AuthorisationEntity authorisation, AccessRequest accessRequest,
-			string organisationName)
+		private AccessEnity CreateAccess(long userId, string[] scope, string organisationName)
 		{
-			string encrptedOrganisationName = SymmetricEncryption.Encrypt(organisationName);
+			//string encrptedOrganisationName = SymmetricEncryption.Encrypt(organisationName);
 			DateTime currentDateTime = DateTime.Now;
 			AccessEnity access = new AccessEnity
 			{
-				Organisation = encrptedOrganisationName,
+				Organisation = organisationName,
 				Token = Guid.NewGuid().ToString(),
-				UserId = authorisation.UserId,
+				UserId = userId,
 				StartTime = currentDateTime,
 				EndTime = currentDateTime.AddMinutes(30),
-				Scope = accessRequest.Scope,
+				Scope = scope,
 			};
 			return access;
 		}
@@ -114,9 +121,10 @@ namespace AuthorisationServer.Access
 
 		private AccessToken CreateAccessToken(AccessEnity access)
 		{
+			string encrptedOrganisationName = SymmetricEncryption.Encrypt(access.Organisation);
 			AccessToken accessToken = new AccessToken
 			{
-				Organisation = access.Organisation,
+				Organisation = encrptedOrganisationName,
 				Token = access.Token,
 				StartTime = access.StartTime,
 				EndTime = access.EndTime,
@@ -125,48 +133,86 @@ namespace AuthorisationServer.Access
 			return accessToken;
 		}
 
+		public AccessToken GetAccessTokenImplicit(string encryptedUsername, string encryptedPassword)
+		{
+			if (string.IsNullOrEmpty(encryptedUsername) ||
+				string.IsNullOrEmpty(encryptedPassword))
+			{
+				throw new ApplicationException("Username or Password is empty.");
+			}
+			string usernameDecrypted = SymmetricEncryption.Decrypt(encryptedUsername);
+			string passwordDecrypted = SymmetricEncryption.Decrypt(encryptedPassword);
+
+			User user = GetUser(usernameDecrypted, passwordDecrypted);
+			if (user == null)
+			{
+				throw new ApplicationException("Could not find user matching Username and Password.");
+			}
+
+			AccessEnity accessEntity = CreateAccess(user.Id, new string[0], user.UserName);
+			PersistAccess(accessEntity);
+			AccessToken accessToken = CreateAccessToken(accessEntity);
+			return accessToken;
+		}
+
+		private User GetUser(string username, string password)
+		{
+			IUserRepository userRepo = UserRepoFactory.GetUserRepository(MessageDbLib.Constants.DatabaseEngineConstant.MSSQLADODOTNET,
+				DatabaseOption.DbConnectionString);
+			User result = userRepo.GetUserMatchingUsernameAndPassword(username, password);
+			return result;
+		}
+
 		public ValidationResult CheckAccessTokenValid(string encryptedToken)
 		{
 			if (string.IsNullOrEmpty(encryptedToken))
 			{
-				return GetValidationResult(false, "The encrypted token requested for validation is null.");
+				return GetValidationResult(false, "The encrypted token requested for validation is null.",
+					ValidationFailReason.AccessTokenEmpty);
 			}
 
 			string decryptedToken = SymmetricEncryption.Decrypt(encryptedToken);
 			if (string.IsNullOrEmpty(decryptedToken))
 			{
-				return GetValidationResult(false, "The decrypted token requested for validation is null.");
+				return GetValidationResult(false, "The decrypted token requested for validation is null.",
+					ValidationFailReason.AccessTokenEmpty);
 			}
 			AccessToken accessToken = JsonConvert.DeserializeObject<AccessToken>(decryptedToken);
 			if (accessToken == null)
 			{
-				return GetValidationResult(false, "The Access-Token requested for validation is null.");
+				return GetValidationResult(false, "The Access-Token requested for validation is null.",
+					ValidationFailReason.TokenExtractError);
 			}
 
 			DateTime currentTime = DateTime.Now;
-			if (accessToken.EndTime >= currentTime)
+			if (currentTime > accessToken.EndTime)
 			{
-				return GetValidationResult(false, "Access-Token passed expiry date.");
+				return GetValidationResult(false, "Access-Token passed expiry date.",
+					ValidationFailReason.AccessTokenExpired);
 			}
 			if (string.IsNullOrEmpty(accessToken.Token))
 			{
-				GetValidationResult(false, "Token value from Access-Token is empty.");
+				return GetValidationResult(false, "Token value from Access-Token is empty.",
+					ValidationFailReason.AccessTokenEmpty);
 			}
 			AccessEnity access = GetAccessEntity(accessToken.Token);
 			if (access == null)
 			{
-				throw new ApplicationException("Could not find key matching token in the database.");
+				return GetValidationResult(false, "Could not find key matching token in the database.",
+					ValidationFailReason.TokenRowNotFound);
 			}
 			ValidationResult result = CheckAccessTokenMatch(accessToken, access);
 			return result;
 		}
 
-		private ValidationResult GetValidationResult(bool isTokenValid, string reason)
+		private ValidationResult GetValidationResult(bool isTokenValid, string message,
+			ValidationFailReason? failReason)
 		{
 			return new ValidationResult
 			{
 				IsTokenValid = isTokenValid,
-				Reason = reason,
+				Message = message,
+				FailReason = failReason,
 			};
 		}
 
@@ -182,28 +228,33 @@ namespace AuthorisationServer.Access
 			if (string.IsNullOrEmpty(accessToken.Organisation) ||
 				string.IsNullOrEmpty(accessEntity.Organisation))
 			{
-				return GetValidationResult(false, "The encryted organisation name is empty.");
+				return GetValidationResult(false, "The encryted organisation name is empty.",
+					ValidationFailReason.OrganisationNameEmpty);
 			}
 
 			string decryptedTokenOrganisation = SymmetricEncryption.Decrypt(accessToken.Organisation);
-			string decryptedEntityOrganisation = SymmetricEncryption.Decrypt(accessEntity.Organisation);
-			if (decryptedTokenOrganisation != decryptedEntityOrganisation)
+			//string decryptedEntityOrganisation = SymmetricEncryption.Decrypt(accessEntity.Organisation);
+			if (decryptedTokenOrganisation != accessEntity.Organisation) // decryptedEntityOrganisation
 			{
-				return GetValidationResult(false, "The decrypted organisation name from Access-Token and DB Access do not match.");
+				return GetValidationResult(false, "The decrypted organisation name from Access-Token and DB Access do not match.",
+					ValidationFailReason.TokenValuesDontMatch);
 			}
 			if (accessToken.Scope != accessEntity.Scope)
 			{
-				return GetValidationResult(false, "The scope from Access-Token and DB Access do not match.");
+				return GetValidationResult(false, "The scope from Access-Token and DB Access do not match.",
+					ValidationFailReason.TokenValuesDontMatch);
 			}
 			if (accessToken.StartTime != accessEntity.StartTime)
 			{
-				return GetValidationResult(false, "The start-time from Access-Token and DB Access do not match.");
+				return GetValidationResult(false, "The start-time from Access-Token and DB Access do not match.",
+					ValidationFailReason.TokenValuesDontMatch);
 			}
 			if (accessToken.EndTime != accessEntity.EndTime)
 			{
-				return GetValidationResult(false, "The end-time from Access-Token and DB Access do not match.");
+				return GetValidationResult(false, "The end-time from Access-Token and DB Access do not match.",
+					ValidationFailReason.TokenValuesDontMatch);
 			}
-			return GetValidationResult(true, "Validation was successful.");
+			return GetValidationResult(true, "Validation was successful.", null);
 		}
 	}
 }

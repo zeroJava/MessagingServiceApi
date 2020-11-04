@@ -8,8 +8,10 @@ namespace WMessageServiceApi.Messaging.DataContracts.LoginContracts
 	{
 		[DataMember]
 		public bool LoginSuccessful { get; set; }
+
 		[DataMember]
 		public string UserName { get; set; }
+
 		[DataMember]
 		public string UserEmailAddress { get; set; }
 		//[DataMember]

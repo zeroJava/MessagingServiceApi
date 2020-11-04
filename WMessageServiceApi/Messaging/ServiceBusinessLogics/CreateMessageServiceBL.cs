@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.ServiceModel;
 using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.EntityClasses;
+using MessageDbCore.Enumerations;
+using MessageDbCore.Exceptions;
 using MessageDbCore.Repositories;
 using MessageDbLib.Configurations;
 using MessageDbLib.Constants;
 using MessageDbLib.DbRepositoryFactories;
 using MessageDbLib.Logging;
+using WMessageServiceApi.Authentication;
 using WMessageServiceApi.Exceptions.Datacontacts;
 using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 using WMessageServiceApi.Messaging.DataEnumerations;
@@ -18,6 +21,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 	{
 		public MessageRequestTokenContract CreateMessage(IMessageContract message)
 		{
+			ValidateAccessToken(message.AccessToken);
+
 			if (message.EmailAccounts == null || message.EmailAccounts.Count <= 0)
 			{
 				throw new InvalidOperationException("Message contract does not have ant emails attahed.");
@@ -31,6 +36,18 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 			return CreateMessageStateTokenContract(MessageReceivedState.AcknowledgedRequest,
 				"Message was successfully acknowledged and persisted in our system.");
+		}
+
+		private void ValidateAccessToken(string encryptedToken)
+		{
+			string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
+			IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
+			TokenValidResult result = tokenValidator.IsTokenValid(encryptedToken);
+			if (!result.IsValidationSuccess)
+			{
+				string message = result.Message ?? "It seems like the Access-Token is invalid.";
+				throw new TokenValidationException(message, result.Reason);
+			}
 		}
 
 		private MessageRequestTokenContract CreateMessageStateTokenContract(MessageReceivedState recievedState,
@@ -68,25 +85,25 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		}
 
 		private void ProcessNewMessage(IMessageContract messageContract, Message message)
-        {
+		{
 			using (IRepoTransaction repoTransaction = RepoTransactionFactory.GetRepoTransaction(DatabaseOption.DatabaseEngine,
 				DatabaseOption.DbConnectionString))
-            {
+			{
 				try
-                {
+				{
 					repoTransaction.BeginTransaction();
 					PersistMessage(message, repoTransaction);
 					ProcessMessageDispatch(messageContract, message, repoTransaction);
 					repoTransaction.Commit();
-                }
+				}
 				catch (Exception exception)
-                {
+				{
 					WriteErrorLog("Unable to process new message request.", exception);
 					repoTransaction.Callback();
 					throw;
-                }
-            }
-        }
+				}
+			}
+		}
 
 		private void PersistMessage(Message message, IRepoTransaction repoTransaction)
 		{

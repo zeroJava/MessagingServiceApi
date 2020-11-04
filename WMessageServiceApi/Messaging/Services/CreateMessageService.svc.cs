@@ -5,6 +5,8 @@ using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 using WMessageServiceApi.Messaging.DataEnumerations;
 using WMessageServiceApi.Messaging.ServiceBusinessLogics;
 using MessageDbLib.Logging;
+using WMessageServiceApi.Exceptions.Datacontacts;
+using WMessageServiceApi.Authentication;
 
 namespace WMessageServiceApi.Messaging.Services
 {
@@ -17,6 +19,12 @@ namespace WMessageServiceApi.Messaging.Services
 				CreateMessageServiceBL createMessageL = new CreateMessageServiceBL();
 				return createMessageL.CreateMessage(message);
             }
+			catch (TokenValidationException exception)
+			{
+				WriteErrorLog("Encontered a token validation error when trying to create a message.", exception);
+				ValidationErrorContract tokenContract = CreateValidationErrorContract(exception);
+				throw new FaultException<ValidationErrorContract>(tokenContract);
+			}
             catch (Exception exception)
             {
 				WriteErrorLog("Encontered an error when trying to create a message.", exception);
@@ -24,6 +32,15 @@ namespace WMessageServiceApi.Messaging.Services
 				throw new FaultException<MessageRequestTokenContract>(tokenContract);
 			}
         }
+
+		private ValidationErrorContract CreateValidationErrorContract(TokenValidationException exception)
+		{
+			return new ValidationErrorContract
+			{
+				Message = exception.Message,
+				Reason = exception.Reason,
+			};
+		}
 
 		private MessageRequestTokenContract CreateMessageStateTokenContract(MessageReceivedState recievedState, string message)
 		{

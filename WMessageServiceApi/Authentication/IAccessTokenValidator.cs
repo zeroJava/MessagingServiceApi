@@ -8,6 +8,6 @@ namespace WMessageServiceApi.Authentication
 {
 	public interface IAccessTokenValidator
 	{
-		bool IsTokenValid();
+		TokenValidResult IsTokenValid(string encryptedToken);
 	}
 }

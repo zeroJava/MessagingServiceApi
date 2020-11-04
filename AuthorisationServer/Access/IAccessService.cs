@@ -15,6 +15,9 @@ namespace AuthorisationServer.Access
 		AccessToken GetAccessToken(AccessRequest accessRequest);
 
 		[OperationContract]
+		AccessToken GetAccessTokenImplicit(string encryptedUsername, string encryptedPassword);
+
+		[OperationContract]
 		ValidationResult CheckAccessTokenValid(string encryptedToken);
 	}
 }

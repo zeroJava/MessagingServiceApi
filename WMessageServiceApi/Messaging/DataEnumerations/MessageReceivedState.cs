@@ -11,6 +11,7 @@ namespace WMessageServiceApi.Messaging.DataEnumerations
 	{
 		[EnumMember]
 		AcknowledgedRequest,
+
 		[EnumMember]
 		FailedToProcessRequest,
 	}

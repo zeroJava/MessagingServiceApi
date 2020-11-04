@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MessageDbCore.Enumerations;
+using MessageDbCore.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -17,6 +19,20 @@ namespace AuthorisationServer.Access
 			{
 				AccessServiceBL accessService = new AccessServiceBL();
 				AccessToken accessToken = accessService.GetAccessToken(accessRequest);
+				return accessToken;
+			}
+			catch (Exception exception)
+			{
+				throw new FaultException(exception.ToString());
+			}
+		}
+
+		public AccessToken GetAccessTokenImplicit(string encryptedUsername, string encryptedPassword)
+		{
+			try
+			{
+				AccessServiceBL accessService = new AccessServiceBL();
+				AccessToken accessToken = accessService.GetAccessTokenImplicit(encryptedUsername, encryptedPassword);
 				return accessToken;
 			}
 			catch (Exception exception)

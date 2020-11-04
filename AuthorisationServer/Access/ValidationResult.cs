@@ -12,7 +12,10 @@ namespace AuthorisationServer.Access
 		[DataMember(Name = "IsTokenValid")]
 		public bool IsTokenValid { get; set; }
 
-		[DataMember(Name = "Reason")]
-		public string Reason { get; set; }
+		[DataMember(Name = "Message")]
+		public string Message { get; set; }
+
+		[DataMember(Name = "FailReason")]
+		public ValidationFailReason? FailReason { get; set; }
 	}
 }
