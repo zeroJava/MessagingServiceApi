@@ -15,6 +15,21 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="GetAccessTokenImplicit">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="encryptedUsername" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="encryptedPassword" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAccessTokenImplicitResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/AuthorisationServer.Access" minOccurs="0" name="GetAccessTokenImplicitResult" nillable="true" type="q3:AccessToken" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="CheckAccessTokenValid">
     <xs:complexType>
       <xs:sequence>
@@ -25,7 +40,7 @@
   <xs:element name="CheckAccessTokenValidResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/AuthorisationServer.Access" minOccurs="0" name="CheckAccessTokenValidResult" nillable="true" type="q3:ValidationResult" />
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/AuthorisationServer.Access" minOccurs="0" name="CheckAccessTokenValidResult" nillable="true" type="q4:ValidationResult" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

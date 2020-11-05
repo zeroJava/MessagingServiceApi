@@ -14,6 +14,12 @@
   <wsdl:message name="IAccessService_GetAccessToken_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetAccessTokenResponse" />
   </wsdl:message>
+  <wsdl:message name="IAccessService_GetAccessTokenImplicit_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAccessTokenImplicit" />
+  </wsdl:message>
+  <wsdl:message name="IAccessService_GetAccessTokenImplicit_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAccessTokenImplicitResponse" />
+  </wsdl:message>
   <wsdl:message name="IAccessService_CheckAccessTokenValid_InputMessage">
     <wsdl:part name="parameters" element="tns:CheckAccessTokenValid" />
   </wsdl:message>
@@ -25,6 +31,10 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IAccessService/GetAccessToken" message="tns:IAccessService_GetAccessToken_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IAccessService/GetAccessTokenResponse" message="tns:IAccessService_GetAccessToken_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="GetAccessTokenImplicit">
+      <wsdl:input wsaw:Action="http://tempuri.org/IAccessService/GetAccessTokenImplicit" message="tns:IAccessService_GetAccessTokenImplicit_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IAccessService/GetAccessTokenImplicitResponse" message="tns:IAccessService_GetAccessTokenImplicit_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="CheckAccessTokenValid">
       <wsdl:input wsaw:Action="http://tempuri.org/IAccessService/CheckAccessTokenValid" message="tns:IAccessService_CheckAccessTokenValid_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IAccessService/CheckAccessTokenValidResponse" message="tns:IAccessService_CheckAccessTokenValid_OutputMessage" />
@@ -34,6 +44,15 @@
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="GetAccessToken">
       <soap:operation soapAction="http://tempuri.org/IAccessService/GetAccessToken" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAccessTokenImplicit">
+      <soap:operation soapAction="http://tempuri.org/IAccessService/GetAccessTokenImplicit" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

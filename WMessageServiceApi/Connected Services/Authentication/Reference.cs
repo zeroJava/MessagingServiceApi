@@ -209,10 +209,13 @@ namespace WMessageServiceApi.Authentication {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<WMessageServiceApi.Authentication.ValidationFailReason> FailReasonField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private bool IsTokenValidField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ReasonField;
+        private string MessageField;
         
         [global::System.ComponentModel.BrowsableAttribute(false)]
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
@@ -221,6 +224,19 @@ namespace WMessageServiceApi.Authentication {
             }
             set {
                 this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<WMessageServiceApi.Authentication.ValidationFailReason> FailReason {
+            get {
+                return this.FailReasonField;
+            }
+            set {
+                if ((this.FailReasonField.Equals(value) != true)) {
+                    this.FailReasonField = value;
+                    this.RaisePropertyChanged("FailReason");
+                }
             }
         }
         
@@ -238,14 +254,14 @@ namespace WMessageServiceApi.Authentication {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Reason {
+        public string Message {
             get {
-                return this.ReasonField;
+                return this.MessageField;
             }
             set {
-                if ((object.ReferenceEquals(this.ReasonField, value) != true)) {
-                    this.ReasonField = value;
-                    this.RaisePropertyChanged("Reason");
+                if ((object.ReferenceEquals(this.MessageField, value) != true)) {
+                    this.MessageField = value;
+                    this.RaisePropertyChanged("Message");
                 }
             }
         }
@@ -260,6 +276,32 @@ namespace WMessageServiceApi.Authentication {
         }
     }
     
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="ValidationFailReason", Namespace="http://schemas.datacontract.org/2004/07/AuthorisationServer.Access")]
+    public enum ValidationFailReason : int {
+        
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        OrganisationNameEmpty = 1,
+        
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        OrganisationNonFound = 2,
+        
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        AccessTokenEmpty = 3,
+        
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        AccessTokenExpired = 4,
+        
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        TokenExtractError = 5,
+        
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        TokenValuesDontMatch = 6,
+        
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        TokenRowNotFound = 7,
+    }
+    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="Authentication.IAccessService")]
     public interface IAccessService {
@@ -269,6 +311,12 @@ namespace WMessageServiceApi.Authentication {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAccessService/GetAccessToken", ReplyAction="http://tempuri.org/IAccessService/GetAccessTokenResponse")]
         System.Threading.Tasks.Task<WMessageServiceApi.Authentication.AccessToken> GetAccessTokenAsync(WMessageServiceApi.Authentication.AccessRequest accessRequest);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAccessService/GetAccessTokenImplicit", ReplyAction="http://tempuri.org/IAccessService/GetAccessTokenImplicitResponse")]
+        WMessageServiceApi.Authentication.AccessToken GetAccessTokenImplicit(string encryptedUsername, string encryptedPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAccessService/GetAccessTokenImplicit", ReplyAction="http://tempuri.org/IAccessService/GetAccessTokenImplicitResponse")]
+        System.Threading.Tasks.Task<WMessageServiceApi.Authentication.AccessToken> GetAccessTokenImplicitAsync(string encryptedUsername, string encryptedPassword);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAccessService/CheckAccessTokenValid", ReplyAction="http://tempuri.org/IAccessService/CheckAccessTokenValidResponse")]
         WMessageServiceApi.Authentication.ValidationResult CheckAccessTokenValid(string encryptedToken);
@@ -310,6 +358,14 @@ namespace WMessageServiceApi.Authentication {
         
         public System.Threading.Tasks.Task<WMessageServiceApi.Authentication.AccessToken> GetAccessTokenAsync(WMessageServiceApi.Authentication.AccessRequest accessRequest) {
             return base.Channel.GetAccessTokenAsync(accessRequest);
+        }
+        
+        public WMessageServiceApi.Authentication.AccessToken GetAccessTokenImplicit(string encryptedUsername, string encryptedPassword) {
+            return base.Channel.GetAccessTokenImplicit(encryptedUsername, encryptedPassword);
+        }
+        
+        public System.Threading.Tasks.Task<WMessageServiceApi.Authentication.AccessToken> GetAccessTokenImplicitAsync(string encryptedUsername, string encryptedPassword) {
+            return base.Channel.GetAccessTokenImplicitAsync(encryptedUsername, encryptedPassword);
         }
         
         public WMessageServiceApi.Authentication.ValidationResult CheckAccessTokenValid(string encryptedToken) {
