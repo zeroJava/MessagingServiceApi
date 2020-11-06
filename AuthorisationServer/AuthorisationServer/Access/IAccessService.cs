@@ -16,8 +16,5 @@ namespace AuthorisationServer.Access
 
 		[OperationContract]
 		AccessToken GetAccessTokenImplicit(string encryptedUsername, string encryptedPassword);
-
-		[OperationContract]
-		ValidationResult CheckAccessTokenValid(string encryptedToken);
 	}
 }

@@ -8,8 +8,6 @@ using System;
 using AuthorisationEntity = MessageDbCore.EntityClasses.Authorisation;
 using AccessEnity = MessageDbCore.EntityClasses.Access;
 using MessageDbCore.DbRepositoryInterfaces;
-using MessageDbCore.Exceptions;
-using MessageDbCore.Enumerations;
 
 namespace AuthorisationServer.Access
 {
@@ -161,100 +159,6 @@ namespace AuthorisationServer.Access
 				DatabaseOption.DbConnectionString);
 			User result = userRepo.GetUserMatchingUsernameAndPassword(username, password);
 			return result;
-		}
-
-		public ValidationResult CheckAccessTokenValid(string encryptedToken)
-		{
-			if (string.IsNullOrEmpty(encryptedToken))
-			{
-				return GetValidationResult(false, "The encrypted token requested for validation is null.",
-					ValidationFailReason.AccessTokenEmpty);
-			}
-
-			string decryptedToken = SymmetricEncryption.Decrypt(encryptedToken);
-			if (string.IsNullOrEmpty(decryptedToken))
-			{
-				return GetValidationResult(false, "The decrypted token requested for validation is null.",
-					ValidationFailReason.AccessTokenEmpty);
-			}
-			AccessToken accessToken = JsonConvert.DeserializeObject<AccessToken>(decryptedToken);
-			if (accessToken == null)
-			{
-				return GetValidationResult(false, "The Access-Token requested for validation is null.",
-					ValidationFailReason.TokenExtractError);
-			}
-
-			DateTime currentTime = DateTime.Now;
-			if (currentTime > accessToken.EndTime)
-			{
-				return GetValidationResult(false, "Access-Token passed expiry date.",
-					ValidationFailReason.AccessTokenExpired);
-			}
-			if (string.IsNullOrEmpty(accessToken.Token))
-			{
-				return GetValidationResult(false, "Token value from Access-Token is empty.",
-					ValidationFailReason.AccessTokenEmpty);
-			}
-			AccessEnity access = GetAccessEntity(accessToken.Token);
-			if (access == null)
-			{
-				return GetValidationResult(false, "Could not find key matching token in the database.",
-					ValidationFailReason.TokenRowNotFound);
-			}
-			ValidationResult result = CheckAccessTokenMatch(accessToken, access);
-			return result;
-		}
-
-		private ValidationResult GetValidationResult(bool isTokenValid, string message,
-			ValidationFailReason? failReason)
-		{
-			return new ValidationResult
-			{
-				IsTokenValid = isTokenValid,
-				Message = message,
-				FailReason = failReason,
-			};
-		}
-
-		private AccessEnity GetAccessEntity(string token)
-		{
-			IAccessRepository accessRepo = AccessRepoFactory.GetAuthorisationRepository(DatabaseOption.DatabaseEngine,
-				DatabaseOption.DbConnectionString);
-			return accessRepo.GetAccessMatchingToken(token);
-		}
-
-		private ValidationResult CheckAccessTokenMatch(AccessToken accessToken, AccessEnity accessEntity)
-		{
-			if (string.IsNullOrEmpty(accessToken.Organisation) ||
-				string.IsNullOrEmpty(accessEntity.Organisation))
-			{
-				return GetValidationResult(false, "The encryted organisation name is empty.",
-					ValidationFailReason.OrganisationNameEmpty);
-			}
-
-			string decryptedTokenOrganisation = SymmetricEncryption.Decrypt(accessToken.Organisation);
-			//string decryptedEntityOrganisation = SymmetricEncryption.Decrypt(accessEntity.Organisation);
-			if (decryptedTokenOrganisation != accessEntity.Organisation) // decryptedEntityOrganisation
-			{
-				return GetValidationResult(false, "The decrypted organisation name from Access-Token and DB Access do not match.",
-					ValidationFailReason.TokenValuesDontMatch);
-			}
-			if (accessToken.Scope != accessEntity.Scope)
-			{
-				return GetValidationResult(false, "The scope from Access-Token and DB Access do not match.",
-					ValidationFailReason.TokenValuesDontMatch);
-			}
-			if (accessToken.StartTime != accessEntity.StartTime)
-			{
-				return GetValidationResult(false, "The start-time from Access-Token and DB Access do not match.",
-					ValidationFailReason.TokenValuesDontMatch);
-			}
-			if (accessToken.EndTime != accessEntity.EndTime)
-			{
-				return GetValidationResult(false, "The end-time from Access-Token and DB Access do not match.",
-					ValidationFailReason.TokenValuesDontMatch);
-			}
-			return GetValidationResult(true, "Validation was successful.", null);
 		}
 	}
 }

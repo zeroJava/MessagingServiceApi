@@ -40,19 +40,5 @@ namespace AuthorisationServer.Access
 				throw new FaultException(exception.ToString());
 			}
 		}
-
-		public ValidationResult CheckAccessTokenValid(string encryptedToken)
-		{
-			try
-			{
-				AccessServiceBL accessService = new AccessServiceBL();
-				ValidationResult result = accessService.CheckAccessTokenValid(encryptedToken);
-				return result;
-			}
-			catch (Exception exception)
-			{
-				throw new FaultException(exception.ToString());
-			}
-		}
 	}
 }
