@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cryptography;
 using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.EntityClasses;
 using MessageDbLib.Configurations;
@@ -12,22 +13,42 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
 	public class RetrieveMessageServiceBL
 	{
-		public List<MessageDispatchInfoContract> GetMessagesSentToUser(string username, string receiverEmailAddress)
+		public List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
 		{
-			long? userId = GetUserIdUsingusername(username);
-			if (userId == null)
+			ValidateRequest(messageRequest);
+
+			string username = SymmetricEncryption.Decrypt(messageRequest.UserCredentials);
+			if (string.IsNullOrEmpty(username))
 			{
-				throw new Exception("Could not get user id");
+				throw new ApplicationException("Decrypting credential returned a empty string.");
 			}
+			User user = GetUserMatchingUsername(username);
+			if (user == null)
+			{
+				throw new ApplicationException("Could not find a matching Username.");
+			}
+
 			WriteInfoLog(string.Format("Getting messages sent to user: {0};", username));
-			return MessagesSentToUser(userId, receiverEmailAddress);
+			return MessagesSentToUser(user.Id, messageRequest.ReceiverEmailAddress);
 		}
 
-		private long? GetUserIdUsingusername(string username)
+		private void ValidateRequest(IRetrieveMessageRequest messageRequest)
+		{
+			if (messageRequest == null)
+			{
+				throw new ApplicationException("Message request sent is empty.");
+			}
+			if (string.IsNullOrEmpty(messageRequest.UserCredentials))
+			{
+				throw new ApplicationException("UserCredential assigned with message-request is empty.");
+			}
+		}
+
+		private User GetUserMatchingUsername(string username)
 		{
 			IUserRepository userRepo = GetUserRepository();
 			User user = userRepo.GetUserMatchingUsername(username);
-			return user != null ? user.Id : (long?)null;
+			return user;
 		}
 
 		private IUserRepository GetUserRepository()
@@ -73,18 +94,19 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		{
 			IMessageRepository messageRepo = GetMessageRepository();
 			List<Message> messages = messageRepo.GetAllMessages().Where(m => messageIds.Any(mi => mi == m.Id)).ToList();
-			if (messages != null)
+			if (messages == null)
 			{
-				foreach (MessageDispatch dispatch in messageDispatches)
-				{
-					Message message = messages.FirstOrDefault(m => m.Id == dispatch.MessageId) as Message;
-					if (message != null)
-					{
-						dispatch.Message = message;
-					}
-				}
-				WriteInfoLog("Completed assigning message to message-dispatch");
+				return;
 			}
+			foreach (MessageDispatch dispatch in messageDispatches)
+			{
+				Message message = messages.FirstOrDefault(m => m.Id == dispatch.MessageId) as Message;
+				if (message != null)
+				{
+					dispatch.Message = message;
+				}
+			}
+			WriteInfoLog("Completed assigning message to message-dispatch");
 		}
 
 		private IMessageRepository GetMessageRepository()
@@ -139,26 +161,32 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			};
 		}
 
-		public List<MessageDispatchInfoContract> GetMsgDispatchesBetweenSenderReceiver(string username, string senderEmailAddress,
-			string receiverEmailAddress,
-			long messageIdThreshold,
-			int numberOfMessages)
+		public List<MessageDispatchInfoContract> GetMsgDispatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest)
 		{
-			long? userId = GetUserIdUsingusername(username);
-			if (userId == null)
+			ValidateRequest(messageRequest);
+
+			string username = SymmetricEncryption.Decrypt(messageRequest.UserCredentials);
+			if (string.IsNullOrEmpty(username))
 			{
-				throw new Exception("Could not get user ID");
+				throw new ApplicationException("Decrypting credential returned a empty string.");
+			}
+			User user = GetUserMatchingUsername(username);
+			if (user == null)
+			{
+				throw new ApplicationException("Could not find a matching Username.");
 			}
 
-			string infotext = string.Format("Getting message messageDispatches between sender: {0} and receiver: {1}.", senderEmailAddress,
-				receiverEmailAddress);
+			string infotext = string.Format("Getting message messageDispatches between sender: {0} and receiver: {1}.",
+				messageRequest.SenderEmailAddress,
+				messageRequest.ReceiverEmailAddress);
 			WriteInfoLog(infotext);
 
 			IMessageDispatchRepository dispatchRepo = GetMessageDispatchRepository();
-			List<MessageDispatch> messageDispatches = dispatchRepo.GetDispatchesBetweenSenderReceiver(senderEmailAddress, receiverEmailAddress,
-				messageIdThreshold,
-				numberOfMessages);
-			List<MessageDispatchInfoContract> messageDispatchInfos = CreateDispatchInfoList(messageDispatches, userId);
+			List<MessageDispatch> messageDispatches = dispatchRepo.GetDispatchesBetweenSenderReceiver(messageRequest.SenderEmailAddress,
+				messageRequest.ReceiverEmailAddress,
+				messageRequest.MessageIdThreshold,
+				messageRequest.NumberOfMessages);
+			List<MessageDispatchInfoContract> messageDispatchInfos = CreateDispatchInfoList(messageDispatches, user.Id);
 			return messageDispatchInfos;
 		}
 

@@ -8,6 +8,12 @@ namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 {
 	public interface IRetrieveMessageRequest
 	{
-		string AccessToken { get; set; }
+		string UserCredentials { get; set; }
+		
+		string SenderEmailAddress { get; set; }
+		string ReceiverEmailAddress { get; set; }
+
+		long MessageIdThreshold { get; set; }
+		int NumberOfMessages { get; set; }
 	}
 }

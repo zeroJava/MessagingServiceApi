@@ -11,12 +11,12 @@ namespace WMessageServiceApi.Messaging.Services
 {
 	public class RetrieveMessageService : IRetrieveMessageService
 	{
-		public List<MessageDispatchInfoContract> GetMessagesSentToUser(string username, string receiverEmailAddress)
+		public List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
 		{
 			try
 			{
 				RetrieveMessageServiceBL retrieveMessageBL = new RetrieveMessageServiceBL();
-				return retrieveMessageBL.GetMessagesSentToUser(username, receiverEmailAddress);
+				return retrieveMessageBL.GetMessagesSentToUser(messageRequest);
 			}
 			catch (Exception exception)
 			{
@@ -29,16 +29,12 @@ namespace WMessageServiceApi.Messaging.Services
 			}
 		}
 
-		public List<MessageDispatchInfoContract> GetMessageDipatchesBetweenSenderReceiver(string username,
-			string senderEmailAddress, string receiverEmailAddress,
-			long messageIdThreshold,
-			int numberOfMessages)
+		public List<MessageDispatchInfoContract> GetMessageDipatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest)
 		{
 			try
 			{
 				RetrieveMessageServiceBL retrieveMessageBL = new RetrieveMessageServiceBL();
-				return retrieveMessageBL.GetMsgDispatchesBetweenSenderReceiver(username, senderEmailAddress, receiverEmailAddress,
-					messageIdThreshold, numberOfMessages);
+				return retrieveMessageBL.GetMsgDispatchesBetweenSenderReceiver(messageRequest);
 			}
 			catch (Exception exception)
 			{

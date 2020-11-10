@@ -10,13 +10,13 @@ namespace WMessageServiceApi.Messaging.ServiceInterfaces
 {
     // TODO replace parameters with datacontract IRetrieveMessageRequest
     [ServiceContract]
+    [ServiceKnownType(typeof(RetrieveMessageRequest))]
     public interface IRetrieveMessageService
     {
         [OperationContract]
-        List<MessageDispatchInfoContract> GetMessageDipatchesBetweenSenderReceiver(string username, string senderEmailAddress, string receiverEmailAddress, 
-			long messageIdThreshold, int numberOfMessages);
+        List<MessageDispatchInfoContract> GetMessageDipatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest);
 
 		[OperationContract]
-		List<MessageDispatchInfoContract> GetMessagesSentToUser(string username, string receiverEmailAddress);
+		List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest);
     }
 }

@@ -26,7 +26,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				throw new InvalidOperationException(string.Format("Could not find user with username: {0}", userContract.UserName));
 			}
 			UpdateUserEntityObject(user, userContract);
-			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString); // TODO changes this
+			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
 			userRepo.UpdateUser(user);
 		}
 
