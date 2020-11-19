@@ -9,5 +9,6 @@ namespace WMessageServiceApi.Authentication
 	public interface IAccessTokenValidator
 	{
 		TokenValidResult IsTokenValid(string encryptedToken);
+		TokenValidResult IsUserCredentialValid(string encryptedUserCred);
 	}
 }

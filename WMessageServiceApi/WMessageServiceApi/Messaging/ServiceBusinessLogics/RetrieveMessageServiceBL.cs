@@ -7,6 +7,7 @@ using MessageDbCore.EntityClasses;
 using MessageDbLib.Configurations;
 using MessageDbLib.DbRepositoryFactories;
 using MessageDbLib.Logging;
+using WMessageServiceApi.Authentication;
 using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
@@ -15,12 +16,12 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 	{
 		public List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
 		{
-			ValidateRequest(messageRequest);
+			ValidateAccessToken(messageRequest.UserCredentials);
 
-			string username = SymmetricEncryption.Decrypt(messageRequest.UserCredentials);
+			string username = messageRequest.Username;
 			if (string.IsNullOrEmpty(username))
 			{
-				throw new ApplicationException("Decrypting credential returned a empty string.");
+				throw new ApplicationException("Username value passed is empty.");
 			}
 			User user = GetUserMatchingUsername(username);
 			if (user == null)
@@ -32,15 +33,14 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			return MessagesSentToUser(user.Id, messageRequest.ReceiverEmailAddress);
 		}
 
-		private void ValidateRequest(IRetrieveMessageRequest messageRequest)
+		private void ValidateAccessToken(string encryptedUserCred)
 		{
-			if (messageRequest == null)
+			string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
+			IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
+			TokenValidResult result = tokenValidator.IsUserCredentialValid(encryptedUserCred);
+			if (!result.IsValidationSuccess)
 			{
-				throw new ApplicationException("Message request sent is empty.");
-			}
-			if (string.IsNullOrEmpty(messageRequest.UserCredentials))
-			{
-				throw new ApplicationException("UserCredential assigned with message-request is empty.");
+				throw new TokenValidationException(result.Message, result.Reason);
 			}
 		}
 
@@ -79,7 +79,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			{
 				return null;
 			}
-			long[] messageids = messageDispatches.Where(mt => mt.MessageId != null).Select(mt => mt.MessageId.Value)
+			long[] messageids = messageDispatches.Where(mt => mt.MessageId != null)
+				.Select(mt => mt.MessageId.Value)
 				.Distinct()
 				.ToArray();
 			return messageids;
@@ -87,13 +88,15 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 		private IMessageDispatchRepository GetMessageDispatchRepository()
 		{
-			return MessageDispatchRepoFactory.GetDispatchRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
+			return MessageDispatchRepoFactory.GetDispatchRepository(DatabaseOption.DatabaseEngine,
+				DatabaseOption.DbConnectionString);
 		}
 
 		private void AssignMessagesToDispatch(List<MessageDispatch> messageDispatches, long[] messageIds)
 		{
 			IMessageRepository messageRepo = GetMessageRepository();
-			List<Message> messages = messageRepo.GetAllMessages().Where(m => messageIds.Any(mi => mi == m.Id)).ToList();
+			List<Message> messages = messageRepo.GetAllMessages().Where(m => messageIds.Any(mi => mi == m.Id))
+				.ToList();
 			if (messages == null)
 			{
 				return;
@@ -111,7 +114,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 		private IMessageRepository GetMessageRepository()
 		{
-			return MessageRepoFactory.GetMessageRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
+			return MessageRepoFactory.GetMessageRepository(DatabaseOption.DatabaseEngine,
+				DatabaseOption.DbConnectionString);
 		}
 
 		private List<MessageDispatchInfoContract> CreateDispatchInfoList(List<MessageDispatch> messageDispatches, long? userId)
@@ -134,7 +138,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			}
 		}
 
-		private MessageDispatchInfoContract CreateMessageDispatchInfoObj(MessageDispatch messageDispatch, Message message, bool senderCurrentUser)
+		private MessageDispatchInfoContract CreateMessageDispatchInfoObj(MessageDispatch messageDispatch, Message message,
+			bool senderCurrentUser)
 		{
 			WriteInfoLog("Creating message dispatch info contract.");
 
@@ -163,12 +168,12 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 		public List<MessageDispatchInfoContract> GetMsgDispatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest)
 		{
-			ValidateRequest(messageRequest);
+			ValidateAccessToken(messageRequest.UserCredentials);
 
-			string username = SymmetricEncryption.Decrypt(messageRequest.UserCredentials);
+			string username = messageRequest.Username;
 			if (string.IsNullOrEmpty(username))
 			{
-				throw new ApplicationException("Decrypting credential returned a empty string.");
+				throw new ApplicationException("Username value passed is empty.");
 			}
 			User user = GetUserMatchingUsername(username);
 			if (user == null)

@@ -6,6 +6,7 @@ using WMessageServiceApi.Messaging.ServiceInterfaces;
 using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 using WMessageServiceApi.Messaging.ServiceBusinessLogics;
 using MessageDbLib.Logging;
+using WMessageServiceApi.Authentication;
 
 namespace WMessageServiceApi.Messaging.Services
 {
@@ -17,6 +18,12 @@ namespace WMessageServiceApi.Messaging.Services
 			{
 				RetrieveMessageServiceBL retrieveMessageBL = new RetrieveMessageServiceBL();
 				return retrieveMessageBL.GetMessagesSentToUser(messageRequest);
+			}
+			catch (TokenValidationException exception)
+			{
+				WriteErrorLog("Encontered a token validation error getting messages set to user.", exception);
+				ValidationErrorContract tokenContract = CreateValidationErrorContract(exception);
+				throw new FaultException<ValidationErrorContract>(tokenContract);
 			}
 			catch (Exception exception)
 			{
@@ -35,6 +42,12 @@ namespace WMessageServiceApi.Messaging.Services
 			{
 				RetrieveMessageServiceBL retrieveMessageBL = new RetrieveMessageServiceBL();
 				return retrieveMessageBL.GetMsgDispatchesBetweenSenderReceiver(messageRequest);
+			}
+			catch (TokenValidationException exception)
+			{
+				WriteErrorLog("Encontered a token validation error getting messages between sender and receiver.", exception);
+				ValidationErrorContract tokenContract = CreateValidationErrorContract(exception);
+				throw new FaultException<ValidationErrorContract>(tokenContract);
 			}
 			catch (Exception exception)
 			{
@@ -55,6 +68,15 @@ namespace WMessageServiceApi.Messaging.Services
 		private void WriteInfoLog(string message)
 		{
 			LogFile.WriteInfoLog(message);
+		}
+
+		private ValidationErrorContract CreateValidationErrorContract(TokenValidationException exception)
+		{
+			return new ValidationErrorContract
+			{
+				Message = exception.Message,
+				Reason = exception.Reason,
+			};
 		}
 	}
 }

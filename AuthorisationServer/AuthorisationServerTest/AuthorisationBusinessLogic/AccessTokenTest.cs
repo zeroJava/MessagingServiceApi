@@ -7,6 +7,7 @@ using AuthorisationServer.Access;
 using Newtonsoft;
 using Newtonsoft.Json;
 using Cryptography;
+using AuthorisationServer.Validate;
 
 namespace WMessageServiceApiTest.AuthorisationBusinessLogic
 {
@@ -78,8 +79,8 @@ namespace WMessageServiceApiTest.AuthorisationBusinessLogic
 
 		private ValidationResult CheckAccessTokenValid(string encryptedToken)
 		{
-			AccessServiceBL accessService = new AccessServiceBL();
-			ValidationResult result = accessService.CheckAccessTokenValid(encryptedToken);
+			ValidateServiceBL accessService = new ValidateServiceBL();
+			ValidationResult result = accessService.AccessTokenValidation(encryptedToken);
 			return result;
 		}
 	}

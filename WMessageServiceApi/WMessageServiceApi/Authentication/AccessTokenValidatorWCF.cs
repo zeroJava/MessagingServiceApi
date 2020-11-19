@@ -58,5 +58,10 @@ namespace WMessageServiceApi.Authentication
 				return null;
 			}
 		}
+
+		public TokenValidResult IsUserCredentialValid(string encryptedUserCred)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

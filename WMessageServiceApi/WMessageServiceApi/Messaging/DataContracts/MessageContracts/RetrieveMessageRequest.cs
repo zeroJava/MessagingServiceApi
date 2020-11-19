@@ -13,6 +13,9 @@ namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 		public string UserCredentials { get; set; }
 
 		[DataMember]
+		public string Username { get; set; }
+
+		[DataMember]
 		public string SenderEmailAddress { get; set; }
 
 		[DataMember]

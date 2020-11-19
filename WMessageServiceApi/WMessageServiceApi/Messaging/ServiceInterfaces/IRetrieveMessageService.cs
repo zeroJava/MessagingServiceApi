@@ -8,7 +8,6 @@ using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceInterfaces
 {
-    // TODO replace parameters with datacontract IRetrieveMessageRequest
     [ServiceContract]
     [ServiceKnownType(typeof(RetrieveMessageRequest))]
     public interface IRetrieveMessageService

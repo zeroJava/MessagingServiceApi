@@ -15,7 +15,7 @@ namespace AuthorisationServer.Validate
 		[DataMember(Name = "Message")]
 		public string Message { get; set; }
 
-		[DataMember(Name = "FailReason")]
-		public FailReason? FailReason { get; set; }
+		[DataMember(Name = "Status")]
+		public int Status { get; set; }
 	}
 }
