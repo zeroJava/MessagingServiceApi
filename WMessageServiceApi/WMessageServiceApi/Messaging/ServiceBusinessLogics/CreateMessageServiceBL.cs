@@ -29,8 +29,10 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			}
 			WriteInfoLog(string.Format("Going to create message. Message content\n{0}", message.Message));
 			Message newMessage = CreateNewMessage(message);
+
 			//PersistMessage(newMessage);
 			//CreateMessageDispatch(message, newMessage);
+
 			ProcessNewMessage(message, newMessage);
 			//PersistMessageToMongoDbService(newMessage);
 
@@ -41,12 +43,12 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		private void ValidateAccessToken(string encryptedToken)
 		{
 			string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
+
 			IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
-			TokenValidResult result = tokenValidator.IsTokenValid(encryptedToken);
+			TokenValidationResult result = tokenValidator.IsTokenValid(encryptedToken);
 			if (!result.IsValidationSuccess)
 			{
-				string message = result.Message ?? "It seems like the Access-Token is invalid.";
-				throw new TokenValidationException(message, result.Reason);
+				throw new TokenValidationException(result.Message, result.Status);
 			}
 		}
 
@@ -137,15 +139,6 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				repoTransaction);
 			dispatchRepo.InsertDispatch(messageDispatch);
 			WriteInfoLog("Message-Dispatch persisting was successful.");
-		}
-
-		private void RerouteErrorMessage(string message)
-		{
-			EntityErrorContract error = new EntityErrorContract
-			{
-				Message = message
-			};
-			throw new FaultException<EntityErrorContract>(error);
 		}
 
 		/*private void PersistMessageToMongoDbService(Message message)

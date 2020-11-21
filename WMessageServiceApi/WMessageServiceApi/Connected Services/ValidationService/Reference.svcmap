@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="04904e2e-0b54-4c95-8e00-26e4e2ee0630" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://192.168.0.12/Authorisation/Services/ValidationService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="ValidationService.xsd" MetadataType="Schema" ID="8949da95-742a-42b5-8206-a4fcad3fc1b0" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?xsd=xsd1" />
+    <MetadataFile FileName="ValidationService1.xsd" MetadataType="Schema" ID="0e9e6ac1-10ff-41bd-84b6-435bf52d0ef5" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?xsd=xsd0" />
+    <MetadataFile FileName="ValidationService2.xsd" MetadataType="Schema" ID="5a0b7c44-a9a2-411d-8baf-cddd5ebc3a6e" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?xsd=xsd2" />
+    <MetadataFile FileName="ValidationService.disco" MetadataType="Disco" ID="a52c59e8-a257-4198-83e9-726a016037eb" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?disco" />
+    <MetadataFile FileName="ValidationService.wsdl" MetadataType="Wsdl" ID="5d19e555-5642-4102-8561-a5fc3bd2d0e4" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?wsdl" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

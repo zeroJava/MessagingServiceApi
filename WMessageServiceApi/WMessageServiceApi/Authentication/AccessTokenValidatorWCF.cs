@@ -2,32 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WMessageServiceApi.ValidationService;
 
 namespace WMessageServiceApi.Authentication
 {
 	public class AccessTokenValidatorWCF : IAccessTokenValidator
 	{
-		private Dictionary<ValidationFailReason, Func<TokenFailReason>> FailReasonDictionary =
-			new Dictionary<ValidationFailReason, Func<TokenFailReason>>
+		public TokenValidationResult IsTokenValid(string encryptedToken)
 		{
-			{ ValidationFailReason.OrganisationNameEmpty, () => TokenFailReason.OrganisationNameEmpty },
-			{ ValidationFailReason.OrganisationNonFound, () => TokenFailReason.OrganisationNonFound },
-			{ ValidationFailReason.AccessTokenEmpty, () => TokenFailReason.AccessTokenEmpty },
-			{ ValidationFailReason.AccessTokenExpired, () => TokenFailReason.AccessTokenExpired },
-			{ ValidationFailReason.TokenExtractError, () => TokenFailReason.TokenExtractError },
-			{ ValidationFailReason.TokenValuesDontMatch, () => TokenFailReason.TokenValuesDontMatch },
-			{ ValidationFailReason.TokenRowNotFound, () => TokenFailReason.TokenRowNotFound },
-		};
-
-		public TokenValidResult IsTokenValid(string encryptedToken)
-		{
-			TokenValidResult tokenResult = new TokenValidResult();
+			TokenValidationResult tokenResult = new TokenValidationResult();
 			try
 			{
-				ValidationResult result = Validate(encryptedToken);
-				tokenResult.IsValidationSuccess = result.IsTokenValid;
+				ValidationResponse result = Validate(encryptedToken);
+				tokenResult.IsValidationSuccess = result.ValidationIsSuccess;
 				tokenResult.Message = result.Message;
-				tokenResult.Reason = GetTokenFailReason(result.FailReason);
+				tokenResult.Status = result.Status;
 			}
 			catch (Exception exception)
 			{
@@ -36,32 +25,35 @@ namespace WMessageServiceApi.Authentication
 			return tokenResult;
 		}
 
-		private ValidationResult Validate(string encrptedToken)
+		private ValidationResponse Validate(string encrptedToken)
 		{
-			AccessServiceClient serviceClient = new AccessServiceClient();
-			ValidationResult result = serviceClient.CheckAccessTokenValid(encrptedToken);
-			return result;
+			ValidationServiceClient serviceClient = new ValidationServiceClient();
+			ValidationResponse response = serviceClient.AccessTokenValidation(encrptedToken);
+			return response;
 		}
 
-		private TokenFailReason? GetTokenFailReason(ValidationFailReason? failReason)
+		public TokenValidationResult IsUserCredentialValid(string encryptedUserCred)
 		{
-			if (failReason == null)
-			{
-				return null;
-			}
+			TokenValidationResult tokenResult = new TokenValidationResult();
 			try
 			{
-				return FailReasonDictionary[failReason.Value].Invoke();
+				ValidationResponse result = ValidateUserCredential(encryptedUserCred);
+				tokenResult.IsValidationSuccess = result.ValidationIsSuccess;
+				tokenResult.Message = result.Message;
+				tokenResult.Status = result.Status;
 			}
-			catch
+			catch (Exception exception)
 			{
-				return null;
+				throw;
 			}
+			return tokenResult;
 		}
 
-		public TokenValidResult IsUserCredentialValid(string encryptedUserCred)
+		private ValidationResponse ValidateUserCredential(string encrptedToken)
 		{
-			throw new NotImplementedException();
+			ValidationServiceClient serviceClient = new ValidationServiceClient();
+			ValidationResponse response = serviceClient.UserCredentialValidation(encrptedToken);
+			return response;
 		}
 	}
 }

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
 
-namespace AuthorisationServer.Validate
+namespace AuthorisationServer.Validation
 {
-	[DataContract(Name = "ValidationResult")]
-	public class ValidationResult
+	[DataContract(Name = "ValidationResponse")]
+	public class ValidationResponse
 	{
 		[DataMember(Name = "ValidationIsSuccess")]
 		public bool ValidationIsSuccess { get; set; }

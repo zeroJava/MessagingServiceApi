@@ -22,17 +22,14 @@ namespace WMessageServiceApi.Messaging.Services
 			catch (TokenValidationException exception)
 			{
 				WriteErrorLog("Encontered a token validation error getting messages set to user.", exception);
-				ValidationErrorContract tokenContract = CreateValidationErrorContract(exception);
-				throw new FaultException<ValidationErrorContract>(tokenContract);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.VALIDATION_ERROR);
+				throw new FaultException<ErrorContract>(error);
 			}
 			catch (Exception exception)
 			{
-				EntityErrorContract error = new EntityErrorContract
-				{
-					Message = exception.Message
-				};
 				WriteErrorLog("Error encountered when getting messages-sent-to-user.", exception);
-				throw new FaultException<EntityErrorContract>(error);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
+				throw new FaultException<ErrorContract>(error);
 			}
 		}
 
@@ -46,17 +43,14 @@ namespace WMessageServiceApi.Messaging.Services
 			catch (TokenValidationException exception)
 			{
 				WriteErrorLog("Encontered a token validation error getting messages between sender and receiver.", exception);
-				ValidationErrorContract tokenContract = CreateValidationErrorContract(exception);
-				throw new FaultException<ValidationErrorContract>(tokenContract);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.VALIDATION_ERROR);
+				throw new FaultException<ErrorContract>(error);
 			}
 			catch (Exception exception)
 			{
-				EntityErrorContract error = new EntityErrorContract
-				{
-					Message = exception.Message
-				};
 				WriteErrorLog("Error encountered when Getting-Message-Dispatches-Between-Sender-Receiver.", exception);
-				throw new FaultException<EntityErrorContract>(error);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
+				throw new FaultException<ErrorContract>(error);
 			}
 		}
 
@@ -68,15 +62,6 @@ namespace WMessageServiceApi.Messaging.Services
 		private void WriteInfoLog(string message)
 		{
 			LogFile.WriteInfoLog(message);
-		}
-
-		private ValidationErrorContract CreateValidationErrorContract(TokenValidationException exception)
-		{
-			return new ValidationErrorContract
-			{
-				Message = exception.Message,
-				Reason = exception.Reason,
-			};
 		}
 	}
 }

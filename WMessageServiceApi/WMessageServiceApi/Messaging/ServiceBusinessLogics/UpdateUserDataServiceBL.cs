@@ -18,7 +18,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				userContract.UserName == string.Empty)
 			{
 				string message = userContract == null ? "The user contract, recieved is null." : "Username is empty";
-				ThrowEntityErrorMessage(message);
+				ThrowEntityErrorMessage(message, StatusList.PROCESS_ERROR);
 			}
 			User user = GetUserEntityObject(userContract.UserName);
 			if (user == null)
@@ -52,13 +52,10 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			}
 		}
 
-		private void ThrowEntityErrorMessage(string message)
+		private void ThrowEntityErrorMessage(string message, int status)
 		{
-			EntityErrorContract error = new EntityErrorContract
-			{
-				Message = message
-			};
-			throw new FaultException<EntityErrorContract>(error);
+			ErrorContract error = new ErrorContract(message, status);
+			throw new FaultException<ErrorContract>(error);
 		}
 	}
 }

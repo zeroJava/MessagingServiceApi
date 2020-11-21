@@ -23,6 +23,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			{
 				throw new ApplicationException("Username value passed is empty.");
 			}
+
 			User user = GetUserMatchingUsername(username);
 			if (user == null)
 			{
@@ -36,11 +37,12 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		private void ValidateAccessToken(string encryptedUserCred)
 		{
 			string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
+
 			IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
-			TokenValidResult result = tokenValidator.IsUserCredentialValid(encryptedUserCred);
+			TokenValidationResult result = tokenValidator.IsUserCredentialValid(encryptedUserCred);
 			if (!result.IsValidationSuccess)
 			{
-				throw new TokenValidationException(result.Message, result.Reason);
+				throw new TokenValidationException(result.Message, result.Status);
 			}
 		}
 
@@ -53,17 +55,20 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 		private IUserRepository GetUserRepository()
 		{
-			return UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
+			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
+			return userRepo;
 		}
 
 		private List<MessageDispatchInfoContract> MessagesSentToUser(long? userId, string receiverEmailAddress)
 		{
 			List<MessageDispatch> messageDispathes = null;
+
 			long[] messageIds = GetMessageIds(receiverEmailAddress, ref messageDispathes);
 			if (messageDispathes == null || messageIds == null)
 			{
 				return null;
 			}
+
 			AssignMessagesToDispatch(messageDispathes, messageIds);
 			List<MessageDispatchInfoContract> dispatchInfos = CreateDispatchInfoList(messageDispathes, userId);
 			return dispatchInfos;
@@ -101,6 +106,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			{
 				return;
 			}
+
 			foreach (MessageDispatch dispatch in messageDispatches)
 			{
 				Message message = messages.FirstOrDefault(m => m.Id == dispatch.MessageId) as Message;
@@ -175,6 +181,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			{
 				throw new ApplicationException("Username value passed is empty.");
 			}
+
 			User user = GetUserMatchingUsername(username);
 			if (user == null)
 			{

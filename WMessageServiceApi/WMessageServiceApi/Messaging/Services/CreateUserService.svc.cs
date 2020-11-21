@@ -22,7 +22,7 @@ namespace WMessageServiceApi.Messaging.Services
             }
             catch (Exception exception)
             {
-                ThrowErrorMessage(exception.Message);
+                ThrowErrorMessage(exception.Message, StatusList.PROCESS_ERROR);
             }
         }
 
@@ -39,22 +39,19 @@ namespace WMessageServiceApi.Messaging.Services
             }
             catch (Exception exception)
             {
-                ThrowErrorMessage(exception.Message);
+                ThrowErrorMessage(exception.Message, StatusList.PROCESS_ERROR);
             }
         }
 
-		private void ThrowErrorMessage(string message)
+		private void ThrowErrorMessage(string message, int status)
 		{
-			var error = new EntityErrorContract
-			{
-				Message = message
-			};
-			throw new FaultException<EntityErrorContract>(error);
+            ErrorContract error = new ErrorContract(message, status);
+			throw new FaultException<ErrorContract>(error);
 		}
 
 		private void ThrowUserExistErrorMessage(string message)
 		{
-			var error = new UserExistErrorContract
+			UserExistErrorContract error = new UserExistErrorContract
 			{
 				Message = message
 			};

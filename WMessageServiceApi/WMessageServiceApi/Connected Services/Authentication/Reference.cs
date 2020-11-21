@@ -199,109 +199,6 @@ namespace WMessageServiceApi.Authentication {
         }
     }
     
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ValidationResult", Namespace="http://schemas.datacontract.org/2004/07/AuthorisationServer.Access")]
-    [System.SerializableAttribute()]
-    public partial class ValidationResult : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<WMessageServiceApi.Authentication.ValidationFailReason> FailReasonField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private bool IsTokenValidField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string MessageField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<WMessageServiceApi.Authentication.ValidationFailReason> FailReason {
-            get {
-                return this.FailReasonField;
-            }
-            set {
-                if ((this.FailReasonField.Equals(value) != true)) {
-                    this.FailReasonField = value;
-                    this.RaisePropertyChanged("FailReason");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public bool IsTokenValid {
-            get {
-                return this.IsTokenValidField;
-            }
-            set {
-                if ((this.IsTokenValidField.Equals(value) != true)) {
-                    this.IsTokenValidField = value;
-                    this.RaisePropertyChanged("IsTokenValid");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Message {
-            get {
-                return this.MessageField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.MessageField, value) != true)) {
-                    this.MessageField = value;
-                    this.RaisePropertyChanged("Message");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ValidationFailReason", Namespace="http://schemas.datacontract.org/2004/07/AuthorisationServer.Access")]
-    public enum ValidationFailReason : int {
-        
-        [System.Runtime.Serialization.EnumMemberAttribute()]
-        OrganisationNameEmpty = 1,
-        
-        [System.Runtime.Serialization.EnumMemberAttribute()]
-        OrganisationNonFound = 2,
-        
-        [System.Runtime.Serialization.EnumMemberAttribute()]
-        AccessTokenEmpty = 3,
-        
-        [System.Runtime.Serialization.EnumMemberAttribute()]
-        AccessTokenExpired = 4,
-        
-        [System.Runtime.Serialization.EnumMemberAttribute()]
-        TokenExtractError = 5,
-        
-        [System.Runtime.Serialization.EnumMemberAttribute()]
-        TokenValuesDontMatch = 6,
-        
-        [System.Runtime.Serialization.EnumMemberAttribute()]
-        TokenRowNotFound = 7,
-    }
-    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="Authentication.IAccessService")]
     public interface IAccessService {
@@ -317,12 +214,6 @@ namespace WMessageServiceApi.Authentication {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAccessService/GetAccessTokenImplicit", ReplyAction="http://tempuri.org/IAccessService/GetAccessTokenImplicitResponse")]
         System.Threading.Tasks.Task<WMessageServiceApi.Authentication.AccessToken> GetAccessTokenImplicitAsync(string encryptedUsername, string encryptedPassword);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAccessService/CheckAccessTokenValid", ReplyAction="http://tempuri.org/IAccessService/CheckAccessTokenValidResponse")]
-        WMessageServiceApi.Authentication.ValidationResult CheckAccessTokenValid(string encryptedToken);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAccessService/CheckAccessTokenValid", ReplyAction="http://tempuri.org/IAccessService/CheckAccessTokenValidResponse")]
-        System.Threading.Tasks.Task<WMessageServiceApi.Authentication.ValidationResult> CheckAccessTokenValidAsync(string encryptedToken);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -366,14 +257,6 @@ namespace WMessageServiceApi.Authentication {
         
         public System.Threading.Tasks.Task<WMessageServiceApi.Authentication.AccessToken> GetAccessTokenImplicitAsync(string encryptedUsername, string encryptedPassword) {
             return base.Channel.GetAccessTokenImplicitAsync(encryptedUsername, encryptedPassword);
-        }
-        
-        public WMessageServiceApi.Authentication.ValidationResult CheckAccessTokenValid(string encryptedToken) {
-            return base.Channel.CheckAccessTokenValid(encryptedToken);
-        }
-        
-        public System.Threading.Tasks.Task<WMessageServiceApi.Authentication.ValidationResult> CheckAccessTokenValidAsync(string encryptedToken) {
-            return base.Channel.CheckAccessTokenValidAsync(encryptedToken);
         }
     }
 }

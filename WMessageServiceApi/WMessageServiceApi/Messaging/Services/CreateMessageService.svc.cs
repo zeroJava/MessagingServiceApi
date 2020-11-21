@@ -22,8 +22,8 @@ namespace WMessageServiceApi.Messaging.Services
 			catch (TokenValidationException exception)
 			{
 				WriteErrorLog("Encontered a token validation error when trying to create a message.", exception);
-				ValidationErrorContract tokenContract = CreateValidationErrorContract(exception);
-				throw new FaultException<ValidationErrorContract>(tokenContract);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.VALIDATION_ERROR);
+				throw new FaultException<ErrorContract>(error);
 			}
             catch (Exception exception)
             {
@@ -32,15 +32,6 @@ namespace WMessageServiceApi.Messaging.Services
 				throw new FaultException<MessageRequestTokenContract>(tokenContract);
 			}
         }
-
-		private ValidationErrorContract CreateValidationErrorContract(TokenValidationException exception)
-		{
-			return new ValidationErrorContract
-			{
-				Message = exception.Message,
-				Reason = exception.Reason,
-			};
-		}
 
 		private MessageRequestTokenContract CreateMessageStateTokenContract(MessageReceivedState recievedState, string message)
 		{

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
 
-namespace AuthorisationServer.Validate
+namespace AuthorisationServer.Validation
 {
 	public class UserCredential
 	{

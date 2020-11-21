@@ -11,5 +11,8 @@ namespace WMessageServiceApi.Exceptions.Datacontacts
     {
         [DataMember(Name = "Message")]
         public string Message { get; set; }
+
+        [DataMember(Name = "Status")]
+        public int Status { get; set; }
     }
 }

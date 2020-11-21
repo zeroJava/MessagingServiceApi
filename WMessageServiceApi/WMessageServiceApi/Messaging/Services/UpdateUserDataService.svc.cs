@@ -18,17 +18,14 @@ namespace WMessageServiceApi.Messaging.Services
 			}
 			catch (Exception exception)
 			{
-				ThrowEntityErrorMessage(exception.Message);
+				ThrowEntityErrorMessage(exception.Message, StatusList.PROCESS_ERROR);
 			}
 		}
 
-		private void ThrowEntityErrorMessage(string message)
+		private void ThrowEntityErrorMessage(string message, int status)
 		{
-			EntityErrorContract error = new EntityErrorContract
-			{
-				Message = message
-			};
-			throw new FaultException<EntityErrorContract>(error);
+			ErrorContract error = new ErrorContract(message, status);
+			throw new FaultException<ErrorContract>(error);
 		}
 	}
 }

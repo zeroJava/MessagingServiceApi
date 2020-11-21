@@ -9,23 +9,20 @@ using WMessageServiceApi.Messaging.DataContracts.UserContracts;
 namespace WMessageServiceApi.Messaging.Services
 {
 	public class RetrieveUserService : IRetrieveUserService
-    {
-        public List<UserInfoContract> GetAllUsers()
-        {
-            try
-            {
+	{
+		public List<UserInfoContract> GetAllUsers()
+		{
+			try
+			{
 				RetrieveUserServiceBL retrieveUserBL = new RetrieveUserServiceBL();
 				return retrieveUserBL.GetAllUsers();
-            }
-            catch (Exception exception)
-            {
-                var error = new EntityErrorContract
-                {
-                    Message = exception.Message
-                };
-                throw new FaultException<EntityErrorContract>(error);
-            }
-        }
+			}
+			catch (Exception exception)
+			{
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
+				throw new FaultException<ErrorContract>(error);
+			}
+		}
 
 		public UserInfoContract GetUserMatchingUsernamePassword(string username, string password)
 		{
@@ -36,12 +33,9 @@ namespace WMessageServiceApi.Messaging.Services
 			}
 			catch (Exception exception)
 			{
-				var error = new EntityErrorContract
-				{
-					Message = exception.Message
-				};
-				throw new FaultException<EntityErrorContract>(error);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
+				throw new FaultException<ErrorContract>(error);
 			}
 		}
-    }
+	}
 }

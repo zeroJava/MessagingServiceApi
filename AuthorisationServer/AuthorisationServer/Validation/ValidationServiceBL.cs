@@ -9,11 +9,11 @@ using MessageDbLib.DbRepositoryFactories;
 using MessageDbLib.Configurations;
 using MessageDbCore.DbRepositoryInterfaces;
 
-namespace AuthorisationServer.Validate
+namespace AuthorisationServer.Validation
 {
-	public class ValidateServiceBL
+	public class ValidationServiceBL
 	{
-		public ValidationResult AccessTokenValidation(string encryptedToken)
+		public ValidationResponse AccessTokenValidation(string encryptedToken)
 		{
 			AccessToken accessToken = null;
 			try
@@ -27,38 +27,37 @@ namespace AuthorisationServer.Validate
 			}
 
 			DateTime currentTime = DateTime.Now;
-			if (currentTime > accessToken.EndTime ||
-				string.IsNullOrEmpty(accessToken.Token))
+			if (currentTime > accessToken.EndTime)
 			{
-				bool isTokenExpired = currentTime > accessToken.EndTime;
-				string message = isTokenExpired ? "Access-Token passed expiry date." : "Token value from Access-Token is empty.";
-				int status = isTokenExpired ? StatusDictionary.ACCESS_TOKEN_EXPIRED : StatusDictionary.ACCESS_TOKEN_EMPTY;
+				return GetValidationResult(false, "Access-Token passed expiry date.",
+					StatusDictionary.ACCESS_TOKEN_EXPIRED);
+			}
 
-				return GetValidationResult(false, message, status);
+			if (string.IsNullOrEmpty(accessToken.Token))
+			{
+				return GetValidationResult(false, "Token value from Access-Token is empty.",
+					StatusDictionary.ACCESS_TOKEN_EMPTY);
 			}
 
 			AccessEnity access = GetAccessEntity(accessToken.Token);
 			if (access == null)
 			{
 				return GetValidationResult(false, "Could not find key matching token in the database.",
-					StatusDictionary.TOKEN_ROW_NOT_FOUND);
+					StatusDictionary.TOKEN_NOT_FOUND);
 			}
-			ValidationResult result = CheckAccessTokenMatch(accessToken, access);
-			return result;
+			ValidationResponse response = CheckAccessTokenMatch(accessToken, access);
+			return response;
 		}
 
 		private AccessToken GetAccessToken(string encryptedToken)
 		{
-			if (string.IsNullOrEmpty(encryptedToken))
-			{
-				throw new ValidationException("The encrypted token requested for validation is null.",
-					StatusDictionary.ACCESS_TOKEN_EMPTY);
-			}
-
-			string decryptedToken = SymmetricEncryption.Decrypt(encryptedToken);
+			string decryptedToken = !string.IsNullOrEmpty(encryptedToken) ? 
+				SymmetricEncryption.Decrypt(encryptedToken) :
+				string.Empty;
+			
 			if (string.IsNullOrEmpty(decryptedToken))
 			{
-				throw new ValidationException("The decrypted token requested for validation is null.",
+				throw new ValidationException("The requested token for validation is empty.",
 					StatusDictionary.ACCESS_TOKEN_EMPTY);
 			}
 
@@ -71,10 +70,10 @@ namespace AuthorisationServer.Validate
 			return accessToken;
 		}
 
-		private ValidationResult GetValidationResult(bool validationIsSuccess, string message,
+		private ValidationResponse GetValidationResult(bool validationIsSuccess, string message,
 			int status)
 		{
-			return new ValidationResult
+			return new ValidationResponse
 			{
 				ValidationIsSuccess = validationIsSuccess,
 				Message = message,
@@ -89,13 +88,12 @@ namespace AuthorisationServer.Validate
 			return accessRepo.GetAccessMatchingToken(token);
 		}
 
-		private ValidationResult CheckAccessTokenMatch(AccessToken accessToken, AccessEnity accessEntity)
+		private ValidationResponse CheckAccessTokenMatch(AccessToken accessToken, AccessEnity accessEntity)
 		{
-			if (string.IsNullOrEmpty(accessToken.Organisation) ||
-				string.IsNullOrEmpty(accessEntity.Organisation))
+			if (string.IsNullOrEmpty(accessToken.Organisation))
 			{
-				return GetValidationResult(false, "The encryted organisation name is empty.",
-					StatusDictionary.ORGANISATION_NAME_EMPTY);
+				return GetValidationResult(false, "The organisation name is empty.",
+					StatusDictionary.PROPERTY_EMPTY);
 			}
 
 			string decryptedTokenOrganisation = SymmetricEncryption.Decrypt(accessToken.Organisation);
@@ -131,18 +129,20 @@ namespace AuthorisationServer.Validate
 			if (propertyMatchFailed)
 			{
 				validationSuccessful = false;
-				message = string.Format("The property: {0} from Access-Token and DB Access do not match.", propertyName);
+				message = string.Format("The property: {0} from Access-Token and DB Access do not match.",
+					propertyName);
 				status = StatusDictionary.TOKEN_VALUE_DOES_NOT_MATCH;
 			}
-			return GetValidationResult(validationSuccessful, message, status);
+			ValidationResponse response = GetValidationResult(validationSuccessful, message, status);
+			return response;
 		}
 
-		public ValidationResult UserCredentialValidation(string encryptedCredential)
+		public ValidationResponse UserCredentialValidation(string encryptedCredential)
 		{
 			if (string.IsNullOrEmpty(encryptedCredential))
 			{
 				return GetValidationResult(false, "The encrypted user credential requested for validation is empty.",
-					StatusDictionary.PARAMETER_EMPTY);
+					StatusDictionary.PROPERTY_EMPTY);
 			}
 
 			string decryptedToken = SymmetricEncryption.Decrypt(encryptedCredential);
@@ -159,10 +159,11 @@ namespace AuthorisationServer.Validate
 					StatusDictionary.EXTRACTION_ERROR);
 			}
 
-			return CheckUsernamePassword(userCredential.Username, userCredential.Password);
+			ValidationResponse response = CheckUsernamePassword(userCredential.Username, userCredential.Password);
+			return response;
 		}
 
-		private ValidationResult CheckUsernamePassword(string usernname, string password)
+		private ValidationResponse CheckUsernamePassword(string usernname, string password)
 		{
 			bool validationIsSuccess = false;
 			string message = "User matching username and password could not be found.";

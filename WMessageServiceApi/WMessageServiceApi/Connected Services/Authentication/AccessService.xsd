@@ -30,18 +30,4 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="CheckAccessTokenValid">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" name="encryptedToken" nillable="true" type="xs:string" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="CheckAccessTokenValidResponse">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/AuthorisationServer.Access" minOccurs="0" name="CheckAccessTokenValidResult" nillable="true" type="q4:ValidationResult" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
 </xs:schema>
