@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MessageDbLib.Constants
+﻿namespace MessageDbLib.Constants
 {
     public class UserDataConstants
     {

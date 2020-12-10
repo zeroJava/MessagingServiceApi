@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MessageDbLib.DbRepository.ADO
 {
@@ -37,8 +35,8 @@ namespace MessageDbLib.DbRepository.ADO
         {
             try
             {
-                Tuple<string, SqlParameter[]> query = GetAuthorisationMatchingAuthCodeQuery(guid);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+                QueryBody query = GetAuthorisationMatchingAuthCodeQuery(guid);
+                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
                     connectionString))
                 {
                     List<Authorisation> authorisations = new List<Authorisation>();
@@ -55,7 +53,7 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetAuthorisationMatchingAuthCodeQuery(Guid guid)
+        private QueryBody GetAuthorisationMatchingAuthCodeQuery(Guid guid)
         {
             SqlParameter[] parameters = new SqlParameter[]
             {
@@ -67,15 +65,15 @@ namespace MessageDbLib.DbRepository.ADO
                 TableName,
                 AuthorisationParameter.AUTHORISATION_CODE);
 
-            return Tuple.Create(query, parameters);
+            return new QueryBody(query, parameters);
         }
 
         public Authorisation GetAuthorisationMatchingId(long id)
         {
             try
             {
-                Tuple<string, SqlParameter[]> query = GetAuthorisationMatchingIdQuery(id);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+                QueryBody query = GetAuthorisationMatchingIdQuery(id);
+                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
                     connectionString))
                 {
                     List<Authorisation> authorisations = new List<Authorisation>();
@@ -92,7 +90,7 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetAuthorisationMatchingIdQuery(long id)
+        private QueryBody GetAuthorisationMatchingIdQuery(long id)
         {
             SqlParameter[] parameters = new SqlParameter[]
             {
@@ -104,15 +102,15 @@ namespace MessageDbLib.DbRepository.ADO
                 TableName,
                 AuthorisationParameter.ID);
 
-            return Tuple.Create(query, parameters);
+            return new QueryBody(query, parameters);
         }
 
         public List<Authorisation> GetAuthorisationsGreaterThanEndTime(DateTime endtime)
         {
             try
             {
-                Tuple<string, SqlParameter[]> query = GetAuthorisationGreaterThanEndTimeQuery(endtime);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+                QueryBody query = GetAuthorisationGreaterThanEndTimeQuery(endtime);
+                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
                     connectionString))
                 {
                     List<Authorisation> authorisations = new List<Authorisation>();
@@ -129,7 +127,7 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetAuthorisationGreaterThanEndTimeQuery(DateTime dateTime)
+        private QueryBody GetAuthorisationGreaterThanEndTimeQuery(DateTime dateTime)
         {
             SqlParameter[] parameters = new SqlParameter[]
             {
@@ -141,15 +139,15 @@ namespace MessageDbLib.DbRepository.ADO
                 TableName,
                 AuthorisationParameter.END_TIME);
 
-            return Tuple.Create(query, parameters);
+            return new QueryBody(query, parameters);
         }
 
         public void InsertAuthorisation(Authorisation authorisation)
         {
             try
             {
-                Tuple<string, SqlParameter[]> query = GetInsertAuthorisationQuery(authorisation);
-                using (DbSqlEngine sqlEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+                QueryBody query = GetInsertAuthorisationQuery(authorisation);
+                using (DbSqlEngine sqlEngine = GetMssqlDbEngine(query.Query, query.Parameters,
                     connectionString))
                 {
                     sqlEngine.ExecuteQueryInsertCallback(authorisation, OnPopulatedIdCallback);
@@ -164,7 +162,7 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetInsertAuthorisationQuery(Authorisation authorisation)
+        private QueryBody GetInsertAuthorisationQuery(Authorisation authorisation)
         {
             SqlParameter[] parameters = new SqlParameter[]
             {
@@ -186,7 +184,8 @@ namespace MessageDbLib.DbRepository.ADO
                 AuthorisationParameter.USER_ID);
 
             string query = string.Format("{0} {1}", insertSection, valueSection);
-            return Tuple.Create(query, parameters);
+
+            return new QueryBody(query, parameters);
         }
 
         private void OnPopulatedIdCallback(Authorisation authorisation, object result)
@@ -199,8 +198,8 @@ namespace MessageDbLib.DbRepository.ADO
         {
             try
             {
-                Tuple<string, SqlParameter[]> query = GetUpdateAuthorisationQuery(authorisation);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+                QueryBody query = GetUpdateAuthorisationQuery(authorisation);
+                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
                     connectionString))
                 {
                     mssqlDbEngine.ExecuteQuery();
@@ -216,7 +215,7 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetUpdateAuthorisationQuery(Authorisation authorisation)
+        private QueryBody GetUpdateAuthorisationQuery(Authorisation authorisation)
         {
             SqlParameter[] parameters = new SqlParameter[]
             {
@@ -242,15 +241,15 @@ namespace MessageDbLib.DbRepository.ADO
                 setUserId,
                 whereId);
 
-            return Tuple.Create(query, parameters);
+            return new QueryBody(query, parameters);
         }
 
         public void DeleteAuthorisation(Authorisation authorisation)
         {
             try
             {
-                Tuple<string, SqlParameter[]> query = GetDeletionAuthorisationQuery(authorisation);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+                QueryBody query = GetDeletionAuthorisationQuery(authorisation);
+                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
                     connectionString))
                 {
                     mssqlDbEngine.ExecuteQuery();
@@ -266,7 +265,7 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetDeletionAuthorisationQuery(Authorisation authorisation)
+        private QueryBody GetDeletionAuthorisationQuery(Authorisation authorisation)
         {
             SqlParameter[] parameters = new SqlParameter[]
             {
@@ -276,7 +275,7 @@ namespace MessageDbLib.DbRepository.ADO
             string query = string.Format("DELETE FROM {0} WHERE ID = {1}", TableName,
                 AuthorisationParameter.ID);
 
-            return Tuple.Create(query, parameters);
+            return new QueryBody(query, parameters);
         }
 
         public void Dispose()

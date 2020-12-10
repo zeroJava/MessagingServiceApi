@@ -1,10 +1,9 @@
-﻿using System;
+﻿using MessageDbCore.DatabaseEngines;
+using MessageDbCore.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
-using MessageDbCore.DatabaseEngines;
-using MessageDbCore.Repositories;
-using MessageDbLib.DbRepository;
 
 namespace MessageDbLib.DbEngine
 {
@@ -18,7 +17,7 @@ namespace MessageDbLib.DbEngine
         private SqlTransaction sqlTransaction;
 
         // Move the sql connector into a adapter and trasnaction, and do a despendeny injection
-        
+
         // We may have to remove the sqlconnection from using statement, and make into a variable. 
 
         public MssqlDbEngine(string sqlQuery, SqlParameter[] mssqlParameters, string connectionString)

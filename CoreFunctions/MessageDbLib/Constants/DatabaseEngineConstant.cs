@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MessageDbLib.Constants
+﻿namespace MessageDbLib.Constants
 {
     /*public static class DatabaseEngineConstant
     {
@@ -15,11 +9,11 @@ namespace MessageDbLib.Constants
 		public const string MysqlCustomEngine = "MYSQLCUSTOMENGINE";
     }*/
 
-	public enum DatabaseEngineConstant
-	{
-		//Mssql_EntityFramework,
-		//Mysql_EntityFramework,
-		MSSQLADODOTNET,
-		//Mysql_CustomEngine,
-	}
+    public enum DatabaseEngineConstant
+    {
+        //Mssql_EntityFramework,
+        //Mysql_EntityFramework,
+        MSSQLADODOTNET,
+        //Mysql_CustomEngine,
+    }
 }
