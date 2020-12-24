@@ -2,8 +2,8 @@
 using System.ServiceModel;
 using WMessageServiceApi.Exceptions.Datacontacts;
 using WMessageServiceApi.Messaging.DataContracts.UserContracts;
-using WMessageServiceApi.Messaging.ServiceInterfaces;
 using WMessageServiceApi.Messaging.ServiceBusinessLogics;
+using WMessageServiceApi.Messaging.ServiceInterfaces;
 
 namespace WMessageServiceApi.Messaging.Services
 {
@@ -13,9 +13,9 @@ namespace WMessageServiceApi.Messaging.Services
         {
             try
             {
-				CreateUserServiceBL createUserBL = new CreateUserServiceBL();
-				createUserBL.CreateNewAdvancedUser(advanceUserContract);
-			}
+                CreateUserServiceBL createUserBL = new CreateUserServiceBL();
+                createUserBL.CreateNewAdvancedUser(advanceUserContract);
+            }
             catch (InvalidOperationException exception)
             {
                 ThrowUserExistErrorMessage(exception.Message);
@@ -27,11 +27,11 @@ namespace WMessageServiceApi.Messaging.Services
         }
 
         public void CreateNewUser(NewUserDataContract userContract)
-        {            
+        {
             try
             {
-				CreateUserServiceBL createUserBL = new CreateUserServiceBL();
-				createUserBL.CreateNewUser(userContract);
+                CreateUserServiceBL createUserBL = new CreateUserServiceBL();
+                createUserBL.CreateNewUser(userContract);
             }
             catch (InvalidOperationException exception)
             {
@@ -43,21 +43,21 @@ namespace WMessageServiceApi.Messaging.Services
             }
         }
 
-		private void ThrowErrorMessage(string message, int status)
-		{
+        private void ThrowErrorMessage(string message, int status)
+        {
             ErrorContract error = new ErrorContract(message, status);
-			throw new FaultException<ErrorContract>(error);
-		}
+            throw new FaultException<ErrorContract>(error);
+        }
 
-		private void ThrowUserExistErrorMessage(string message)
-		{
-			UserExistErrorContract error = new UserExistErrorContract
-			{
-				Message = message
-			};
-			throw new FaultException<UserExistErrorContract>(error);
-		}
-	}
+        private void ThrowUserExistErrorMessage(string message)
+        {
+            UserExistErrorContract error = new UserExistErrorContract
+            {
+                Message = message
+            };
+            throw new FaultException<UserExistErrorContract>(error);
+        }
+    }
 }
 
 /*var advanceUser = new AdvancedUser()

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Web;
+﻿using System.Runtime.Serialization;
 
 namespace WMessageServiceApi.Exceptions.Datacontacts
 {
@@ -16,14 +12,14 @@ namespace WMessageServiceApi.Exceptions.Datacontacts
         public int Status { get; set; }
 
         public ErrorContract(string message)
-		{
+        {
             Message = message;
-		}
+        }
 
         public ErrorContract(string message, int status)
-		{
+        {
             Message = message;
             Status = status;
-		}
+        }
     }
 }

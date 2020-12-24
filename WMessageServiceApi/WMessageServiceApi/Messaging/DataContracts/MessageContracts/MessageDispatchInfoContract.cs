@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Web;
 
 namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 {
@@ -19,13 +16,13 @@ namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
         public string MessageContent { get; set; }
         [DataMember]
         public bool? MessageReceived { get; set; }
-		[DataMember]
-		public DateTime? MessageReceivedDate { get; set; }
-		[DataMember]
-		public bool SenderCurrentUser { get; set; }
-		[DataMember]
-		public long DispatchId { get; set; }
-		[DataMember]
-		public long MessageId { get; set; }
-	}
+        [DataMember]
+        public DateTime? MessageReceivedDate { get; set; }
+        [DataMember]
+        public bool SenderCurrentUser { get; set; }
+        [DataMember]
+        public long DispatchId { get; set; }
+        [DataMember]
+        public long MessageId { get; set; }
+    }
 }

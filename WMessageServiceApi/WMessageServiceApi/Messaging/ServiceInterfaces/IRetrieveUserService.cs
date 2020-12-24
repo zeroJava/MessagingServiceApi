@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ServiceModel;
 using WMessageServiceApi.Messaging.DataContracts.UserContracts;
 
@@ -12,7 +11,7 @@ namespace WMessageServiceApi.Messaging.ServiceInterfaces
         [OperationContract]
         List<UserInfoContract> GetAllUsers();
 
-		[OperationContract]
-		UserInfoContract GetUserMatchingUsernamePassword(string username, string password);
+        [OperationContract]
+        UserInfoContract GetUserMatchingUsernamePassword(string username, string password);
     }
 }

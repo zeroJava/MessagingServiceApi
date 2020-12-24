@@ -1,215 +1,217 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Cryptography;
-using MessageDbCore.DbRepositoryInterfaces;
+﻿using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.EntityClasses;
 using MessageDbLib.Configurations;
 using MessageDbLib.DbRepositoryFactories;
 using MessageDbLib.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using WMessageServiceApi.Authentication;
 using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public class RetrieveMessageServiceBL
-	{
-		public List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
-		{
-			ValidateAccessToken(messageRequest.UserCredentials);
+    public class RetrieveMessageServiceBL
+    {
+        public List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
+        {
+            ValidateAccessToken(messageRequest.UserCredentials);
 
-			string username = messageRequest.Username;
-			if (string.IsNullOrEmpty(username))
-			{
-				throw new ApplicationException("Username value passed is empty.");
-			}
+            string username = messageRequest.Username;
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ApplicationException("Username value passed is empty.");
+            }
 
-			User user = GetUserMatchingUsername(username);
-			if (user == null)
-			{
-				throw new ApplicationException("Could not find a matching Username.");
-			}
+            User user = GetUserMatchingUsername(username);
+            if (user == null)
+            {
+                throw new ApplicationException("Could not find a matching Username.");
+            }
 
-			WriteInfoLog(string.Format("Getting messages sent to user: {0};", username));
-			return MessagesSentToUser(user.Id, messageRequest.ReceiverEmailAddress);
-		}
+            WriteInfoLog(string.Format("Getting messages sent to user: {0};", username));
+            return MessagesSentToUser(user.Id, messageRequest.ReceiverEmailAddress);
+        }
 
-		private void ValidateAccessToken(string encryptedUserCred)
-		{
-			string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
+        private void ValidateAccessToken(string encryptedUserCred)
+        {
+            string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
 
-			IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
-			TokenValidationResult result = tokenValidator.IsUserCredentialValid(encryptedUserCred);
-			if (!result.IsValidationSuccess)
-			{
-				throw new TokenValidationException(result.Message, result.Status);
-			}
-		}
+            IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
+            TokenValidationResult result = tokenValidator.IsUserCredentialValid(encryptedUserCred);
 
-		private User GetUserMatchingUsername(string username)
-		{
-			IUserRepository userRepo = GetUserRepository();
-			User user = userRepo.GetUserMatchingUsername(username);
-			return user;
-		}
+            if (!result.IsValidationSuccess)
+            {
+                throw new TokenValidationException(result.Message, result.Status);
+            }
+        }
 
-		private IUserRepository GetUserRepository()
-		{
-			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
-			return userRepo;
-		}
+        private User GetUserMatchingUsername(string username)
+        {
+            IUserRepository userRepo = GetUserRepository();
+            User user = userRepo.GetUserMatchingUsername(username);
+            return user;
+        }
 
-		private List<MessageDispatchInfoContract> MessagesSentToUser(long? userId, string receiverEmailAddress)
-		{
-			List<MessageDispatch> messageDispathes = null;
+        private IUserRepository GetUserRepository()
+        {
+            IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
+            return userRepo;
+        }
 
-			long[] messageIds = GetMessageIds(receiverEmailAddress, ref messageDispathes);
-			if (messageDispathes == null || messageIds == null)
-			{
-				return null;
-			}
+        private List<MessageDispatchInfoContract> MessagesSentToUser(long? userId, string receiverEmailAddress)
+        {
+            List<MessageDispatch> messageDispathes = null;
 
-			AssignMessagesToDispatch(messageDispathes, messageIds);
-			List<MessageDispatchInfoContract> dispatchInfos = CreateDispatchInfoList(messageDispathes, userId);
-			return dispatchInfos;
-		}
+            long[] messageIds = GetMessageIds(receiverEmailAddress, ref messageDispathes);
+            if (messageDispathes == null || messageIds == null)
+            {
+                return null;
+            }
 
-		private long[] GetMessageIds(string receiverEmailAddress, ref List<MessageDispatch> messageDispatches)
-		{
-			IMessageDispatchRepository dispatchRepo = GetMessageDispatchRepository();
-			messageDispatches = dispatchRepo.GetDispatchesNotReceivedMatchingEmail(receiverEmailAddress);
+            AssignMessagesToDispatch(messageDispathes, messageIds);
+            List<MessageDispatchInfoContract> dispatchInfos = CreateDispatchInfoList(messageDispathes, userId);
+            return dispatchInfos;
+        }
 
-			if (messageDispatches == null ||
-				messageDispatches.Count() == 0)
-			{
-				return null;
-			}
-			long[] messageids = messageDispatches.Where(mt => mt.MessageId != null)
-				.Select(mt => mt.MessageId.Value)
-				.Distinct()
-				.ToArray();
-			return messageids;
-		}
+        private long[] GetMessageIds(string receiverEmailAddress, ref List<MessageDispatch> messageDispatches)
+        {
+            IMessageDispatchRepository dispatchRepo = GetMessageDispatchRepository();
+            messageDispatches = dispatchRepo.GetDispatchesNotReceivedMatchingEmail(receiverEmailAddress);
 
-		private IMessageDispatchRepository GetMessageDispatchRepository()
-		{
-			return MessageDispatchRepoFactory.GetDispatchRepository(DatabaseOption.DatabaseEngine,
-				DatabaseOption.DbConnectionString);
-		}
+            if (messageDispatches == null ||
+                messageDispatches.Count() == 0)
+            {
+                return null;
+            }
 
-		private void AssignMessagesToDispatch(List<MessageDispatch> messageDispatches, long[] messageIds)
-		{
-			IMessageRepository messageRepo = GetMessageRepository();
-			List<Message> messages = messageRepo.GetAllMessages().Where(m => messageIds.Any(mi => mi == m.Id))
-				.ToList();
-			if (messages == null)
-			{
-				return;
-			}
+            long[] messageids = messageDispatches.Where(mt => mt.MessageId != null)
+                .Select(mt => mt.MessageId.Value)
+                .Distinct()
+                .ToArray();
+            return messageids;
+        }
 
-			foreach (MessageDispatch dispatch in messageDispatches)
-			{
-				Message message = messages.FirstOrDefault(m => m.Id == dispatch.MessageId) as Message;
-				if (message != null)
-				{
-					dispatch.Message = message;
-				}
-			}
-			WriteInfoLog("Completed assigning message to message-dispatch");
-		}
+        private IMessageDispatchRepository GetMessageDispatchRepository()
+        {
+            return MessageDispatchRepoFactory.GetDispatchRepository(DatabaseOption.DatabaseEngine,
+                DatabaseOption.DbConnectionString);
+        }
 
-		private IMessageRepository GetMessageRepository()
-		{
-			return MessageRepoFactory.GetMessageRepository(DatabaseOption.DatabaseEngine,
-				DatabaseOption.DbConnectionString);
-		}
+        private void AssignMessagesToDispatch(List<MessageDispatch> messageDispatches, long[] messageIds)
+        {
+            IMessageRepository messageRepo = GetMessageRepository();
+            List<Message> messages = messageRepo.GetAllMessages().Where(m => messageIds.Any(mi => mi == m.Id))
+                .ToList();
 
-		private List<MessageDispatchInfoContract> CreateDispatchInfoList(List<MessageDispatch> messageDispatches, long? userId)
-		{
-			try
-			{
-				List<MessageDispatchInfoContract> msgDispatchinfos = new List<MessageDispatchInfoContract>();
-				foreach (MessageDispatch dispatch in messageDispatches)
-				{
-					bool userIsSender = dispatch.Message.SenderId == userId;
-					MessageDispatchInfoContract dispatchInfo = CreateMessageDispatchInfoObj(dispatch, dispatch.Message, userIsSender);
-					msgDispatchinfos.Add(dispatchInfo);
-				}
-				return msgDispatchinfos;
-			}
-			catch (Exception exception)
-			{
-				WriteErrorLog("Error encountered when executing Convert-Message-Dispatch-To-Contract.", exception);
-				return null;
-			}
-		}
+            if (messages == null)
+            {
+                return;
+            }
 
-		private MessageDispatchInfoContract CreateMessageDispatchInfoObj(MessageDispatch messageDispatch, Message message,
-			bool senderCurrentUser)
-		{
-			WriteInfoLog("Creating message dispatch info contract.");
+            foreach (MessageDispatch dispatch in messageDispatches)
+            {
+                Message message = messages.FirstOrDefault(m => m.Id == dispatch.MessageId) as Message;
+                if (message != null)
+                {
+                    dispatch.Message = message;
+                }
+            }
+            WriteInfoLog("Completed assigning message to message-dispatch");
+        }
 
-			string infomessage = string.Format("SenderName: {0}\n- ReceiverName: {1}" + "\n- SenderIsCurrentUser: {2}" +
-				"\n- DispatchId: {3}" +
-				"\n- MessageId: {4}", message.SenderEmailAddress,
-				messageDispatch.EmailAddress,
-				senderCurrentUser,
-				messageDispatch.Id,
-				message.Id);
-			WriteInfoLog(infomessage);
+        private IMessageRepository GetMessageRepository()
+        {
+            return MessageRepoFactory.GetMessageRepository(DatabaseOption.DatabaseEngine,
+                DatabaseOption.DbConnectionString);
+        }
 
-			return new MessageDispatchInfoContract
-			{
-				SenderName = message.SenderEmailAddress,
-				ReceiverName = messageDispatch.EmailAddress,
-				MessageSentDate = message.MessageCreated,
-				MessageReceivedDate = messageDispatch.MessageReceivedTime,
-				MessageReceived = messageDispatch.MessageReceived,
-				MessageContent = message.MessageText,
-				SenderCurrentUser = senderCurrentUser,
-				DispatchId = messageDispatch.Id,
-				MessageId = message.Id
-			};
-		}
+        private List<MessageDispatchInfoContract> CreateDispatchInfoList(List<MessageDispatch> messageDispatches, long? userId)
+        {
+            try
+            {
+                List<MessageDispatchInfoContract> msgDispatchinfos = new List<MessageDispatchInfoContract>();
+                foreach (MessageDispatch dispatch in messageDispatches)
+                {
+                    bool userIsSender = dispatch.Message.SenderId == userId;
+                    MessageDispatchInfoContract dispatchInfo = CreateMessageDispatchInfoObj(dispatch, dispatch.Message, userIsSender);
+                    msgDispatchinfos.Add(dispatchInfo);
+                }
+                return msgDispatchinfos;
+            }
+            catch (Exception exception)
+            {
+                WriteErrorLog("Error encountered when executing Convert-Message-Dispatch-To-Contract.", exception);
+                return null;
+            }
+        }
 
-		public List<MessageDispatchInfoContract> GetMsgDispatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest)
-		{
-			ValidateAccessToken(messageRequest.UserCredentials);
+        private MessageDispatchInfoContract CreateMessageDispatchInfoObj(MessageDispatch messageDispatch, Message message,
+            bool senderCurrentUser)
+        {
+            WriteInfoLog("Creating message dispatch info contract.");
 
-			string username = messageRequest.Username;
-			if (string.IsNullOrEmpty(username))
-			{
-				throw new ApplicationException("Username value passed is empty.");
-			}
+            string infomessage = string.Format("SenderName: {0}\n- ReceiverName: {1}" + "\n- SenderIsCurrentUser: {2}" +
+                "\n- DispatchId: {3}" +
+                "\n- MessageId: {4}", message.SenderEmailAddress,
+                messageDispatch.EmailAddress,
+                senderCurrentUser,
+                messageDispatch.Id,
+                message.Id);
+            WriteInfoLog(infomessage);
 
-			User user = GetUserMatchingUsername(username);
-			if (user == null)
-			{
-				throw new ApplicationException("Could not find a matching Username.");
-			}
+            return new MessageDispatchInfoContract
+            {
+                SenderName = message.SenderEmailAddress,
+                ReceiverName = messageDispatch.EmailAddress,
+                MessageSentDate = message.MessageCreated,
+                MessageReceivedDate = messageDispatch.MessageReceivedTime,
+                MessageReceived = messageDispatch.MessageReceived,
+                MessageContent = message.MessageText,
+                SenderCurrentUser = senderCurrentUser,
+                DispatchId = messageDispatch.Id,
+                MessageId = message.Id
+            };
+        }
 
-			string infotext = string.Format("Getting message messageDispatches between sender: {0} and receiver: {1}.",
-				messageRequest.SenderEmailAddress,
-				messageRequest.ReceiverEmailAddress);
-			WriteInfoLog(infotext);
+        public List<MessageDispatchInfoContract> GetMsgDispatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest)
+        {
+            ValidateAccessToken(messageRequest.UserCredentials);
 
-			IMessageDispatchRepository dispatchRepo = GetMessageDispatchRepository();
-			List<MessageDispatch> messageDispatches = dispatchRepo.GetDispatchesBetweenSenderReceiver(messageRequest.SenderEmailAddress,
-				messageRequest.ReceiverEmailAddress,
-				messageRequest.MessageIdThreshold,
-				messageRequest.NumberOfMessages);
-			List<MessageDispatchInfoContract> messageDispatchInfos = CreateDispatchInfoList(messageDispatches, user.Id);
-			return messageDispatchInfos;
-		}
+            string username = messageRequest.Username;
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ApplicationException("Username value passed is empty.");
+            }
 
-		private void WriteErrorLog(string message, Exception exception)
-		{
-			LogFile.WriteErrorLog(message, exception);
-		}
+            User user = GetUserMatchingUsername(username);
+            if (user == null)
+            {
+                throw new ApplicationException("Could not find a matching Username.");
+            }
 
-		private void WriteInfoLog(string message)
-		{
-			LogFile.WriteInfoLog(message);
-		}
-	}
+            string infotext = string.Format("Getting message messageDispatches between sender: {0} and receiver: {1}.",
+                messageRequest.SenderEmailAddress,
+                messageRequest.ReceiverEmailAddress);
+            WriteInfoLog(infotext);
+
+            IMessageDispatchRepository dispatchRepo = GetMessageDispatchRepository();
+            List<MessageDispatch> messageDispatches = dispatchRepo.GetDispatchesBetweenSenderReceiver(messageRequest.SenderEmailAddress,
+                messageRequest.ReceiverEmailAddress,
+                messageRequest.MessageIdThreshold,
+                messageRequest.NumberOfMessages);
+            List<MessageDispatchInfoContract> messageDispatchInfos = CreateDispatchInfoList(messageDispatches, user.Id);
+            return messageDispatchInfos;
+        }
+
+        private void WriteErrorLog(string message, Exception exception)
+        {
+            LogFile.WriteErrorLog(message, exception);
+        }
+
+        private void WriteInfoLog(string message)
+        {
+            LogFile.WriteInfoLog(message);
+        }
+    }
 }

@@ -76,14 +76,17 @@ namespace AuthorisationServer.Access
 		private AuthorisationEntity GetAuthorisation(string authorisationCode)
 		{
 			Guid authorisationCodeGuid;
+
 			if (string.IsNullOrEmpty(authorisationCode) ||
 				!Guid.TryParse(authorisationCode, out authorisationCodeGuid))
 			{
 				return null;
 			}
+
 			IAuthorisationRepository authorisationRepo = AuthorisationRepoFactory.GetAuthorisationRepository(DatabaseOption.DatabaseEngine,
 				DatabaseOption.DbConnectionString);
 			AuthorisationEntity authorisation = authorisationRepo.GetAuthorisationMatchingAuthCode(authorisationCodeGuid);
+			
 			return authorisation;
 		}
 
@@ -138,6 +141,7 @@ namespace AuthorisationServer.Access
 			{
 				throw new ApplicationException("Username or Password is empty.");
 			}
+
 			string usernameDecrypted = SymmetricEncryption.Decrypt(encryptedUsername);
 			string passwordDecrypted = SymmetricEncryption.Decrypt(encryptedPassword);
 
@@ -150,6 +154,7 @@ namespace AuthorisationServer.Access
 			AccessEnity accessEntity = CreateAccess(user.Id, new string[0], user.UserName);
 			PersistAccess(accessEntity);
 			AccessToken accessToken = CreateAccessToken(accessEntity);
+
 			return accessToken;
 		}
 
@@ -158,6 +163,7 @@ namespace AuthorisationServer.Access
 			IUserRepository userRepo = UserRepoFactory.GetUserRepository(MessageDbLib.Constants.DatabaseEngineConstant.MSSQLADODOTNET,
 				DatabaseOption.DbConnectionString);
 			User result = userRepo.GetUserMatchingUsernameAndPassword(username, password);
+
 			return result;
 		}
 	}

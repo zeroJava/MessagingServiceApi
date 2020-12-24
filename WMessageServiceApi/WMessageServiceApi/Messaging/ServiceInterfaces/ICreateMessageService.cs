@@ -1,5 +1,4 @@
-﻿using System;
-using System.ServiceModel;
+﻿using System.ServiceModel;
 using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceInterfaces
@@ -9,5 +8,5 @@ namespace WMessageServiceApi.Messaging.ServiceInterfaces
     {
         [OperationContract]
         MessageRequestTokenContract CreateMessage(MessageContract message);
-	}
+    }
 }

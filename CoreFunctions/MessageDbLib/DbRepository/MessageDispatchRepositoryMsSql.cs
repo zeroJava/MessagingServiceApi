@@ -63,8 +63,9 @@ namespace MessageDbLib.DbRepository.ADO
         {
             try
             {
-                Tuple<string, SqlParameter[]> query = GetdispatchMatchingIdQuery(dispatchId);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+                QueryBody queryBody = GetdispatchMatchingIdQuery(dispatchId);
+
+                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
                     connectionString))
                 {
                     List<MessageDispatch> dispatches = new List<MessageDispatch>();
@@ -81,27 +82,29 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetdispatchMatchingIdQuery(long dispatchId)
+        private QueryBody GetdispatchMatchingIdQuery(long dispatchId)
         {
-            SqlParameter[] sqlParameters = new SqlParameter[]
+            SqlParameter[] parameters = new SqlParameter[]
             {
                 new SqlParameter(MessageDispatchParameter.ID, dispatchId)
             };
+
             string columns = GetSelectColumns(dispatchIdColumn);
             string query = string.Format("SELECT {0} FROM {1} WHERE ID = {2}",
                 columns,
                 TableName,
                 MessageDispatchParameter.ID);
 
-            return Tuple.Create(query, sqlParameters);
+            return new QueryBody(query, parameters);
         }
 
         public List<MessageDispatch> GetDispatchesMatchingEmail(string email)
         {
             try
             {
-                Tuple<string, SqlParameter[]> query = GetDispatchesMatchingEmailQuery(email);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+                QueryBody queryBody = GetDispatchesMatchingEmailQuery(email);
+
+                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
                     connectionString))
                 {
                     List<MessageDispatch> dispatches = new List<MessageDispatch>();
@@ -118,27 +121,28 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetDispatchesMatchingEmailQuery(string email)
+        private QueryBody GetDispatchesMatchingEmailQuery(string email)
         {
-            SqlParameter[] sqlParameters = new SqlParameter[]
+            SqlParameter[] parameters = new SqlParameter[]
             {
                 new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, email)
             };
+
             string columns = GetSelectColumns(dispatchIdColumn);
-            string query = string.Format("SELECT {0} FROM {1} WHERE EMAILADDRESS = {2}",
-                columns,
+            string query = string.Format("SELECT {0} FROM {1} WHERE EMAILADDRESS = {2}", columns,
                 TableName,
                 MessageDispatchParameter.EMAIL_ADDRESS);
 
-            return Tuple.Create(query, sqlParameters);
+            return new QueryBody(query, parameters);
         }
 
         public List<MessageDispatch> GetDispatchesMatchingMessageId(long messageId)
         {
             try
             {
-                Tuple<string, SqlParameter[]> query = GetDispatchesMatchingMessageIdQuery(messageId);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+                QueryBody queryBody = GetDispatchesMatchingMessageIdQuery(messageId);
+
+                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
                     connectionString))
                 {
                     List<MessageDispatch> dispatches = new List<MessageDispatch>();
@@ -155,27 +159,28 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetDispatchesMatchingMessageIdQuery(long messageId)
+        private QueryBody GetDispatchesMatchingMessageIdQuery(long messageId)
         {
-            SqlParameter[] sqlParameters = new SqlParameter[]
+            SqlParameter[] parameters = new SqlParameter[]
             {
                 new SqlParameter(MessageDispatchParameter.MESSAGE_ID, messageId)
             };
+
             string columns = GetSelectColumns(dispatchIdColumn);
-            string query = string.Format("SELECT {0} FROM {1} WHERE MESSAGEID = {2}",
-                columns,
+            string query = string.Format("SELECT {0} FROM {1} WHERE MESSAGEID = {2}", columns,
                 TableName,
                 MessageDispatchParameter.MESSAGE_ID);
 
-            return Tuple.Create(query, sqlParameters);
+            return new QueryBody(query, parameters);
         }
 
         public List<MessageDispatch> GetDispatchesNotReceivedMatchingEmail(string email)
         {
             try
             {
-                Tuple<string, SqlParameter[]> query = GetDispatchesNotReceivedMatchingEmailQuery(email);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+                QueryBody queryBody = GetDispatchesNotReceivedMatchingEmailQuery(email);
+
+                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
                     connectionString))
                 {
                     List<MessageDispatch> dispatches = new List<MessageDispatch>();
@@ -192,19 +197,20 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetDispatchesNotReceivedMatchingEmailQuery(string email)
+        private QueryBody GetDispatchesNotReceivedMatchingEmailQuery(string email)
         {
-            SqlParameter[] sqlParameters = new SqlParameter[]
+            SqlParameter[] parameters = new SqlParameter[]
             {
                 new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, email)
             };
+
             string columns = GetSelectColumns(dispatchIdColumn);
             string query = string.Format("SELECT {0} FROM {1} WHERE EMAILADDRESS = {2} AND NOT MESSAGERECEIVED = 1",
                 columns,
                 TableName,
                 MessageDispatchParameter.EMAIL_ADDRESS);
 
-            return Tuple.Create(query, sqlParameters);
+            return new QueryBody(query, parameters);
         }
 
         public List<MessageDispatch> GetDispatchesBetweenSenderReceiver(string senderEmailAddress,
@@ -214,10 +220,10 @@ namespace MessageDbLib.DbRepository.ADO
         {
             try
             {
-                Tuple<string, SqlParameter[]> query = GetDispathedBetweenSenderReceiverQuery(senderEmailAddress,
-                    receiverEmailAddress,
+                QueryBody queryBody = GetDispathedBetweenSenderReceiverQuery(senderEmailAddress, receiverEmailAddress,
                     messageIdThreshold);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+
+                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
                     connectionString))
                 {
                     List<MessageDispatch> dispatches = new List<MessageDispatch>();
@@ -234,17 +240,19 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetDispathedBetweenSenderReceiverQuery(string senderEmailAddress,
+        private QueryBody GetDispathedBetweenSenderReceiverQuery(string senderEmailAddress,
             string receiverEmailAddress,
             long messageIdThreshold)
         {
             string messageIdThresholdParameter = "@messageIdThreshold";
-            SqlParameter[] sqlParameters = new SqlParameter[]
+
+            SqlParameter[] parameters = new SqlParameter[]
             {
                 new SqlParameter(MessageParameter.SENDER_EMAIL_ADDRESS, senderEmailAddress),
                 new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, receiverEmailAddress),
                 new SqlParameter(messageIdThresholdParameter, messageIdThreshold),
             };
+
             string columns = GetSelectColumns(dispatchAliasIdColumn);
             string query = string.Format("SELECT {0} FROM {1} AS md " +
                 "INNER JOIN messagedbo.MessageTable AS m ON m.ID = md.MESSAGEID " +
@@ -257,7 +265,7 @@ namespace MessageDbLib.DbRepository.ADO
                 MessageDispatchParameter.EMAIL_ADDRESS,
                 messageIdThresholdParameter);
 
-            return Tuple.Create(query, sqlParameters);
+            return new QueryBody(query, parameters);
         }
 
         private MessageDispatch OnPopulateResultListCallBack(DbDataReader dbDataReader)
@@ -306,8 +314,9 @@ namespace MessageDbLib.DbRepository.ADO
         {
             try
             {
-                Tuple<string, SqlParameter[]> query = GetDispatchInsertQuery(dispatch);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+                QueryBody queryBody = GetDispatchInsertQuery(dispatch);
+
+                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
                     connectionString))
                 {
                     mssqlDbEngine.ExecuteQueryInsertCallback(dispatch, OnPopulateIdCallBack);
@@ -322,9 +331,9 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetDispatchInsertQuery(MessageDispatch dispatch)
+        private QueryBody GetDispatchInsertQuery(MessageDispatch dispatch)
         {
-            SqlParameter[] sqlParameters = new SqlParameter[]
+            SqlParameter[] parameters = new SqlParameter[]
             {
                 new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, dispatch.EmailAddress),
                 new SqlParameter(MessageDispatchParameter.MESSAGE_ID, dispatch.MessageId),
@@ -345,7 +354,8 @@ namespace MessageDbLib.DbRepository.ADO
                 MessageDispatchParameter.MESSAGE_RECEIVED_TIME);
 
             string query = string.Format("{0} {1}", insertStatement, valueSection);
-            return Tuple.Create(query, sqlParameters);
+
+            return new QueryBody(query, parameters);
         }
 
         private void OnPopulateIdCallBack(MessageDispatch dispatch, object result)
@@ -358,8 +368,9 @@ namespace MessageDbLib.DbRepository.ADO
         {
             try
             {
-                Tuple<string, SqlParameter[]> updatequery = GetDefaultDispatchUpdateQuery(dispatch);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(updatequery.Item1, updatequery.Item2,
+                QueryBody queryBody = GetDefaultDispatchUpdateQuery(dispatch);
+
+                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
                     connectionString))
                 {
                     mssqlDbEngine.ExecuteQuery();
@@ -374,9 +385,9 @@ namespace MessageDbLib.DbRepository.ADO
             }
         }
 
-        private Tuple<string, SqlParameter[]> GetDefaultDispatchUpdateQuery(MessageDispatch dispatch)
+        private QueryBody GetDefaultDispatchUpdateQuery(MessageDispatch dispatch)
         {
-            SqlParameter[] sqlParameters = new SqlParameter[]
+            SqlParameter[] parameters = new SqlParameter[]
             {
                 new SqlParameter(MessageDispatchParameter.ID, dispatch.Id),
                 new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, dispatch.EmailAddress),
@@ -387,20 +398,16 @@ namespace MessageDbLib.DbRepository.ADO
 
             string updateTable = string.Format("UPDATE {0} SET", TableName);
 
-            string setEmailAddress = string.Format("{0} = {1}",
-                MessageDispatchColumn.EMAIL_ADDRESS,
+            string setEmailAddress = string.Format("{0} = {1}", MessageDispatchColumn.EMAIL_ADDRESS,
                 MessageDispatchParameter.EMAIL_ADDRESS);
 
-            string setMessageId = string.Format("{0} = {1}",
-                MessageDispatchColumn.MESSAGE_ID,
+            string setMessageId = string.Format("{0} = {1}", MessageDispatchColumn.MESSAGE_ID,
                 MessageDispatchParameter.MESSAGE_ID);
 
-            string setMessageReceived = string.Format("{0} = {1}",
-                MessageDispatchColumn.MESSAGE_RECEIVED,
+            string setMessageReceived = string.Format("{0} = {1}", MessageDispatchColumn.MESSAGE_RECEIVED,
                 MessageDispatchParameter.MESSAGE_RECEIVED);
 
-            string setMessageReceivedTime = string.Format("{0} = {1}",
-                MessageDispatchColumn.MESSAGE_RECEIVED_TIME,
+            string setMessageReceivedTime = string.Format("{0} = {1}", MessageDispatchColumn.MESSAGE_RECEIVED_TIME,
                 MessageDispatchParameter.MESSAGE_RECEIVED_TIME);
 
             string whereId = string.Format("WHERE {0} = {1}", MessageDispatchColumn.ID, MessageDispatchParameter.ID);
@@ -412,7 +419,7 @@ namespace MessageDbLib.DbRepository.ADO
                 setMessageReceivedTime,
                 whereId);
 
-            return Tuple.Create(query, sqlParameters);
+            return new QueryBody(query, parameters);
         }
 
         public void DeleteDispatch(MessageDispatch dispatch)
@@ -423,9 +430,11 @@ namespace MessageDbLib.DbRepository.ADO
                 {
                     new SqlParameter(MessageDispatchParameter.ID, GetDBValue(dispatch.Id))
                 };
+
                 string sqlQuery = string.Format("DELETE FROM {0} WHERE {1} = {2}", TableName,
                     MessageDispatchColumn.ID,
                     MessageDispatchParameter.ID);
+
                 using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(sqlQuery, sqlParameters,
                     connectionString))
                 {
@@ -458,8 +467,7 @@ namespace MessageDbLib.DbRepository.ADO
 
         protected static string GetSelectColumns(string id)
         {
-            string columns = string.Format("{0}, {1}, {2}, {3}, {4}",
-                id,
+            string columns = string.Format("{0}, {1}, {2}, {3}, {4}", id,
                 MessageDispatchColumn.EMAIL_ADDRESS,
                 MessageDispatchColumn.MESSAGE_ID,
                 MessageDispatchColumn.MESSAGE_RECEIVED,

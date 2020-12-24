@@ -121,6 +121,7 @@ namespace MessageDbLib.DbEngine
                 {
                     throw new ApplicationException("Invalid SQL transaction type is injected into MssqlDbEngine.");
                 }
+
                 SqlCommand sqlCommand = new SqlCommand(sqlQuery, sqlConnection,
                     sqlTransaction);
                 return sqlCommand;
@@ -190,13 +191,17 @@ namespace MessageDbLib.DbEngine
             using (SqlCommand sqlCommand = GetSqlCommand(sqlQuery, sqlConnection))
             {
                 sqlCommand.Parameters.AddRange(mssqlParameters);
+
                 OpenConnection(sqlConnection);
+
                 sqlCommand.ExecuteNonQuery();
                 sqlCommand.CommandText = "SELECT @@IDENTITY";
+
                 if (populateIdCallBack != null)
                 {
                     populateIdCallBack.Invoke(entity, sqlCommand.ExecuteScalar());
                 }
+
                 CloseConnection(sqlConnection);
             }
         }
@@ -240,7 +245,28 @@ namespace MessageDbLib.DbEngine
             {
                 sqlCommand.Parameters.AddRange(mssqlParameters);
                 OpenConnection(sqlConnection);
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                /*SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                while (sqlDataReader.Read())
+                {
+                    if (populateResultListCallBack != null)
+                    {
+                        TEntity entityObject = populateResultListCallBack.Invoke(sqlDataReader);
+                        entities.Add(entityObject);
+                    }
+                }*/
+                ExecuteDataReader(sqlCommand, entities,
+                    populateResultListCallBack);
+
+                CloseConnection(sqlConnection);
+            }
+        }
+
+        private void ExecuteDataReader<TEntity>(SqlCommand sqlCommand, List<TEntity> entities,
+            PopulateResultListCallBack<TEntity> populateResultListCallBack)
+        {
+            using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+            {
                 while (sqlDataReader.Read())
                 {
                     if (populateResultListCallBack != null)
@@ -249,7 +275,6 @@ namespace MessageDbLib.DbEngine
                         entities.Add(entityObject);
                     }
                 }
-                CloseConnection(sqlConnection);
             }
         }
     }

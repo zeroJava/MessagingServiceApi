@@ -51,22 +51,20 @@ namespace AuthorisationServer.Validation
 
 		private AccessToken GetAccessToken(string encryptedToken)
 		{
-			string decryptedToken = !string.IsNullOrEmpty(encryptedToken) ? 
-				SymmetricEncryption.Decrypt(encryptedToken) :
-				string.Empty;
-			
+			//string decryptedToken = !string.IsNullOrEmpty(encryptedToken) ? SymmetricEncryption.Decrypt(encryptedToken) : string.Empty;
+			string decryptedToken = encryptedToken; // for now, we're not using the encrypted token.
+
 			if (string.IsNullOrEmpty(decryptedToken))
 			{
-				throw new ValidationException("The requested token for validation is empty.",
-					StatusDictionary.ACCESS_TOKEN_EMPTY);
+				throw new ValidationException("The requested token for validation is empty.", StatusDictionary.ACCESS_TOKEN_EMPTY);
 			}
 
 			AccessToken accessToken = JsonConvert.DeserializeObject<AccessToken>(decryptedToken);
 			if (accessToken == null)
 			{
-				throw new ValidationException("The Access-Token requested for validation is null.",
-					StatusDictionary.EXTRACTION_ERROR);
+				throw new ValidationException("The Access-Token requested for validation is null.", StatusDictionary.EXTRACTION_ERROR);
 			}
+
 			return accessToken;
 		}
 
@@ -129,8 +127,7 @@ namespace AuthorisationServer.Validation
 			if (propertyMatchFailed)
 			{
 				validationSuccessful = false;
-				message = string.Format("The property: {0} from Access-Token and DB Access do not match.",
-					propertyName);
+				message = string.Format("The property: {0} from Access-Token and DB Access do not match.", propertyName);
 				status = StatusDictionary.TOKEN_VALUE_DOES_NOT_MATCH;
 			}
 			ValidationResponse response = GetValidationResult(validationSuccessful, message, status);
@@ -141,22 +138,19 @@ namespace AuthorisationServer.Validation
 		{
 			if (string.IsNullOrEmpty(encryptedCredential))
 			{
-				return GetValidationResult(false, "The encrypted user credential requested for validation is empty.",
-					StatusDictionary.PROPERTY_EMPTY);
+				return GetValidationResult(false, "The encrypted user credential requested for validation is empty.", StatusDictionary.PROPERTY_EMPTY);
 			}
 
 			string decryptedToken = SymmetricEncryption.Decrypt(encryptedCredential);
 			if (string.IsNullOrEmpty(decryptedToken))
 			{
-				return GetValidationResult(false, "The decrypted user credential requested for validation is null.",
-					StatusDictionary.DECRYPTION_ERROR);
+				return GetValidationResult(false, "The decrypted user credential requested for validation is null.", StatusDictionary.DECRYPTION_ERROR);
 			}
 
 			UserCredential userCredential = JsonConvert.DeserializeObject<UserCredential>(decryptedToken);
 			if (userCredential == null)
 			{
-				return GetValidationResult(false, "The user credential requested for validation is null.",
-					StatusDictionary.EXTRACTION_ERROR);
+				return GetValidationResult(false, "The user credential requested for validation is null.", StatusDictionary.EXTRACTION_ERROR);
 			}
 
 			ValidationResponse response = CheckUsernamePassword(userCredential.Username, userCredential.Password);

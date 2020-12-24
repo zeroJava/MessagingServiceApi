@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Web;
 
 namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 {
     [DataContract]
-	[KnownType(typeof(PictureMessageContract))]
-	[KnownType(typeof(VideoMessageContract))]
+    [KnownType(typeof(PictureMessageContract))]
+    [KnownType(typeof(VideoMessageContract))]
     public class MessageContract : IMessageContract
     {
         [DataMember]
@@ -25,5 +23,5 @@ namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 
         [DataMember]
         public DateTime MessageCreated { get; set; }
-	}
+    }
 }
