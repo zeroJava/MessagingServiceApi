@@ -26,8 +26,7 @@ namespace AuthorisationServer.Authorisation
 
 		private User GetUserMatching(string username, string password)
 		{
-			if (string.IsNullOrEmpty(username) ||
-				string.IsNullOrEmpty(password))
+			if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
 			{
 				throw new ApplicationException("Username or Password is not defined.");
 			}

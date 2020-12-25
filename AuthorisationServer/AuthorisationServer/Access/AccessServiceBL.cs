@@ -49,6 +49,7 @@ namespace AuthorisationServer.Access
 			{
 				throw new ApplicationException("Encrpyted organisation key return an empty value.");
 			}
+
 			OrganisationKeySerDes organisationKey = JsonConvert.DeserializeObject<OrganisationKeySerDes>(decryptedKey);
 			return organisationKey;
 		}
@@ -64,10 +65,13 @@ namespace AuthorisationServer.Access
 				throw new ApplicationException("Could not find key matching rquested key name.");
 			}
 
-			string decryptedRequestOKey = SymmetricEncryption.Decrypt(encrytedRequestOKey);
-			string decryptedDBOKey = SymmetricEncryption.Decrypt(organisationKey.OKey);
+			//string requestOKey = SymmetricEncryption.Decrypt(encrytedRequestOKey);
+			//string dbOKey = SymmetricEncryption.Decrypt(organisationKey.OKey);
 
-			if (decryptedRequestOKey != decryptedDBOKey)
+			string requestOKey = encrytedRequestOKey;
+			string dbOKey = organisationKey.OKey;
+
+			if (requestOKey != dbOKey)
 			{
 				throw new ApplicationException("The request OKey does not match OKey from the database.");
 			}

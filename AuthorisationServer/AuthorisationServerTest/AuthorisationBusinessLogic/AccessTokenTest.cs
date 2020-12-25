@@ -8,6 +8,8 @@ using Newtonsoft;
 using Newtonsoft.Json;
 using Cryptography;
 using AuthorisationServer.Validation;
+using MessageDbLib.DbRepository.ADO;
+using MessageDbLib.Configurations;
 
 namespace WMessageServiceApiTest.AuthorisationBusinessLogic
 {
@@ -82,6 +84,20 @@ namespace WMessageServiceApiTest.AuthorisationBusinessLogic
 			ValidationServiceBL accessService = new ValidationServiceBL();
 			ValidationResponse result = accessService.AccessTokenValidation(encryptedToken);
 			return result;
+		}
+
+		[TestMethod]
+		public void CreateOrganisationKey()
+		{
+			OrganisationKeySerDes organisationKey = new OrganisationKeySerDes
+			{
+				Name = "Test App Org",
+				OKey = "Test application",
+			};
+			string result = JsonConvert.SerializeObject(organisationKey);
+			string enryptedResult = SymmetricEncryption.Encrypt(result);
+
+			Console.WriteLine(enryptedResult);
 		}
 	}
 }
