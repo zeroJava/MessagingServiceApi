@@ -13,7 +13,7 @@ namespace WMessageServiceApi.Messaging.Services
         {
             try
             {
-                UpdateUserDataServiceBL updateUserDataBL = new UpdateUserDataServiceBL();
+                UpdateUserDataServiceBl updateUserDataBL = new UpdateUserDataServiceBl();
                 updateUserDataBL.UpdateUser(userContract);
             }
             catch (Exception exception)

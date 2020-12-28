@@ -3,7 +3,7 @@ using WMessageServiceApi.ValidationService;
 
 namespace WMessageServiceApi.Authentication
 {
-    public class AccessTokenValidatorWCF : IAccessTokenValidator
+    public class AccessTokenValidatorWcf : IAccessTokenValidator
     {
         public TokenValidationResult IsTokenValid(string encryptedToken)
         {

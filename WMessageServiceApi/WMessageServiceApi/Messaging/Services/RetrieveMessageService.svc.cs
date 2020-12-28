@@ -16,7 +16,7 @@ namespace WMessageServiceApi.Messaging.Services
         {
             try
             {
-                RetrieveMessageServiceBL retrieveMessageBL = new RetrieveMessageServiceBL();
+                RetrieveMessageServiceBl retrieveMessageBL = new RetrieveMessageServiceBl();
                 return retrieveMessageBL.GetMessagesSentToUser(messageRequest);
             }
             catch (TokenValidationException exception)
@@ -37,7 +37,7 @@ namespace WMessageServiceApi.Messaging.Services
         {
             try
             {
-                RetrieveMessageServiceBL retrieveMessageBL = new RetrieveMessageServiceBL();
+                RetrieveMessageServiceBl retrieveMessageBL = new RetrieveMessageServiceBl();
                 return retrieveMessageBL.GetMsgDispatchesBetweenSenderReceiver(messageRequest);
             }
             catch (TokenValidationException exception)

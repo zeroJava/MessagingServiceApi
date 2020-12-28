@@ -8,7 +8,7 @@ using WMessageServiceApi.Messaging.DataContracts.UserContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-    public class CreateUserServiceBL
+    public class CreateUserServiceBl
     {
         public void CreateNewAdvancedUser(NewAdvancedUserDataContract advanceUserContract)
         {

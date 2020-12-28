@@ -12,7 +12,7 @@ using WMessageServiceApi.Messaging.DataEnumerations;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-    public class CreateMessageServiceBL
+    public class CreateMessageBl
     {
         public MessageRequestTokenContract CreateMessage(IMessageContract message)
         {

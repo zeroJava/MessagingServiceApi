@@ -9,7 +9,7 @@ using WMessageServiceApi.Messaging.DataContracts.UserContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-    public class UpdateUserDataServiceBL
+    public class UpdateUserDataServiceBl
     {
         public void UpdateUser(INewUserDataContract userContract)
         {

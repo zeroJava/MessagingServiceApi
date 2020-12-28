@@ -11,7 +11,7 @@ using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-    public class RetrieveMessageServiceBL
+    public class RetrieveMessageServiceBl
     {
         public List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
         {

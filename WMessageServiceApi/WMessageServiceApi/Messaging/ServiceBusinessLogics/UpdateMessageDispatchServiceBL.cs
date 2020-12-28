@@ -7,9 +7,9 @@ using System;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-    public class UpdateMessageDispatchServiceBL
+    public static class UpdateMessageDispatchServiceBl
     {
-        public void UpdateDispatchAsReceived(long dispatchId, DateTime receivedDateTime)
+        public static void UpdateDispatchAsReceived(long dispatchId, DateTime receivedDateTime)
         {
             WriteInfoLog(string.Format("Recieved dispatch update request for dispatch (id): {0}.", dispatchId));
 
@@ -25,13 +25,13 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
             }
         }
 
-        private IMessageDispatchRepository GetDispatchRepository()
+        private static IMessageDispatchRepository GetDispatchRepository()
         {
             return MessageDispatchRepoFactory.GetDispatchRepository(DatabaseOption.DatabaseEngine,
                 DatabaseOption.DbConnectionString);
         }
 
-        private void UpdateDispatch(MessageDispatch dispatch)
+        private static void UpdateDispatch(MessageDispatch dispatch)
         {
             long dispatchId = dispatch != null ? dispatch.Id : 0L;
             WriteInfoLog(string.Format("Going to update dispatch (ID): {0}", dispatchId));
@@ -41,12 +41,12 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
             WriteInfoLog(string.Format("Dispatch-object: {0} was sucessfully updated.", dispatchId));
         }
 
-        private void WriteErrorLog(string message, Exception exception)
+        private static void WriteErrorLog(string message, Exception exception)
         {
             LogFile.WriteErrorLog(message, exception);
         }
 
-        private void WriteInfoLog(string message)
+        private static void WriteInfoLog(string message)
         {
             LogFile.WriteInfoLog(message);
         }

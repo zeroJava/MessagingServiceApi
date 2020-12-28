@@ -13,7 +13,7 @@ namespace WMessageServiceApi.Authentication
             {
                 case ACCESS_TOKEN_WCF:
                     {
-                        AccessTokenValidatorWCF validatorWCF = new AccessTokenValidatorWCF();
+                        AccessTokenValidatorWcf validatorWCF = new AccessTokenValidatorWcf();
                         return validatorWCF;
                     }
                 default:

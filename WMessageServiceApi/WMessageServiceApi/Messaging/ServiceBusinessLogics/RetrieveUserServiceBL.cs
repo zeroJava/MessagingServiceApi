@@ -7,7 +7,7 @@ using WMessageServiceApi.Messaging.DataContracts.UserContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-    public class RetrieveUserServiceBL
+    public class RetrieveUserServiceBl
     {
         public List<UserInfoContract> GetAllUsers()
         {

@@ -14,7 +14,7 @@ namespace WMessageServiceApi.Messaging.Services
         {
             try
             {
-                RetrieveUserServiceBL retrieveUserBL = new RetrieveUserServiceBL();
+                RetrieveUserServiceBl retrieveUserBL = new RetrieveUserServiceBl();
                 return retrieveUserBL.GetAllUsers();
             }
             catch (Exception exception)
@@ -28,7 +28,7 @@ namespace WMessageServiceApi.Messaging.Services
         {
             try
             {
-                RetrieveUserServiceBL retrieveUserBL = new RetrieveUserServiceBL();
+                RetrieveUserServiceBl retrieveUserBL = new RetrieveUserServiceBl();
                 return retrieveUserBL.GetUserMatchingUsernamePassword(username, password);
             }
             catch (Exception exception)

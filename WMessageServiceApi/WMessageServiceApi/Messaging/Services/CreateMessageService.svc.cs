@@ -16,7 +16,7 @@ namespace WMessageServiceApi.Messaging.Services
         {
             try
             {
-                CreateMessageServiceBL createMessageL = new CreateMessageServiceBL();
+                CreateMessageBl createMessageL = new CreateMessageBl();
                 return createMessageL.CreateMessage(message);
             }
             catch (TokenValidationException exception)

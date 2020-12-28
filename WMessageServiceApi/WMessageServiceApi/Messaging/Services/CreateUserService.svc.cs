@@ -13,7 +13,7 @@ namespace WMessageServiceApi.Messaging.Services
         {
             try
             {
-                CreateUserServiceBL createUserBL = new CreateUserServiceBL();
+                CreateUserServiceBl createUserBL = new CreateUserServiceBl();
                 createUserBL.CreateNewAdvancedUser(advanceUserContract);
             }
             catch (InvalidOperationException exception)
@@ -30,7 +30,7 @@ namespace WMessageServiceApi.Messaging.Services
         {
             try
             {
-                CreateUserServiceBL createUserBL = new CreateUserServiceBL();
+                CreateUserServiceBl createUserBL = new CreateUserServiceBl();
                 createUserBL.CreateNewUser(userContract);
             }
             catch (InvalidOperationException exception)

@@ -15,8 +15,7 @@ namespace WMessageServiceApi.Messaging.Services
         {
             try
             {
-                UpdateMessageDispatchServiceBL updateMessagedispatchBL = new UpdateMessageDispatchServiceBL();
-                updateMessagedispatchBL.UpdateDispatchAsReceived(dispatchId, receivedDateTime);
+                UpdateMessageDispatchServiceBl.UpdateDispatchAsReceived(dispatchId, receivedDateTime);
             }
             catch (Exception exception)
             {
