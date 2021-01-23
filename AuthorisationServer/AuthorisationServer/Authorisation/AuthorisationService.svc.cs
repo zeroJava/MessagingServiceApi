@@ -15,7 +15,7 @@ namespace AuthorisationServer.Authorisation
         {
             try
             {
-                AuthorisationServiceBL authorisationService = new AuthorisationServiceBL();
+                AuthorisationServiceBl authorisationService = new AuthorisationServiceBl();
                 return authorisationService.GetAuthorisationCode(request);
 
             }

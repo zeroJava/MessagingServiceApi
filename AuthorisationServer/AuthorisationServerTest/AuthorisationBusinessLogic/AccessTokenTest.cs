@@ -35,7 +35,7 @@ namespace WMessageServiceApiTest.AuthorisationBusinessLogic
 				Password = "adtest",
 				Scope = new string[0],
 			};
-			AuthorisationServiceBL authorisationService = new AuthorisationServiceBL();
+			AuthorisationServiceBl authorisationService = new AuthorisationServiceBl();
 			AuthorisationGrant grant = authorisationService.GetAuthorisationCode(request);
 			return grant;
 		}
@@ -48,7 +48,7 @@ namespace WMessageServiceApiTest.AuthorisationBusinessLogic
 				AuthenticationCode = grant.AuthorisationCode.ToString(),
 				Scope = grant.Scope,
 			};
-			AccessServiceBL accessService = new AccessServiceBL();
+			AccessServiceBl accessService = new AccessServiceBl();
 			AccessToken accessToken = accessService.GetAccessToken(request);
 			return accessToken;
 		}
@@ -81,7 +81,7 @@ namespace WMessageServiceApiTest.AuthorisationBusinessLogic
 
 		private ValidationResponse CheckAccessTokenValid(string encryptedToken)
 		{
-			ValidationServiceBL accessService = new ValidationServiceBL();
+			ValidationServiceBl accessService = new ValidationServiceBl();
 			ValidationResponse result = accessService.AccessTokenValidation(encryptedToken);
 			return result;
 		}

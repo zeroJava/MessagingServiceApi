@@ -11,7 +11,7 @@ using MessageDbCore.DbRepositoryInterfaces;
 
 namespace AuthorisationServer.Access
 {
-	public sealed class AccessServiceBL
+    public sealed class AccessServiceBl
 	{
 		public AccessToken GetAccessToken(AccessRequest accessRequest)
 		{
@@ -104,7 +104,7 @@ namespace AuthorisationServer.Access
 				Token = Guid.NewGuid().ToString(),
 				UserId = userId,
 				StartTime = currentDateTime,
-				EndTime = currentDateTime.AddMinutes(30),
+				EndTime = DateTime.Now.AddYears(100),
 				Scope = scope,
 			};
 			return access;

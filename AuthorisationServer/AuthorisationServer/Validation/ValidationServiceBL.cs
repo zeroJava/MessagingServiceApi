@@ -8,10 +8,11 @@ using MessageDbCore.Repositories;
 using MessageDbLib.DbRepositoryFactories;
 using MessageDbLib.Configurations;
 using MessageDbCore.DbRepositoryInterfaces;
+using System.Linq;
 
 namespace AuthorisationServer.Validation
 {
-	public class ValidationServiceBL
+	public class ValidationServiceBl
 	{
 		public ValidationResponse AccessTokenValidation(string encryptedToken)
 		{
@@ -104,17 +105,20 @@ namespace AuthorisationServer.Validation
 				propertyMatchFailed = true;
 				propertyName = "Organisation";
 			}
-			if (accessToken.Scope != accessEntity.Scope)
+
+			if (!Enumerable.SequenceEqual(accessToken.Scope, accessEntity.Scope))
 			{
 				propertyMatchFailed = true;
 				propertyName = "Scope";
 			}
-			if (accessToken.StartTime != accessEntity.StartTime)
+
+			if (!CompareDates(accessToken.StartTime, accessEntity.StartTime))
 			{
 				propertyMatchFailed = true;
 				propertyName = "StartTime";
 			}
-			if (accessToken.EndTime != accessEntity.EndTime)
+
+			if (!CompareDates(accessToken.EndTime, accessEntity.EndTime))
 			{
 				propertyMatchFailed = true;
 				propertyName = "EndTime";
@@ -134,20 +138,30 @@ namespace AuthorisationServer.Validation
 			return response;
 		}
 
-		public ValidationResponse UserCredentialValidation(string encryptedCredential)
+		private static bool CompareDates(DateTime datetimeOne, DateTime datetimeTwo)
+        {
+			return datetimeOne.Year == datetimeTwo.Year && datetimeOne.Month == datetimeTwo.Month &&
+				datetimeOne.Day == datetimeTwo.Day &&
+				datetimeOne.Hour == datetimeTwo.Hour &&
+				datetimeOne.Minute == datetimeTwo.Minute &&
+				datetimeOne.Second == datetimeTwo.Second;
+        }
+
+		public ValidationResponse UserCredentialValidation(string credential)
 		{
-			if (string.IsNullOrEmpty(encryptedCredential))
+			/*if (string.IsNullOrEmpty(credential))
 			{
 				return GetValidationResult(false, "The encrypted user credential requested for validation is empty.", StatusDictionary.PROPERTY_EMPTY);
 			}
 
-			string decryptedToken = SymmetricEncryption.Decrypt(encryptedCredential);
+			//string decryptedToken = SymmetricEncryption.Decrypt(encryptedCredential);
+			string decryptedToken = credential;
 			if (string.IsNullOrEmpty(decryptedToken))
 			{
 				return GetValidationResult(false, "The decrypted user credential requested for validation is null.", StatusDictionary.DECRYPTION_ERROR);
-			}
+			}*/
 
-			UserCredential userCredential = JsonConvert.DeserializeObject<UserCredential>(decryptedToken);
+			UserCredential userCredential = JsonConvert.DeserializeObject<UserCredential>(credential); // decrytedToken
 			if (userCredential == null)
 			{
 				return GetValidationResult(false, "The user credential requested for validation is null.", StatusDictionary.EXTRACTION_ERROR);

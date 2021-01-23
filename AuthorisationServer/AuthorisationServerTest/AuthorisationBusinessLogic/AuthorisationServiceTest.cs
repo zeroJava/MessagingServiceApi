@@ -30,7 +30,7 @@ namespace WMessageServiceApiTest.AuthorisationBusinessLogic
 				Password = "adtest",
 				Scope = new string[0],
 			};
-			AuthorisationServiceBL authorisationService = new AuthorisationServiceBL();
+			AuthorisationServiceBl authorisationService = new AuthorisationServiceBl();
 			AuthorisationGrant grant = authorisationService.GetAuthorisationCode(request);
 			return grant;
 		}

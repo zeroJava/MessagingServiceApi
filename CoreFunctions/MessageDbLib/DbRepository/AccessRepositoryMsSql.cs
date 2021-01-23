@@ -124,13 +124,17 @@ namespace MessageDbLib.DbRepository.ADO
                 access.Id = id;
             }
 
+            if (dataReader[AccessColumn.ORGANISATION] != null)
+            {
+                access.Organisation = dataReader[AccessColumn.ORGANISATION].ToString();
+            }
+
             if (dataReader[AccessColumn.TOKEN] != null)
             {
                 access.Token = dataReader[AccessColumn.TOKEN].ToString();
             }
 
-            string useridColumn = dataReader[AccessColumn.USER_ID] != null ? dataReader[AccessColumn.USER_ID].ToString() :
-                string.Empty;
+            string useridColumn = dataReader[AccessColumn.USER_ID] != null ? dataReader[AccessColumn.USER_ID].ToString() : string.Empty;
 
             long userid;
             if (!string.IsNullOrEmpty(useridColumn) &&

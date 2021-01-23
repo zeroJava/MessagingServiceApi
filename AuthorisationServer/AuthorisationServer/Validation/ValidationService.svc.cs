@@ -13,8 +13,7 @@ namespace AuthorisationServer.Validation
 		{
 			try
 			{
-				ValidationServiceBL validateService = new ValidationServiceBL();
-				ValidationResponse result = validateService.AccessTokenValidation(encryptedToken);
+				ValidationResponse result = new ValidationServiceBl().AccessTokenValidation(encryptedToken);
 				return result;
 			}
 			catch (Exception exception)
@@ -23,12 +22,11 @@ namespace AuthorisationServer.Validation
 			}
 		}
 
-		public ValidationResponse UserCredentialValidation(string encryptedCredential)
+		public ValidationResponse UserCredentialValidation(string credential)
 		{
 			try
 			{
-				ValidationServiceBL validateService = new ValidationServiceBL();
-				ValidationResponse result = validateService.UserCredentialValidation(encryptedCredential);
+				ValidationResponse result = new ValidationServiceBl().UserCredentialValidation(credential);
 				return result;
 			}
 			catch (Exception exception)

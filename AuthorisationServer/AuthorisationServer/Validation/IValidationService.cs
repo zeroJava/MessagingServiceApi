@@ -16,6 +16,6 @@ namespace AuthorisationServer.Validation
 		ValidationResponse AccessTokenValidation(string encryptedToken);
 
 		[OperationContract]
-		ValidationResponse UserCredentialValidation(string encryptedCredential);
+		ValidationResponse UserCredentialValidation(string credential);
 	}
 }

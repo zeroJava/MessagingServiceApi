@@ -10,7 +10,7 @@ using System.Web;
 
 namespace AuthorisationServer.Authorisation
 {
-	public sealed class AuthorisationServiceBL
+    public sealed class AuthorisationServiceBl
 	{
 		public AuthorisationGrant GetAuthorisationCode(AuthorisationRequest request)
 		{
