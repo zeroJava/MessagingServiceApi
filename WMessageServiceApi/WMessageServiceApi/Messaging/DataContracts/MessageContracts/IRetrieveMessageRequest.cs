@@ -2,7 +2,7 @@
 {
     public interface IRetrieveMessageRequest
     {
-        string UserCredentials { get; set; }
+        string UserAccessToken { get; set; }
         string Username { get; set; }
 
         string SenderEmailAddress { get; set; }

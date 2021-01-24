@@ -22,6 +22,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
             {
                 throw new InvalidOperationException("Message contract does not have ant emails attahed.");
             }
+
             WriteInfoLog(string.Format("Going to create message. Message content\n{0}", message.Message));
             Message newMessage = CreateNewMessage(message);
 
@@ -31,8 +32,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
             ProcessNewMessage(message, newMessage);
             //PersistMessageToMongoDbService(newMessage);
 
-            return CreateMessageStateTokenContract(MessageReceivedState.AcknowledgedRequest,
-                "Message was successfully acknowledged and persisted in our system.");
+            return CreateMessageStateTokenContract(MessageReceivedState.AcknowledgedRequest, "Message was successfully acknowledged and persisted in our system.");
         }
 
         private void ValidateAccessToken(string encryptedToken)
@@ -41,6 +41,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
             IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
             TokenValidationResult result = tokenValidator.IsTokenValid(encryptedToken);
+
             if (!result.IsValidationSuccess)
             {
                 throw new TokenValidationException(result.Message, result.Status);

@@ -6,7 +6,7 @@ namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
     public class RetrieveMessageRequest : IRetrieveMessageRequest
     {
         [DataMember]
-        public string UserCredentials { get; set; }
+        public string UserAccessToken { get; set; }
 
         [DataMember]
         public string Username { get; set; }

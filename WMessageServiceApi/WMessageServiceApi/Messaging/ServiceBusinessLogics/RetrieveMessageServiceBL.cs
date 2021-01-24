@@ -15,7 +15,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
     {
         public List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
         {
-            ValidateAccessToken(messageRequest.UserCredentials);
+            ValidateAccessToken(messageRequest.UserAccessToken);
 
             string username = messageRequest.Username;
             if (string.IsNullOrEmpty(username))
@@ -33,12 +33,18 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
             return MessagesSentToUser(user.Id, messageRequest.ReceiverEmailAddress);
         }
 
-        private void ValidateAccessToken(string encryptedUserCred)
+        private void ValidateAccessToken(string userAccessToken)
         {
             string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
 
+            if (string.IsNullOrEmpty(userAccessToken))
+            {
+                Console.WriteLine("This is a debug bypass, will be removed later.");
+                return;
+            }
+
             IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
-            TokenValidationResult result = tokenValidator.IsUserCredentialValid(encryptedUserCred);
+            TokenValidationResult result = tokenValidator.IsUserCredentialValid(userAccessToken);
 
             if (!result.IsValidationSuccess)
             {
@@ -176,7 +182,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
         public List<MessageDispatchInfoContract> GetMsgDispatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest)
         {
-            ValidateAccessToken(messageRequest.UserCredentials);
+            ValidateAccessToken(messageRequest.UserAccessToken);
 
             string username = messageRequest.Username;
             if (string.IsNullOrEmpty(username))
