@@ -4,11 +4,11 @@ using MessageDbCore.Repositories;
 using MessageDbLib.Configurations;
 using MessageDbLib.Constants;
 using MessageDbLib.DbRepositoryFactories;
-using MessageDbLib.Logging;
 using System;
 using WMessageServiceApi.Authentication;
 using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 using WMessageServiceApi.Messaging.DataEnumerations;
+using WMessageServiceApi.Logging;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {

@@ -2,12 +2,12 @@
 using MessageDbCore.EntityClasses;
 using MessageDbLib.Configurations;
 using MessageDbLib.DbRepositoryFactories;
-using MessageDbLib.Logging;
 using System;
+using WMessageServiceApi.Logging;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-    public static class UpdateMessageDispatchServiceBl
+	public static class UpdateMessageDispatchServiceBl
     {
         public static void UpdateDispatchAsReceived(long dispatchId, DateTime receivedDateTime)
         {

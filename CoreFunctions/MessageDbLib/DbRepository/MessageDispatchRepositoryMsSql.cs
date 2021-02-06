@@ -3,7 +3,6 @@ using MessageDbCore.EntityClasses;
 using MessageDbCore.Repositories;
 using MessageDbLib.Constants.TableConstants;
 using MessageDbLib.DbEngine;
-using MessageDbLib.Logging;
 using MessageDbLib.Utility;
 using System;
 using System.Collections.Generic;
@@ -13,487 +12,447 @@ using System.Linq;
 
 namespace MessageDbLib.DbRepository.ADO
 {
-    public class MessageDispatchRepositoryMsSql : IMessageDispatchRepository
-    {
-        private const string dispatchIdColumn = MessageDispatchColumn.ID;
-        private const string dispatchAliasIdColumn = "md.ID";
+	public class MessageDispatchRepositoryMsSql : IMessageDispatchRepository
+	{
+		private const string dispatchIdColumn = MessageDispatchColumn.ID;
+		private const string dispatchAliasIdColumn = "md.ID";
 
-        protected string connectionString;
-        protected readonly IRepoTransaction repoTransaction;
-        protected readonly bool transactionModeEnabled = false;
-        public virtual string TableName { get; protected set; } = "messagedbo.MessageDispatchTable";
+		protected string connectionString;
+		protected readonly IRepoTransaction repoTransaction;
+		protected readonly bool transactionModeEnabled = false;
 
-        public MessageDispatchRepositoryMsSql(string connectionString)
-        {
-            this.connectionString = connectionString;
-        }
+		public virtual string TableName { get; protected set; } = "messagedbo.MessageDispatchTable";
 
-        public MessageDispatchRepositoryMsSql(string connectionString, IRepoTransaction repoTransaction)
-        {
-            this.connectionString = connectionString;
-            this.repoTransaction = repoTransaction;
-            this.transactionModeEnabled = true;
-        }
+		public MessageDispatchRepositoryMsSql(string connectionString)
+		{
+			this.connectionString = connectionString;
+		}
 
-        public List<MessageDispatch> GetAllDispatches()
-        {
-            try
-            {
-                string columns = GetSelectColumns(dispatchIdColumn);
-                string query = string.Format("SELECT {0} FROM {1}", columns,
-                    TableName);
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query, null,
-                    connectionString))
-                {
-                    List<MessageDispatch> dispatches = new List<MessageDispatch>();
-                    mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
-                    return dispatches;
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in MessageDispatchRepositoryMsSql. Error\n{1}",
-                    "GetAllDispatches", exception.Message);
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+		public MessageDispatchRepositoryMsSql(string connectionString, IRepoTransaction repoTransaction)
+		{
+			this.connectionString = connectionString;
+			this.repoTransaction = repoTransaction;
+			this.transactionModeEnabled = true;
+		}
 
-        public MessageDispatch GetDispatchMatchingId(long dispatchId)
-        {
-            try
-            {
-                QueryBody queryBody = GetdispatchMatchingIdQuery(dispatchId);
+		public List<MessageDispatch> GetAllDispatches()
+		{
+			try
+			{
+				string columns = GetSelectColumns(dispatchIdColumn);
+				string query = string.Format("SELECT {0} FROM {1}", columns, TableName);
 
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
-                    connectionString))
-                {
-                    List<MessageDispatch> dispatches = new List<MessageDispatch>();
-                    mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
-                    return dispatches.FirstOrDefault();
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in MessageDispatchRepositoryMsSql. Error\n{1}",
-                    "GetdispatchMatchingId", exception.Message);
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query, null, connectionString))
+				{
+					List<MessageDispatch> dispatches = new List<MessageDispatch>();
+					mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
+					return dispatches;
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.GetAllDispatches", exception);
+			}
+		}
 
-        private QueryBody GetdispatchMatchingIdQuery(long dispatchId)
-        {
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-                new SqlParameter(MessageDispatchParameter.ID, dispatchId)
-            };
+		public MessageDispatch GetDispatchMatchingId(long dispatchId)
+		{
+			try
+			{
+				QueryBody queryBody = GetdispatchMatchingIdQuery(dispatchId);
 
-            string columns = GetSelectColumns(dispatchIdColumn);
-            string query = string.Format("SELECT {0} FROM {1} WHERE ID = {2}",
-                columns,
-                TableName,
-                MessageDispatchParameter.ID);
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
+					connectionString))
+				{
+					List<MessageDispatch> dispatches = new List<MessageDispatch>();
+					mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
+					return dispatches.FirstOrDefault();
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.GetDispatchMatchingId", exception);
+			}
+		}
 
-            return new QueryBody(query, parameters);
-        }
+		private QueryBody GetdispatchMatchingIdQuery(long dispatchId)
+		{
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter(MessageDispatchParameter.ID, dispatchId)
+			};
 
-        public List<MessageDispatch> GetDispatchesMatchingEmail(string email)
-        {
-            try
-            {
-                QueryBody queryBody = GetDispatchesMatchingEmailQuery(email);
+			string columns = GetSelectColumns(dispatchIdColumn);
+			string query = string.Format("SELECT {0} FROM {1} WHERE ID = {2}",
+				columns,
+				TableName,
+				MessageDispatchParameter.ID);
 
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
-                    connectionString))
-                {
-                    List<MessageDispatch> dispatches = new List<MessageDispatch>();
-                    mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
-                    return dispatches;
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in MessageDispatchRepositoryMsSql. Error\n{1}",
-                    "GetdispatchesMatchingId", exception.Message);
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+			return new QueryBody(query, parameters);
+		}
 
-        private QueryBody GetDispatchesMatchingEmailQuery(string email)
-        {
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-                new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, email)
-            };
+		public List<MessageDispatch> GetDispatchesMatchingEmail(string email)
+		{
+			try
+			{
+				QueryBody queryBody = GetDispatchesMatchingEmailQuery(email);
 
-            string columns = GetSelectColumns(dispatchIdColumn);
-            string query = string.Format("SELECT {0} FROM {1} WHERE EMAILADDRESS = {2}", columns,
-                TableName,
-                MessageDispatchParameter.EMAIL_ADDRESS);
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
+					connectionString))
+				{
+					List<MessageDispatch> dispatches = new List<MessageDispatch>();
+					mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
+					return dispatches;
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.GetDispatchMatchingEmail", exception);
+			}
+		}
 
-            return new QueryBody(query, parameters);
-        }
+		private QueryBody GetDispatchesMatchingEmailQuery(string email)
+		{
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, email)
+			};
 
-        public List<MessageDispatch> GetDispatchesMatchingMessageId(long messageId)
-        {
-            try
-            {
-                QueryBody queryBody = GetDispatchesMatchingMessageIdQuery(messageId);
+			string columns = GetSelectColumns(dispatchIdColumn);
+			string query = string.Format("SELECT {0} FROM {1} WHERE EMAILADDRESS = {2}", columns,
+				TableName,
+				MessageDispatchParameter.EMAIL_ADDRESS);
 
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
-                    connectionString))
-                {
-                    List<MessageDispatch> dispatches = new List<MessageDispatch>();
-                    mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
-                    return dispatches;
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in MessageDispatchRepositoryMsSql. Error\n{1}",
-                    "GetdispatchesMatchingId", exception.Message);
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+			return new QueryBody(query, parameters);
+		}
 
-        private QueryBody GetDispatchesMatchingMessageIdQuery(long messageId)
-        {
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-                new SqlParameter(MessageDispatchParameter.MESSAGE_ID, messageId)
-            };
+		public List<MessageDispatch> GetDispatchesMatchingMessageId(long messageId)
+		{
+			try
+			{
+				QueryBody queryBody = GetDispatchesMatchingMessageIdQuery(messageId);
 
-            string columns = GetSelectColumns(dispatchIdColumn);
-            string query = string.Format("SELECT {0} FROM {1} WHERE MESSAGEID = {2}", columns,
-                TableName,
-                MessageDispatchParameter.MESSAGE_ID);
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
+					connectionString))
+				{
+					List<MessageDispatch> dispatches = new List<MessageDispatch>();
+					mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
+					return dispatches;
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.GetDispatchMatchingMessageId", exception);
+			}
+		}
 
-            return new QueryBody(query, parameters);
-        }
+		private QueryBody GetDispatchesMatchingMessageIdQuery(long messageId)
+		{
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter(MessageDispatchParameter.MESSAGE_ID, messageId)
+			};
 
-        public List<MessageDispatch> GetDispatchesNotReceivedMatchingEmail(string email)
-        {
-            try
-            {
-                QueryBody queryBody = GetDispatchesNotReceivedMatchingEmailQuery(email);
+			string columns = GetSelectColumns(dispatchIdColumn);
+			string query = string.Format("SELECT {0} FROM {1} WHERE MESSAGEID = {2}", columns, TableName,
+				MessageDispatchParameter.MESSAGE_ID);
 
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
-                    connectionString))
-                {
-                    List<MessageDispatch> dispatches = new List<MessageDispatch>();
-                    mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
-                    return dispatches;
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in MessageDispatchRepositoryMsSql. Error\n{1}",
-                    "GetDispatchesNotReceivedMatchingEmail", exception.Message);
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+			return new QueryBody(query, parameters);
+		}
 
-        private QueryBody GetDispatchesNotReceivedMatchingEmailQuery(string email)
-        {
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-                new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, email)
-            };
+		public List<MessageDispatch> GetDispatchesNotReceivedMatchingEmail(string email)
+		{
+			try
+			{
+				QueryBody queryBody = GetDispatchesNotReceivedMatchingEmailQuery(email);
 
-            string columns = GetSelectColumns(dispatchIdColumn);
-            string query = string.Format("SELECT {0} FROM {1} WHERE EMAILADDRESS = {2} AND NOT MESSAGERECEIVED = 1",
-                columns,
-                TableName,
-                MessageDispatchParameter.EMAIL_ADDRESS);
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
+					connectionString))
+				{
+					List<MessageDispatch> dispatches = new List<MessageDispatch>();
+					mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
+					return dispatches;
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.GetDispatchesNotReceivedMatchingEmail", exception);
+			}
+		}
 
-            return new QueryBody(query, parameters);
-        }
+		private QueryBody GetDispatchesNotReceivedMatchingEmailQuery(string email)
+		{
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, email)
+			};
 
-        public List<MessageDispatch> GetDispatchesBetweenSenderReceiver(string senderEmailAddress,
-            string receiverEmailAddress,
-            long messageIdThreshold,
-            int numberOfMessages)
-        {
-            try
-            {
-                QueryBody queryBody = GetDispathedBetweenSenderReceiverQuery(senderEmailAddress, receiverEmailAddress,
-                    messageIdThreshold);
+			string columns = GetSelectColumns(dispatchIdColumn);
+			string query = string.Format("SELECT {0} FROM {1} WHERE EMAILADDRESS = {2} AND NOT MESSAGERECEIVED = 1", columns,
+				TableName,
+				MessageDispatchParameter.EMAIL_ADDRESS);
 
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
-                    connectionString))
-                {
-                    List<MessageDispatch> dispatches = new List<MessageDispatch>();
-                    mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
-                    return dispatches;
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in MessageDispatchRepositoryMsSql. Error\n{1}",
-                    "GetAlldispatchesBetweenSenderReceiver", exception.Message);
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+			return new QueryBody(query, parameters);
+		}
 
-        private QueryBody GetDispathedBetweenSenderReceiverQuery(string senderEmailAddress,
-            string receiverEmailAddress,
-            long messageIdThreshold)
-        {
-            string messageIdThresholdParameter = "@messageIdThreshold";
+		public List<MessageDispatch> GetDispatchesBetweenSenderReceiver(string senderEmailAddress,
+			string receiverEmailAddress,
+			long messageIdThreshold,
+			int numberOfMessages)
+		{
+			try
+			{
+				QueryBody queryBody = GetDispathedBetweenSenderReceiverQuery(senderEmailAddress, receiverEmailAddress,
+					messageIdThreshold);
 
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-                new SqlParameter(MessageParameter.SENDER_EMAIL_ADDRESS, senderEmailAddress),
-                new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, receiverEmailAddress),
-                new SqlParameter(messageIdThresholdParameter, messageIdThreshold),
-            };
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
+					connectionString))
+				{
+					List<MessageDispatch> dispatches = new List<MessageDispatch>();
+					mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
+					return dispatches;
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.GetDispatchesBetweenSenderReceiver", exception);
+			}
+		}
 
-            string columns = GetSelectColumns(dispatchAliasIdColumn);
-            string query = string.Format("SELECT {0} FROM {1} AS md " +
-                "INNER JOIN messagedbo.MessageTable AS m ON m.ID = md.MESSAGEID " +
-                "WHERE (m.SENDEREMAILADDRESS = {2} AND md.EMAILADDRESS = {3}) " +
-                "OR (m.SENDEREMAILADDRESS = {3} AND md.EMAILADDRESS = {2}) " +
-                "AND m.ID < {4}",
-                columns,
-                TableName,
-                MessageParameter.SENDER_EMAIL_ADDRESS,
-                MessageDispatchParameter.EMAIL_ADDRESS,
-                messageIdThresholdParameter);
+		private QueryBody GetDispathedBetweenSenderReceiverQuery(string senderEmailAddress,
+			string receiverEmailAddress,
+			long messageIdThreshold)
+		{
+			string messageIdThresholdParameter = "@messageIdThreshold";
 
-            return new QueryBody(query, parameters);
-        }
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter(MessageParameter.SENDER_EMAIL_ADDRESS, senderEmailAddress),
+				new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, receiverEmailAddress),
+				new SqlParameter(messageIdThresholdParameter, messageIdThreshold),
+			};
 
-        private MessageDispatch OnPopulateResultListCallBack(DbDataReader dbDataReader)
-        {
-            return Extractdispatch(dbDataReader);
-        }
+			string columns = GetSelectColumns(dispatchAliasIdColumn);
+			string query = string.Format("SELECT {0} FROM {1} AS md " +
+				"INNER JOIN messagedbo.MessageTable AS m ON m.ID = md.MESSAGEID " +
+				"WHERE (m.SENDEREMAILADDRESS = {2} AND md.EMAILADDRESS = {3}) " +
+				"OR (m.SENDEREMAILADDRESS = {3} AND md.EMAILADDRESS = {2}) " +
+				"AND m.ID < {4}",
+				columns,
+				TableName,
+				MessageParameter.SENDER_EMAIL_ADDRESS,
+				MessageDispatchParameter.EMAIL_ADDRESS,
+				messageIdThresholdParameter);
 
-        private MessageDispatch Extractdispatch(DbDataReader dbDataReader)
-        {
-            MessageDispatch dispatch = new MessageDispatch();
-            Populatedispatch(dispatch, dbDataReader);
-            return dispatch;
-        }
+			return new QueryBody(query, parameters);
+		}
 
-        private void Populatedispatch(MessageDispatch dispatch, DbDataReader dbDataReader)
-        {
-            if (dbDataReader[MessageDispatchColumn.ID] != null &&
-                long.TryParse(dbDataReader[MessageDispatchColumn.ID].ToString(), out long id))
-            {
-                dispatch.Id = id;
-            }
-            if (dbDataReader[MessageDispatchColumn.EMAIL_ADDRESS] != null)
-            {
-                dispatch.EmailAddress = dbDataReader[MessageDispatchColumn.EMAIL_ADDRESS]
-                    .ToString();
-            }
-            if (dbDataReader[MessageDispatchColumn.MESSAGE_ID] != null &&
-                long.TryParse(dbDataReader[MessageDispatchColumn.MESSAGE_ID].ToString(), out long messageid))
-            {
-                dispatch.MessageId = messageid;
-            }
-            if (dbDataReader[MessageDispatchColumn.MESSAGE_RECEIVED] != null &&
-                bool.TryParse(dbDataReader[MessageDispatchColumn.MESSAGE_RECEIVED].ToString(), out bool messageReceived))
-            {
-                dispatch.MessageReceived = messageReceived;
-            }
-            //var hh = dbDataReader[MessageDispatchColumn.MESSAGE_RECEIVED_TIME];
-            if (dbDataReader[MessageDispatchColumn.MESSAGE_RECEIVED_TIME] != null &&
-                DateTime.TryParse(dbDataReader[MessageDispatchColumn.MESSAGE_RECEIVED_TIME].ToString(), out DateTime receivedTime))
-            {
-                dispatch.MessageReceivedTime = receivedTime;
-            }
-        }
+		private MessageDispatch OnPopulateResultListCallBack(DbDataReader dbDataReader)
+		{
+			return Extractdispatch(dbDataReader);
+		}
 
-        public void InsertDispatch(MessageDispatch dispatch)
-        {
-            try
-            {
-                QueryBody queryBody = GetDispatchInsertQuery(dispatch);
+		private MessageDispatch Extractdispatch(DbDataReader dbDataReader)
+		{
+			MessageDispatch dispatch = new MessageDispatch();
+			Populatedispatch(dispatch, dbDataReader);
+			return dispatch;
+		}
 
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
-                    connectionString))
-                {
-                    mssqlDbEngine.ExecuteQueryInsertCallback(dispatch, OnPopulateIdCallBack);
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in MessageDispatchRepositoryMsSql. Error\n{1}",
-                    "Insertdispatch", exception.Message);
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+		private void Populatedispatch(MessageDispatch dispatch, DbDataReader dbDataReader)
+		{
+			if (dbDataReader[MessageDispatchColumn.ID] != null &&
+				long.TryParse(dbDataReader[MessageDispatchColumn.ID].ToString(), out long id))
+			{
+				dispatch.Id = id;
+			}
+			if (dbDataReader[MessageDispatchColumn.EMAIL_ADDRESS] != null)
+			{
+				dispatch.EmailAddress = dbDataReader[MessageDispatchColumn.EMAIL_ADDRESS]
+					.ToString();
+			}
+			if (dbDataReader[MessageDispatchColumn.MESSAGE_ID] != null &&
+				long.TryParse(dbDataReader[MessageDispatchColumn.MESSAGE_ID].ToString(), out long messageid))
+			{
+				dispatch.MessageId = messageid;
+			}
+			if (dbDataReader[MessageDispatchColumn.MESSAGE_RECEIVED] != null &&
+				bool.TryParse(dbDataReader[MessageDispatchColumn.MESSAGE_RECEIVED].ToString(), out bool messageReceived))
+			{
+				dispatch.MessageReceived = messageReceived;
+			}
+			//var hh = dbDataReader[MessageDispatchColumn.MESSAGE_RECEIVED_TIME];
+			if (dbDataReader[MessageDispatchColumn.MESSAGE_RECEIVED_TIME] != null &&
+				DateTime.TryParse(dbDataReader[MessageDispatchColumn.MESSAGE_RECEIVED_TIME].ToString(), out DateTime receivedTime))
+			{
+				dispatch.MessageReceivedTime = receivedTime;
+			}
+		}
 
-        private QueryBody GetDispatchInsertQuery(MessageDispatch dispatch)
-        {
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-                new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, dispatch.EmailAddress),
-                new SqlParameter(MessageDispatchParameter.MESSAGE_ID, dispatch.MessageId),
-                new SqlParameter(MessageDispatchParameter.MESSAGE_RECEIVED, GetDBValue(dispatch.MessageReceived)),
-                new SqlParameter(MessageDispatchParameter.MESSAGE_RECEIVED_TIME, GetDBValue(dispatch.MessageReceivedTime))
-            };
+		public void InsertDispatch(MessageDispatch dispatch)
+		{
+			try
+			{
+				QueryBody queryBody = GetDispatchInsertQuery(dispatch);
 
-            string insertStatement = string.Format(@"INSERT INTO {0}({1}, {2}, {3}, {4})", TableName,
-                MessageDispatchColumn.EMAIL_ADDRESS,
-                MessageDispatchColumn.MESSAGE_ID,
-                MessageDispatchColumn.MESSAGE_RECEIVED,
-                MessageDispatchColumn.MESSAGE_RECEIVED_TIME);
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
+					connectionString))
+				{
+					mssqlDbEngine.ExecuteQueryInsertCallback(dispatch, OnPopulateIdCallBack);
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.InsertDispatch", exception);
+			}
+		}
 
-            string valueSection = string.Format(@"VALUES ({0}, {1}, {2}, {3})",
-                MessageDispatchParameter.EMAIL_ADDRESS,
-                MessageDispatchParameter.MESSAGE_ID,
-                MessageDispatchParameter.MESSAGE_RECEIVED,
-                MessageDispatchParameter.MESSAGE_RECEIVED_TIME);
+		private QueryBody GetDispatchInsertQuery(MessageDispatch dispatch)
+		{
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, dispatch.EmailAddress),
+				new SqlParameter(MessageDispatchParameter.MESSAGE_ID, dispatch.MessageId),
+				new SqlParameter(MessageDispatchParameter.MESSAGE_RECEIVED, GetDBValue(dispatch.MessageReceived)),
+				new SqlParameter(MessageDispatchParameter.MESSAGE_RECEIVED_TIME, GetDBValue(dispatch.MessageReceivedTime))
+			};
 
-            string query = string.Format("{0} {1}", insertStatement, valueSection);
+			string insertStatement = string.Format(@"INSERT INTO {0}({1}, {2}, {3}, {4})", TableName,
+				MessageDispatchColumn.EMAIL_ADDRESS,
+				MessageDispatchColumn.MESSAGE_ID,
+				MessageDispatchColumn.MESSAGE_RECEIVED,
+				MessageDispatchColumn.MESSAGE_RECEIVED_TIME);
 
-            return new QueryBody(query, parameters);
-        }
+			string valueSection = string.Format(@"VALUES ({0}, {1}, {2}, {3})",
+				MessageDispatchParameter.EMAIL_ADDRESS,
+				MessageDispatchParameter.MESSAGE_ID,
+				MessageDispatchParameter.MESSAGE_RECEIVED,
+				MessageDispatchParameter.MESSAGE_RECEIVED_TIME);
 
-        private void OnPopulateIdCallBack(MessageDispatch dispatch, object result)
-        {
-            long id = Convert.ToInt64(result);
-            dispatch.Id = id;
-        }
+			string query = string.Format("{0} {1}", insertStatement, valueSection);
 
-        public void UpdateDispatch(MessageDispatch dispatch) // Tuple<string, IDbDataParameter[]> query where TParameter : IDbDataParameter
-        {
-            try
-            {
-                QueryBody queryBody = GetDefaultDispatchUpdateQuery(dispatch);
+			return new QueryBody(query, parameters);
+		}
 
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
-                    connectionString))
-                {
-                    mssqlDbEngine.ExecuteQuery();
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in MessageDispatchRepositoryMsSql. Error\n{1}",
-                    "Updatedispatch", exception.Message);
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+		private void OnPopulateIdCallBack(MessageDispatch dispatch, object result)
+		{
+			long id = Convert.ToInt64(result);
+			dispatch.Id = id;
+		}
 
-        private QueryBody GetDefaultDispatchUpdateQuery(MessageDispatch dispatch)
-        {
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-                new SqlParameter(MessageDispatchParameter.ID, dispatch.Id),
-                new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, dispatch.EmailAddress),
-                new SqlParameter(MessageDispatchParameter.MESSAGE_ID, dispatch.MessageId),
-                new SqlParameter(MessageDispatchParameter.MESSAGE_RECEIVED, GetDBValue(dispatch.MessageReceived)),
-                new SqlParameter(MessageDispatchParameter.MESSAGE_RECEIVED_TIME, GetDBValue(dispatch.MessageReceivedTime))
-            };
+		public void UpdateDispatch(MessageDispatch dispatch) // Tuple<string, IDbDataParameter[]> query where TParameter : IDbDataParameter
+		{
+			try
+			{
+				QueryBody queryBody = GetDefaultDispatchUpdateQuery(dispatch);
 
-            string updateTable = string.Format("UPDATE {0} SET", TableName);
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
+					connectionString))
+				{
+					mssqlDbEngine.ExecuteQuery();
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.UpdateDispatch", exception);
+			}
+		}
 
-            string setEmailAddress = string.Format("{0} = {1}", MessageDispatchColumn.EMAIL_ADDRESS,
-                MessageDispatchParameter.EMAIL_ADDRESS);
+		private QueryBody GetDefaultDispatchUpdateQuery(MessageDispatch dispatch)
+		{
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter(MessageDispatchParameter.ID, dispatch.Id),
+				new SqlParameter(MessageDispatchParameter.EMAIL_ADDRESS, dispatch.EmailAddress),
+				new SqlParameter(MessageDispatchParameter.MESSAGE_ID, dispatch.MessageId),
+				new SqlParameter(MessageDispatchParameter.MESSAGE_RECEIVED, GetDBValue(dispatch.MessageReceived)),
+				new SqlParameter(MessageDispatchParameter.MESSAGE_RECEIVED_TIME, GetDBValue(dispatch.MessageReceivedTime))
+			};
 
-            string setMessageId = string.Format("{0} = {1}", MessageDispatchColumn.MESSAGE_ID,
-                MessageDispatchParameter.MESSAGE_ID);
+			string updateTable = string.Format("UPDATE {0} SET", TableName);
 
-            string setMessageReceived = string.Format("{0} = {1}", MessageDispatchColumn.MESSAGE_RECEIVED,
-                MessageDispatchParameter.MESSAGE_RECEIVED);
+			string setEmailAddress = string.Format("{0} = {1}", MessageDispatchColumn.EMAIL_ADDRESS,
+				MessageDispatchParameter.EMAIL_ADDRESS);
 
-            string setMessageReceivedTime = string.Format("{0} = {1}", MessageDispatchColumn.MESSAGE_RECEIVED_TIME,
-                MessageDispatchParameter.MESSAGE_RECEIVED_TIME);
+			string setMessageId = string.Format("{0} = {1}", MessageDispatchColumn.MESSAGE_ID,
+				MessageDispatchParameter.MESSAGE_ID);
 
-            string whereId = string.Format("WHERE {0} = {1}", MessageDispatchColumn.ID, MessageDispatchParameter.ID);
+			string setMessageReceived = string.Format("{0} = {1}", MessageDispatchColumn.MESSAGE_RECEIVED,
+				MessageDispatchParameter.MESSAGE_RECEIVED);
 
-            string query = string.Format("{0} {1}, {2}, {3}, {4} {5}", updateTable,
-                setEmailAddress,
-                setMessageId,
-                setMessageReceived,
-                setMessageReceivedTime,
-                whereId);
+			string setMessageReceivedTime = string.Format("{0} = {1}", MessageDispatchColumn.MESSAGE_RECEIVED_TIME,
+				MessageDispatchParameter.MESSAGE_RECEIVED_TIME);
 
-            return new QueryBody(query, parameters);
-        }
+			string whereId = string.Format("WHERE {0} = {1}", MessageDispatchColumn.ID, MessageDispatchParameter.ID);
 
-        public void DeleteDispatch(MessageDispatch dispatch)
-        {
-            try
-            {
-                SqlParameter[] sqlParameters = new SqlParameter[]
-                {
-                    new SqlParameter(MessageDispatchParameter.ID, GetDBValue(dispatch.Id))
-                };
+			string query = string.Format("{0} {1}, {2}, {3}, {4} {5}", updateTable,
+				setEmailAddress,
+				setMessageId,
+				setMessageReceived,
+				setMessageReceivedTime,
+				whereId);
 
-                string sqlQuery = string.Format("DELETE FROM {0} WHERE {1} = {2}", TableName,
-                    MessageDispatchColumn.ID,
-                    MessageDispatchParameter.ID);
+			return new QueryBody(query, parameters);
+		}
 
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(sqlQuery, sqlParameters,
-                    connectionString))
-                {
-                    mssqlDbEngine.ExecuteQuery();
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in MessageDispatchRepositoryMsSql. Error\n{1}",
-                    "Deletedispatch", exception.Message);
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+		public void DeleteDispatch(MessageDispatch dispatch)
+		{
+			try
+			{
+				SqlParameter[] sqlParameters = new SqlParameter[]
+				{
+					new SqlParameter(MessageDispatchParameter.ID, GetDBValue(dispatch.Id))
+				};
 
-        protected void WriteErrorLog(string errorMessage)
-        {
-            LogFile.WriteErrorLog(errorMessage);
-        }
+				string sqlQuery = string.Format("DELETE FROM {0} WHERE {1} = {2}", TableName,
+					MessageDispatchColumn.ID,
+					MessageDispatchParameter.ID);
 
-        protected void WriteInfoLog(string infoMessage)
-        {
-            LogFile.WriteInfoLog(infoMessage);
-        }
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(sqlQuery, sqlParameters,
+					connectionString))
+				{
+					mssqlDbEngine.ExecuteQuery();
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.DeleteDispatch", exception);
+			}
+		}
 
-        public void Dispose()
-        {
-            //
-        }
+		public void Dispose()
+		{
+			//
+		}
 
-        protected static string GetSelectColumns(string id)
-        {
-            string columns = string.Format("{0}, {1}, {2}, {3}, {4}", id,
-                MessageDispatchColumn.EMAIL_ADDRESS,
-                MessageDispatchColumn.MESSAGE_ID,
-                MessageDispatchColumn.MESSAGE_RECEIVED,
-                MessageDispatchColumn.MESSAGE_RECEIVED_TIME);
-            return columns;
-        }
+		protected static string GetSelectColumns(string id)
+		{
+			string columns = string.Format("{0}, {1}, {2}, {3}, {4}", id,
+				MessageDispatchColumn.EMAIL_ADDRESS,
+				MessageDispatchColumn.MESSAGE_ID,
+				MessageDispatchColumn.MESSAGE_RECEIVED,
+				MessageDispatchColumn.MESSAGE_RECEIVED_TIME);
+			return columns;
+		}
 
-        protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
-            string connectionString)
-        {
-            if (transactionModeEnabled &&
-                repoTransaction != null)
-            {
-                MssqlDbEngine transactionMssqlEngine = new MssqlDbEngine(query, mssqlParameters,
-                    connectionString,
-                    repoTransaction);
-                return transactionMssqlEngine;
-            }
-            MssqlDbEngine mssqlDbEngine = new MssqlDbEngine(query, mssqlParameters,
-                connectionString);
-            return mssqlDbEngine;
-        }
+		protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
+			string connectionString)
+		{
+			if (transactionModeEnabled && repoTransaction != null)
+			{
+				MssqlDbEngine transactionMssqlEngine = new MssqlDbEngine(query, mssqlParameters,
+					connectionString,
+					repoTransaction);
+				return transactionMssqlEngine;
+			}
+			MssqlDbEngine mssqlDbEngine = new MssqlDbEngine(query, mssqlParameters,
+				connectionString);
+			return mssqlDbEngine;
+		}
 
-        protected static object GetDBValue(object value)
-        {
-            return DbValueUtil.GetValidValue(value);
-        }
-    }
+		protected static object GetDBValue(object value)
+		{
+			return DbValueUtil.GetValidValue(value);
+		}
+	}
 }

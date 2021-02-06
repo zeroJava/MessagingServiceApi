@@ -2,16 +2,16 @@
 using MessageDbCore.EntityClasses;
 using MessageDbLib.Configurations;
 using MessageDbLib.DbRepositoryFactories;
-using MessageDbLib.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using WMessageServiceApi.Authentication;
+using WMessageServiceApi.Logging;
 using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-    public class RetrieveMessageServiceBl
+	public class RetrieveMessageServiceBl
     {
         public List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
         {

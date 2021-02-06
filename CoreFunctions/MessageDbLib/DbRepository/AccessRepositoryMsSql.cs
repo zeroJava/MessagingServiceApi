@@ -2,7 +2,6 @@
 using MessageDbCore.Repositories;
 using MessageDbLib.Constants.TableConstants;
 using MessageDbLib.DbEngine;
-using MessageDbLib.Logging;
 using MessageDbLib.Utility;
 using System;
 using System.Collections.Generic;
@@ -12,375 +11,356 @@ using System.Linq;
 
 namespace MessageDbLib.DbRepository.ADO
 {
-    public class AccessRepositoryMsSql : IAccessRepository
-    {
-        protected readonly string connectionString;
-        protected readonly IRepoTransaction repoTransaction;
-        protected readonly bool transactionModeEnabled = false;
-        public virtual string TableName { get; protected set; } = "dbo.AccessTable";
+	public class AccessRepositoryMsSql : IAccessRepository
+	{
+		protected readonly string connectionString;
+		protected readonly IRepoTransaction repoTransaction;
+		protected readonly bool transactionModeEnabled = false;
 
-        public AccessRepositoryMsSql(string connectionString)
-        {
-            this.connectionString = connectionString;
-        }
+		public virtual string TableName { get; protected set; } = "dbo.AccessTable";
 
-        public AccessRepositoryMsSql(string connectionString, IRepoTransaction repoTransaction)
-        {
-            this.connectionString = connectionString;
-            this.repoTransaction = repoTransaction;
-            this.transactionModeEnabled = true;
-        }
+		public AccessRepositoryMsSql(string connectionString)
+		{
+			this.connectionString = connectionString;
+		}
 
-        public Access GetAccessMatchingToken(string token)
-        {
-            try
-            {
-                QueryBody query = GetAccessMatchingTokenQuery(token);
-                using (MssqlDbEngine dbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
-                    connectionString))
-                {
-                    List<Access> accesses = new List<Access>();
-                    dbEngine.ExecuteReaderQuery(accesses, OnPopulateResultListCallBack);
-                    return accesses.FirstOrDefault();
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in AccessRepositoryMsSql. Error\n{1}",
-                    "Get-Access-Matching-Token", exception.ToString());
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+		public AccessRepositoryMsSql(string connectionString, IRepoTransaction repoTransaction)
+		{
+			this.connectionString = connectionString;
+			this.repoTransaction = repoTransaction;
+			this.transactionModeEnabled = true;
+		}
 
-        private QueryBody GetAccessMatchingTokenQuery(string token)
-        {
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-                new SqlParameter(AccessParameter.TOKEN, token)
-            };
+		public Access GetAccessMatchingToken(string token)
+		{
+			try
+			{
+				QueryBody query = GetAccessMatchingTokenQuery(token);
+				using (MssqlDbEngine dbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
+					connectionString))
+				{
+					List<Access> accesses = new List<Access>();
+					dbEngine.ExecuteReaderQuery(accesses, OnPopulateResultListCallBack);
+					return accesses.FirstOrDefault();
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing AccessRepositoryMsSql.GetAccessMatchingToken", exception);
+			}
+		}
 
-            string columns = GetSelectColumns();
-            string query = string.Format("SELECT {0} FROM {1} WHERE TOKEN = {2}", columns,
-                TableName,
-                AccessParameter.TOKEN);
+		private QueryBody GetAccessMatchingTokenQuery(string token)
+		{
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter(AccessParameter.TOKEN, token)
+			};
 
-            return new QueryBody(query, parameters);
-        }
+			string columns = GetSelectColumns();
+			string query = string.Format("SELECT {0} FROM {1} WHERE TOKEN = {2}", columns,
+				TableName,
+				AccessParameter.TOKEN);
 
-        public Access GetAccessMatchingId(long id)
-        {
-            try
-            {
-                QueryBody query = GetAccessMatchingIdQuery(id);
-                using (MssqlDbEngine dbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
-                    connectionString))
-                {
-                    List<Access> accesses = new List<Access>();
-                    dbEngine.ExecuteReaderQuery(accesses, OnPopulateResultListCallBack);
-                    return accesses.FirstOrDefault();
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in AccessRepositoryMsSql. Error\n{1}",
-                    "Get-Access-Matching-Id", exception.ToString());
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+			return new QueryBody(query, parameters);
+		}
 
-        private QueryBody GetAccessMatchingIdQuery(long id)
-        {
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-                new SqlParameter(AccessParameter.ID, id)
-            };
+		public Access GetAccessMatchingId(long id)
+		{
+			try
+			{
+				QueryBody query = GetAccessMatchingIdQuery(id);
+				using (MssqlDbEngine dbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
+					connectionString))
+				{
+					List<Access> accesses = new List<Access>();
+					dbEngine.ExecuteReaderQuery(accesses, OnPopulateResultListCallBack);
+					return accesses.FirstOrDefault();
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing AccessRepositoryMsSql.GetAccessMatchingId", exception);
+			}
+		}
 
-            string columns = GetSelectColumns();
-            string query = string.Format("SELECT {0} FROM {1} WHERE ID = {2}", columns,
-                TableName,
-                AccessParameter.ID);
+		private QueryBody GetAccessMatchingIdQuery(long id)
+		{
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter(AccessParameter.ID, id)
+			};
 
-            return new QueryBody(query, parameters);
-        }
+			string columns = GetSelectColumns();
+			string query = string.Format("SELECT {0} FROM {1} WHERE ID = {2}", columns,
+				TableName,
+				AccessParameter.ID);
 
-        private Access OnPopulateResultListCallBack(DbDataReader dataReader)
-        {
-            Access access = new Access();
-            PopulateAccess(access, dataReader);
-            return access;
-        }
+			return new QueryBody(query, parameters);
+		}
 
-        private void PopulateAccess(Access access, DbDataReader dataReader)
-        {
-            string idColumn = dataReader[AccessColumn.ID] != null ? dataReader[AccessColumn.ID].ToString() :
-                string.Empty;
+		private Access OnPopulateResultListCallBack(DbDataReader dataReader)
+		{
+			Access access = new Access();
+			PopulateAccess(access, dataReader);
+			return access;
+		}
 
-            long id;
-            if (!string.IsNullOrEmpty(idColumn) &&
-                long.TryParse(idColumn, out id))
-            {
-                access.Id = id;
-            }
+		private void PopulateAccess(Access access, DbDataReader dataReader)
+		{
+			string idColumn = dataReader[AccessColumn.ID] != null ? dataReader[AccessColumn.ID].ToString() :
+				string.Empty;
 
-            if (dataReader[AccessColumn.ORGANISATION] != null)
-            {
-                access.Organisation = dataReader[AccessColumn.ORGANISATION].ToString();
-            }
+			long id;
+			if (!string.IsNullOrEmpty(idColumn) &&
+				long.TryParse(idColumn, out id))
+			{
+				access.Id = id;
+			}
 
-            if (dataReader[AccessColumn.TOKEN] != null)
-            {
-                access.Token = dataReader[AccessColumn.TOKEN].ToString();
-            }
+			if (dataReader[AccessColumn.ORGANISATION] != null)
+			{
+				access.Organisation = dataReader[AccessColumn.ORGANISATION].ToString();
+			}
 
-            string useridColumn = dataReader[AccessColumn.USER_ID] != null ? dataReader[AccessColumn.USER_ID].ToString() : string.Empty;
+			if (dataReader[AccessColumn.TOKEN] != null)
+			{
+				access.Token = dataReader[AccessColumn.TOKEN].ToString();
+			}
 
-            long userid;
-            if (!string.IsNullOrEmpty(useridColumn) &&
-                long.TryParse(useridColumn, out userid))
-            {
-                access.UserId = userid;
-            }
+			string useridColumn = dataReader[AccessColumn.USER_ID] != null ? dataReader[AccessColumn.USER_ID].ToString() : string.Empty;
 
-            string starttimeColumn = dataReader[AccessColumn.START_TIME] != null ? dataReader[AccessColumn.START_TIME].ToString() :
-                string.Empty;
+			long userid;
+			if (!string.IsNullOrEmpty(useridColumn) &&
+				long.TryParse(useridColumn, out userid))
+			{
+				access.UserId = userid;
+			}
 
-            DateTime starttime;
-            if (!string.IsNullOrEmpty(starttimeColumn) &&
-                DateTime.TryParse(starttimeColumn, out starttime))
-            {
-                access.StartTime = starttime;
-            }
+			string starttimeColumn = dataReader[AccessColumn.START_TIME] != null ? dataReader[AccessColumn.START_TIME].ToString() :
+				string.Empty;
 
-            string endtimeColumn = dataReader[AccessColumn.END_TIME] != null ? dataReader[AccessColumn.END_TIME].ToString() :
-                string.Empty;
+			DateTime starttime;
+			if (!string.IsNullOrEmpty(starttimeColumn) &&
+				DateTime.TryParse(starttimeColumn, out starttime))
+			{
+				access.StartTime = starttime;
+			}
 
-            DateTime endtime;
-            if (!string.IsNullOrEmpty(endtimeColumn) &&
-                DateTime.TryParse(endtimeColumn, out endtime))
-            {
-                access.EndTime = endtime;
-            }
+			string endtimeColumn = dataReader[AccessColumn.END_TIME] != null ? dataReader[AccessColumn.END_TIME].ToString() :
+				string.Empty;
 
-            string scopeColumn = dataReader[AccessColumn.SCOPE] != null ? dataReader[AccessColumn.SCOPE].ToString() :
-                string.Empty;
+			DateTime endtime;
+			if (!string.IsNullOrEmpty(endtimeColumn) &&
+				DateTime.TryParse(endtimeColumn, out endtime))
+			{
+				access.EndTime = endtime;
+			}
 
-            string[] scope = new string[0];
-            if (!string.IsNullOrEmpty(scopeColumn))
-            {
-                string[] list = scopeColumn.Split(';');
-                if (list.Length > 0)
-                {
-                    scope = list;
-                }
-            }
-            access.Scope = scope;
-        }
+			string scopeColumn = dataReader[AccessColumn.SCOPE] != null ? dataReader[AccessColumn.SCOPE].ToString() :
+				string.Empty;
 
-        public void InsertAccess(Access access)
-        {
-            try
-            {
-                QueryBody query = GetInsertAccessQuery(access);
-                using (MssqlDbEngine dbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
-                    connectionString))
-                {
-                    dbEngine.ExecuteQueryInsertCallback(access, OnPopulateIdCallBack);
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in AccessRepositoryMsSql. Error\n{1}",
-                    "Inser-Access", exception.ToString());
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+			string[] scope = new string[0];
+			if (!string.IsNullOrEmpty(scopeColumn))
+			{
+				string[] list = scopeColumn.Split(';');
+				if (list.Length > 0)
+				{
+					scope = list;
+				}
+			}
+			access.Scope = scope;
+		}
 
-        private QueryBody GetInsertAccessQuery(Access access)
-        {
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-                new SqlParameter(AccessParameter.ORGANISATION, GetDBValue(access.Organisation)),
-                new SqlParameter(AccessParameter.TOKEN, GetDBValue(access.Token)),
-                new SqlParameter(AccessParameter.USER_ID, GetDBValue(access.UserId)),
-                new SqlParameter(AccessParameter.START_TIME, GetDBValue(access.StartTime)),
-                new SqlParameter(AccessParameter.END_TIME, GetDBValue(access.EndTime)),
-                new SqlParameter(AccessParameter.SCOPE, GetDBValue(JoinScopeList(access.Scope))),
-            };
+		public void InsertAccess(Access access)
+		{
+			try
+			{
+				QueryBody query = GetInsertAccessQuery(access);
+				using (MssqlDbEngine dbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
+					connectionString))
+				{
+					dbEngine.ExecuteQueryInsertCallback(access, OnPopulateIdCallBack);
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing AccessRepositoryMsSql.InsertAccess", exception);
+			}
+		}
 
-            string insert = string.Format("INSERT INTO {0}({1}, {2}, {3}, {4}, {5}, {6})", TableName,
-                AccessColumn.ORGANISATION,
-                AccessColumn.TOKEN,
-                AccessColumn.USER_ID,
-                AccessColumn.START_TIME,
-                AccessColumn.END_TIME,
-                AccessColumn.SCOPE);
+		private QueryBody GetInsertAccessQuery(Access access)
+		{
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter(AccessParameter.ORGANISATION, GetDBValue(access.Organisation)),
+				new SqlParameter(AccessParameter.TOKEN, GetDBValue(access.Token)),
+				new SqlParameter(AccessParameter.USER_ID, GetDBValue(access.UserId)),
+				new SqlParameter(AccessParameter.START_TIME, GetDBValue(access.StartTime)),
+				new SqlParameter(AccessParameter.END_TIME, GetDBValue(access.EndTime)),
+				new SqlParameter(AccessParameter.SCOPE, GetDBValue(JoinScopeList(access.Scope))),
+			};
 
-            string values = string.Format("VALUES ({0}, {1}, {2}, {3}, {4}, {5})", AccessParameter.ORGANISATION,
-                AccessParameter.TOKEN,
-                AccessParameter.USER_ID,
-                AccessParameter.START_TIME,
-                AccessParameter.END_TIME,
-                AccessParameter.SCOPE);
+			string insert = string.Format("INSERT INTO {0}({1}, {2}, {3}, {4}, {5}, {6})", TableName,
+				AccessColumn.ORGANISATION,
+				AccessColumn.TOKEN,
+				AccessColumn.USER_ID,
+				AccessColumn.START_TIME,
+				AccessColumn.END_TIME,
+				AccessColumn.SCOPE);
 
-            string stringquery = string.Format("{0} {1}", insert, values);
+			string values = string.Format("VALUES ({0}, {1}, {2}, {3}, {4}, {5})", AccessParameter.ORGANISATION,
+				AccessParameter.TOKEN,
+				AccessParameter.USER_ID,
+				AccessParameter.START_TIME,
+				AccessParameter.END_TIME,
+				AccessParameter.SCOPE);
 
-            return new QueryBody(stringquery, parameters);
-        }
+			string stringquery = string.Format("{0} {1}", insert, values);
 
-        private string JoinScopeList(string[] scope)
-        {
-            if (scope == null ||
-                scope.Length == 0)
-            {
-                return null;
-            }
+			return new QueryBody(stringquery, parameters);
+		}
 
-            string joinString = string.Join(";", scope);
-            return joinString;
-        }
+		private string JoinScopeList(string[] scope)
+		{
+			if (scope == null ||
+				scope.Length == 0)
+			{
+				return null;
+			}
 
-        private void OnPopulateIdCallBack(Access access, object result)
-        {
-            long id = Convert.ToInt64(result);
-            access.Id = id;
-        }
+			string joinString = string.Join(";", scope);
+			return joinString;
+		}
 
-        public void UpdateAccess(Access access)
-        {
-            try
-            {
-                QueryBody query = GetUpdateAccessQuery(access);
-                using (MssqlDbEngine dbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
-                    connectionString))
-                {
-                    dbEngine.ExecuteQuery();
-                }
-            }
-            catch (Exception exception)
-            {
-                string message = string.Format("Error encountered when executing {0} function in AccessRepositoryMsSql. Error\n{1}",
-                    "Update-Access", exception.ToString());
-                WriteErrorLog(message);
-                throw;
-            }
-        }
+		private void OnPopulateIdCallBack(Access access, object result)
+		{
+			long id = Convert.ToInt64(result);
+			access.Id = id;
+		}
 
-        private QueryBody GetUpdateAccessQuery(Access access)
-        {
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-                new SqlParameter(AccessParameter.ID, GetDBValue(access.Id)),
-                new SqlParameter(AccessParameter.ORGANISATION, GetDBValue(access.Organisation)),
-                new SqlParameter(AccessParameter.TOKEN, GetDBValue(access.Token)),
-                new SqlParameter(AccessParameter.USER_ID, GetDBValue(access.UserId)),
-                new SqlParameter(AccessParameter.START_TIME, GetDBValue(access.StartTime)),
-                new SqlParameter(AccessParameter.END_TIME, GetDBValue(access.EndTime)),
-                new SqlParameter(AccessParameter.SCOPE, GetDBValue(JoinScopeList(access.Scope))),
-            };
+		public void UpdateAccess(Access access)
+		{
+			try
+			{
+				QueryBody query = GetUpdateAccessQuery(access);
+				using (MssqlDbEngine dbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
+					connectionString))
+				{
+					dbEngine.ExecuteQuery();
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing AccessRepositoryMsSql.UpdateAccess", exception);
+			}
+		}
 
-            string updateTable = string.Format("UPDATE {0} SET", TableName);
+		private QueryBody GetUpdateAccessQuery(Access access)
+		{
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter(AccessParameter.ID, GetDBValue(access.Id)),
+				new SqlParameter(AccessParameter.ORGANISATION, GetDBValue(access.Organisation)),
+				new SqlParameter(AccessParameter.TOKEN, GetDBValue(access.Token)),
+				new SqlParameter(AccessParameter.USER_ID, GetDBValue(access.UserId)),
+				new SqlParameter(AccessParameter.START_TIME, GetDBValue(access.StartTime)),
+				new SqlParameter(AccessParameter.END_TIME, GetDBValue(access.EndTime)),
+				new SqlParameter(AccessParameter.SCOPE, GetDBValue(JoinScopeList(access.Scope))),
+			};
 
-            string setOrganisation = string.Format("{0} = {1}", AccessColumn.ORGANISATION,
-                AccessParameter.ORGANISATION);
+			string updateTable = string.Format("UPDATE {0} SET", TableName);
 
-            string setToken = string.Format("{0} = {1}", AccessColumn.TOKEN,
-                AccessParameter.TOKEN);
+			string setOrganisation = string.Format("{0} = {1}", AccessColumn.ORGANISATION,
+				AccessParameter.ORGANISATION);
 
-            string setUserId = string.Format("{0} = {1}", AccessColumn.USER_ID,
-                AccessParameter.USER_ID);
+			string setToken = string.Format("{0} = {1}", AccessColumn.TOKEN,
+				AccessParameter.TOKEN);
 
-            string setStartTime = string.Format("{0} = {1}", AccessColumn.START_TIME,
-                AccessParameter.START_TIME);
+			string setUserId = string.Format("{0} = {1}", AccessColumn.USER_ID,
+				AccessParameter.USER_ID);
 
-            string setEndTime = string.Format("{0} = {1}", AccessColumn.END_TIME,
-                AccessParameter.END_TIME);
+			string setStartTime = string.Format("{0} = {1}", AccessColumn.START_TIME,
+				AccessParameter.START_TIME);
 
-            string setScope = string.Format("{0} = {1}", AccessColumn.SCOPE,
-                AccessParameter.SCOPE);
+			string setEndTime = string.Format("{0} = {1}", AccessColumn.END_TIME,
+				AccessParameter.END_TIME);
 
-            string whereId = string.Format("WHERE {0} = {1}", AccessColumn.ID,
-                AccessParameter.ID);
+			string setScope = string.Format("{0} = {1}", AccessColumn.SCOPE,
+				AccessParameter.SCOPE);
 
-            string query = string.Format("{0} {1}, {2}, {3}, {4}, {5}, {6} {7}", updateTable,
-                setOrganisation,
-                setToken,
-                setUserId,
-                setStartTime,
-                setEndTime,
-                setScope,
-                whereId);
+			string whereId = string.Format("WHERE {0} = {1}", AccessColumn.ID,
+				AccessParameter.ID);
 
-            return new QueryBody(query, parameters);
-        }
+			string query = string.Format("{0} {1}, {2}, {3}, {4}, {5}, {6} {7}", updateTable,
+				setOrganisation,
+				setToken,
+				setUserId,
+				setStartTime,
+				setEndTime,
+				setScope,
+				whereId);
 
-        public void DeleteAccess(Access access)
-        {
-            try
-            {
-                SqlParameter[] sqlParameters = new SqlParameter[]
-                {
-                    new SqlParameter(AccessParameter.ID, GetDBValue(access.Id))
-                };
+			return new QueryBody(query, parameters);
+		}
 
-                string sqlQuery = string.Format("DELETE FROM {0} WHERE {1} = {2}", TableName,
-                    AccessColumn.ID,
-                    AccessParameter.ID);
+		public void DeleteAccess(Access access)
+		{
+			try
+			{
+				SqlParameter[] sqlParameters = new SqlParameter[]
+				{
+					new SqlParameter(AccessParameter.ID, GetDBValue(access.Id))
+				};
 
-                using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(sqlQuery, sqlParameters,
-                    connectionString))
-                {
-                    mssqlDbEngine.ExecuteQuery();
-                }
-            }
-            catch (Exception exception)
-            {
-                string eMessage = string.Format("Error encountered when executing {0} function in AccessRepositoryMsSql. Error\n{1}",
-                    "Delete-Access", exception.Message);
-                WriteErrorLog(eMessage);
-                throw;
-            }
-        }
+				string sqlQuery = string.Format("DELETE FROM {0} WHERE {1} = {2}", TableName,
+					AccessColumn.ID,
+					AccessParameter.ID);
 
-        protected static string GetSelectColumns()
-        {
-            string columns = string.Format("{0}, {1}, {2}, {3}, {4}, {5}, {6}",
-                AccessColumn.ID,
-                AccessColumn.ORGANISATION,
-                AccessColumn.TOKEN,
-                AccessColumn.USER_ID,
-                AccessColumn.START_TIME,
-                AccessColumn.END_TIME,
-                AccessColumn.SCOPE);
-            return columns;
-        }
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(sqlQuery, sqlParameters,
+					connectionString))
+				{
+					mssqlDbEngine.ExecuteQuery();
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing AccessRepositoryMsSql.DeleteAccess", exception);
+			}
+		}
 
-        protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
-            string connectionString)
-        {
-            if (transactionModeEnabled &&
-                repoTransaction != null)
-            {
-                MssqlDbEngine transactionMssqlEngine = new MssqlDbEngine(query, mssqlParameters,
-                    connectionString,
-                    repoTransaction);
-                return transactionMssqlEngine;
-            }
-            MssqlDbEngine mssqlDbEngine = new MssqlDbEngine(query, mssqlParameters,
-                connectionString);
-            return mssqlDbEngine;
-        }
+		protected static string GetSelectColumns()
+		{
+			string columns = string.Format("{0}, {1}, {2}, {3}, {4}, {5}, {6}",
+				AccessColumn.ID,
+				AccessColumn.ORGANISATION,
+				AccessColumn.TOKEN,
+				AccessColumn.USER_ID,
+				AccessColumn.START_TIME,
+				AccessColumn.END_TIME,
+				AccessColumn.SCOPE);
+			return columns;
+		}
 
-        protected void WriteErrorLog(string errorMessage)
-        {
-            LogFile.WriteErrorLog(errorMessage);
-        }
+		protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
+			string connectionString)
+		{
+			if (transactionModeEnabled &&
+				repoTransaction != null)
+			{
+				MssqlDbEngine transactionMssqlEngine = new MssqlDbEngine(query, mssqlParameters,
+					connectionString,
+					repoTransaction);
+				return transactionMssqlEngine;
+			}
+			MssqlDbEngine mssqlDbEngine = new MssqlDbEngine(query, mssqlParameters,
+				connectionString);
+			return mssqlDbEngine;
+		}
 
-        protected object GetDBValue(object value)
-        {
-            return DbValueUtil.GetValidValue(value);
-        }
-    }
+		protected object GetDBValue(object value)
+		{
+			return DbValueUtil.GetValidValue(value);
+		}
+	}
 }

@@ -1,16 +1,16 @@
-﻿using MessageDbLib.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 using WMessageServiceApi.Authentication;
 using WMessageServiceApi.Exceptions.Datacontacts;
+using WMessageServiceApi.Logging;
 using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 using WMessageServiceApi.Messaging.ServiceBusinessLogics;
 using WMessageServiceApi.Messaging.ServiceInterfaces;
 
 namespace WMessageServiceApi.Messaging.Services
 {
-    public class RetrieveMessageService : IRetrieveMessageService
+	public class RetrieveMessageService : IRetrieveMessageService
     {
         public List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
         {
