@@ -22,11 +22,11 @@
     <MetadataSource Address="http://192.168.0.12/Authorisation/Services/ValidationService.svc" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="ValidationService.xsd" MetadataType="Schema" ID="8949da95-742a-42b5-8206-a4fcad3fc1b0" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?xsd=xsd1" />
-    <MetadataFile FileName="ValidationService1.xsd" MetadataType="Schema" ID="0e9e6ac1-10ff-41bd-84b6-435bf52d0ef5" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?xsd=xsd0" />
-    <MetadataFile FileName="ValidationService2.xsd" MetadataType="Schema" ID="5a0b7c44-a9a2-411d-8baf-cddd5ebc3a6e" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?xsd=xsd2" />
-    <MetadataFile FileName="ValidationService.disco" MetadataType="Disco" ID="a52c59e8-a257-4198-83e9-726a016037eb" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?disco" />
-    <MetadataFile FileName="ValidationService.wsdl" MetadataType="Wsdl" ID="5d19e555-5642-4102-8561-a5fc3bd2d0e4" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?wsdl" />
+    <MetadataFile FileName="ValidationService.xsd" MetadataType="Schema" ID="c208374a-7c97-43e8-bb16-c8f776b530a7" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?xsd=xsd1" />
+    <MetadataFile FileName="ValidationService1.xsd" MetadataType="Schema" ID="bc259389-f38f-4265-8627-a6d252571236" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?xsd=xsd0" />
+    <MetadataFile FileName="ValidationService2.xsd" MetadataType="Schema" ID="f75d1181-b5d1-4dba-800b-198dcc8f89fa" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?xsd=xsd2" />
+    <MetadataFile FileName="ValidationService.disco" MetadataType="Disco" ID="752122de-b17b-42da-af18-8afb0c695720" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?disco" />
+    <MetadataFile FileName="ValidationService.wsdl" MetadataType="Wsdl" ID="962d3a78-14f8-4f95-b7e4-8a614cc2bf07" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/ValidationService.svc?wsdl" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

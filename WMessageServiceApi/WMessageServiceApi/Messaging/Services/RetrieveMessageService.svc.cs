@@ -21,13 +21,13 @@ namespace WMessageServiceApi.Messaging.Services
             }
             catch (TokenValidationException exception)
             {
-                WriteErrorLog("Encontered a token validation error getting messages set to user.", exception);
+                LogError("Encontered a token validation error getting messages set to user.", exception);
                 ErrorContract error = new ErrorContract(exception.Message, StatusList.VALIDATION_ERROR);
                 throw new FaultException<ErrorContract>(error);
             }
             catch (Exception exception)
             {
-                WriteErrorLog("Error encountered when getting messages-sent-to-user.", exception);
+                LogError("Error encountered when getting messages-sent-to-user.", exception);
                 ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
                 throw new FaultException<ErrorContract>(error);
             }
@@ -42,26 +42,21 @@ namespace WMessageServiceApi.Messaging.Services
             }
             catch (TokenValidationException exception)
             {
-                WriteErrorLog("Encontered a token validation error getting messages between sender and receiver.", exception);
+                LogError("Encontered a token validation error getting messages between sender and receiver.", exception);
                 ErrorContract error = new ErrorContract(exception.Message, StatusList.VALIDATION_ERROR);
                 throw new FaultException<ErrorContract>(error);
             }
             catch (Exception exception)
             {
-                WriteErrorLog("Error encountered when Getting-Message-Dispatches-Between-Sender-Receiver.", exception);
+                LogError("Error encountered when Getting-Message-Dispatches-Between-Sender-Receiver.", exception);
                 ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
                 throw new FaultException<ErrorContract>(error);
             }
         }
 
-        private void WriteErrorLog(string message, Exception exception)
+        private void LogError(string message, Exception exception)
         {
-            LogFile.WriteErrorLog(message, exception);
-        }
-
-        private void WriteInfoLog(string message)
-        {
-            LogFile.WriteInfoLog(message);
+            AppLog.LogError(message + "\n" + exception.ToString());
         }
     }
 }

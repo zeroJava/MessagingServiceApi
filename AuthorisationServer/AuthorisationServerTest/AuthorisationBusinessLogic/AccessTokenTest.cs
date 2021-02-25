@@ -81,8 +81,9 @@ namespace WMessageServiceApiTest.AuthorisationBusinessLogic
 
 		private ValidationResponse CheckAccessTokenValid(string encryptedToken)
 		{
+			string decrytedValyedTemp = SymmetricEncryption.Decrypt(encryptedToken);
 			ValidationServiceBl accessService = new ValidationServiceBl();
-			ValidationResponse result = accessService.AccessTokenValidation(encryptedToken);
+			ValidationResponse result = accessService.AccessTokenValidation(decrytedValyedTemp);
 			return result;
 		}
 

@@ -29,7 +29,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
                 throw new ApplicationException("Could not find a matching Username.");
             }
 
-            WriteInfoLog(string.Format("Getting messages sent to user: {0};", username));
+            LogInfo(string.Format("Getting messages sent to user: {0};", username));
             return MessagesSentToUser(user.Id, messageRequest.ReceiverEmailAddress);
         }
 
@@ -123,7 +123,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
                     dispatch.Message = message;
                 }
             }
-            WriteInfoLog("Completed assigning message to message-dispatch");
+            LogInfo("Completed assigning message to message-dispatch");
         }
 
         private IMessageRepository GetMessageRepository()
@@ -147,7 +147,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
             }
             catch (Exception exception)
             {
-                WriteErrorLog("Error encountered when executing Convert-Message-Dispatch-To-Contract.", exception);
+                LogError("Error encountered when executing Convert-Message-Dispatch-To-Contract.", exception);
                 return null;
             }
         }
@@ -155,7 +155,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
         private MessageDispatchInfoContract CreateMessageDispatchInfoObj(MessageDispatch messageDispatch, Message message,
             bool senderCurrentUser)
         {
-            WriteInfoLog("Creating message dispatch info contract.");
+            LogInfo("Creating message dispatch info contract.");
 
             string infomessage = string.Format("SenderName: {0}\n- ReceiverName: {1}" + "\n- SenderIsCurrentUser: {2}" +
                 "\n- DispatchId: {3}" +
@@ -164,7 +164,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
                 senderCurrentUser,
                 messageDispatch.Id,
                 message.Id);
-            WriteInfoLog(infomessage);
+            LogInfo(infomessage);
 
             return new MessageDispatchInfoContract
             {
@@ -199,7 +199,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
             string infotext = string.Format("Getting message messageDispatches between sender: {0} and receiver: {1}.",
                 messageRequest.SenderEmailAddress,
                 messageRequest.ReceiverEmailAddress);
-            WriteInfoLog(infotext);
+            LogInfo(infotext);
 
             IMessageDispatchRepository dispatchRepo = GetMessageDispatchRepository();
             List<MessageDispatch> messageDispatches = dispatchRepo.GetDispatchesBetweenSenderReceiver(messageRequest.SenderEmailAddress,
@@ -210,14 +210,14 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
             return messageDispatchInfos;
         }
 
-        private void WriteErrorLog(string message, Exception exception)
+        private void LogError(string message, Exception exception)
         {
-            LogFile.WriteErrorLog(message, exception);
+            AppLog.LogError(message + "\n" + exception.ToString());
         }
 
-        private void WriteInfoLog(string message)
+        private void LogInfo(string message)
         {
-            LogFile.WriteInfoLog(message);
+            AppLog.LogInfo(message);
         }
     }
 }

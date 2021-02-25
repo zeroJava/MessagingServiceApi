@@ -15,6 +15,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
             IMessageDispatchRepository dispatchRepo = GetDispatchRepository();
             MessageDispatch dispatch = dispatchRepo.GetDispatchMatchingId(dispatchId);
+
             if (dispatch != null)
             {
                 WriteInfoLog(string.Format("Found Dispatch (ID): {0}", dispatchId));
@@ -43,12 +44,12 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
         private static void WriteErrorLog(string message, Exception exception)
         {
-            LogFile.WriteErrorLog(message, exception);
+            AppLog.LogError(message + "\n" + exception.ToString());
         }
 
         private static void WriteInfoLog(string message)
         {
-            LogFile.WriteInfoLog(message);
+            AppLog.LogInfo(message);
         }
     }
 }

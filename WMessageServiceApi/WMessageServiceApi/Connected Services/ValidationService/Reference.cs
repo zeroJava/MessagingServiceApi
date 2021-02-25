@@ -101,10 +101,10 @@ namespace WMessageServiceApi.ValidationService {
         System.Threading.Tasks.Task<WMessageServiceApi.ValidationService.ValidationResponse> AccessTokenValidationAsync(string encryptedToken);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IValidationService/UserCredentialValidation", ReplyAction="http://tempuri.org/IValidationService/UserCredentialValidationResponse")]
-        WMessageServiceApi.ValidationService.ValidationResponse UserCredentialValidation(string encryptedCredential);
+        WMessageServiceApi.ValidationService.ValidationResponse UserCredentialValidation(string credential);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IValidationService/UserCredentialValidation", ReplyAction="http://tempuri.org/IValidationService/UserCredentialValidationResponse")]
-        System.Threading.Tasks.Task<WMessageServiceApi.ValidationService.ValidationResponse> UserCredentialValidationAsync(string encryptedCredential);
+        System.Threading.Tasks.Task<WMessageServiceApi.ValidationService.ValidationResponse> UserCredentialValidationAsync(string credential);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -142,12 +142,12 @@ namespace WMessageServiceApi.ValidationService {
             return base.Channel.AccessTokenValidationAsync(encryptedToken);
         }
         
-        public WMessageServiceApi.ValidationService.ValidationResponse UserCredentialValidation(string encryptedCredential) {
-            return base.Channel.UserCredentialValidation(encryptedCredential);
+        public WMessageServiceApi.ValidationService.ValidationResponse UserCredentialValidation(string credential) {
+            return base.Channel.UserCredentialValidation(credential);
         }
         
-        public System.Threading.Tasks.Task<WMessageServiceApi.ValidationService.ValidationResponse> UserCredentialValidationAsync(string encryptedCredential) {
-            return base.Channel.UserCredentialValidationAsync(encryptedCredential);
+        public System.Threading.Tasks.Task<WMessageServiceApi.ValidationService.ValidationResponse> UserCredentialValidationAsync(string credential) {
+            return base.Channel.UserCredentialValidationAsync(credential);
         }
     }
 }

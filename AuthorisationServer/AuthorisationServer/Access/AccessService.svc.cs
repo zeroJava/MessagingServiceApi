@@ -22,6 +22,7 @@ namespace AuthorisationServer.Access
             }
             catch (Exception exception)
             {
+                LogError(exception.ToString());
                 throw new FaultException(exception.ToString());
             }
         }
@@ -35,8 +36,14 @@ namespace AuthorisationServer.Access
             }
             catch (Exception exception)
             {
+                LogError(exception.ToString());
                 throw new FaultException(exception.ToString());
             }
         }
+
+        private static void LogError(string message)
+		{
+            Logging.AppLog.LogError(message);
+		}
     }
 }

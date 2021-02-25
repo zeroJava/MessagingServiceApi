@@ -23,7 +23,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
                 throw new InvalidOperationException("Message contract does not have ant emails attahed.");
             }
 
-            WriteInfoLog(string.Format("Going to create message. Message content\n{0}", message.Message));
+            LogInfo(string.Format("Going to create message. Message content\n{0}", message.Message));
             Message newMessage = CreateNewMessage(message);
 
             //PersistMessage(newMessage);
@@ -77,7 +77,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
             User user = retrieveUser.GetUserMatchingUsername(userName);
             if (user == null)
             {
-                throw new InvalidOperationException("Sender could not be found in our current repo.");
+                throw new InvalidOperationException("Sender could not be found in our current repo");
             }
             return user;
         }
@@ -96,7 +96,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
                 }
                 catch (Exception exception)
                 {
-                    WriteErrorLog("Unable to process new message request.", exception);
+                    LogError("Unable to process new message request");
                     repoTransaction.Callback();
                     throw;
                 }
@@ -110,7 +110,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
                 DatabaseOption.DbConnectionString,
                 repoTransaction);
             messageRepo.InsertMessage(message);
-            WriteInfoLog("Message persisting was successful.");
+            LogInfo("Message persisting was successful");
         }
 
         private void ProcessMessageDispatch(IMessageContract messageContract, Message message,
@@ -134,7 +134,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
                 DatabaseOption.DbConnectionString,
                 repoTransaction);
             dispatchRepo.InsertDispatch(messageDispatch);
-            WriteInfoLog("Message-Dispatch persisting was successful.");
+            LogInfo("Message-Dispatch persisting was successful");
         }
 
         /*private void PersistMessageToMongoDbService(Message message)
@@ -158,14 +158,14 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			}
 		}*/
 
-        private void WriteErrorLog(string message, Exception exception)
+        private void LogError(string message)
         {
-            LogFile.WriteErrorLog(message, exception);
+            AppLog.LogError(message);
         }
 
-        private void WriteInfoLog(string message)
+        private void LogInfo(string message)
         {
-            LogFile.WriteInfoLog(message);
+            AppLog.LogInfo(message + ".");
         }
     }
 }

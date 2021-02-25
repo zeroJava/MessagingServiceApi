@@ -3,9 +3,9 @@ using System;
 
 namespace WMessageServiceApi.Logging
 {
-	public static class LogFile
+	public static class AppLog
 	{
-		public static void WriteErrorLog(string errorMessage, Exception exception)
+		/*public static void WriteErrorLog(string errorMessage, Exception exception)
 		{
 			try
 			{
@@ -18,9 +18,9 @@ namespace WMessageServiceApi.Logging
 			{
 				//
 			}
-		}
+		}*/
 
-		public static void WriteErrorLog(string errorMessage)
+		public static void LogError(string errorMessage)
 		{
 			try
 			{
@@ -29,11 +29,11 @@ namespace WMessageServiceApi.Logging
 			}
 			catch (Exception exception)
 			{
-				//
+				Console.WriteLine(exception.ToString());
 			}
 		}
 
-		public static void WriteInfoLog(string infoMessage)
+		public static void LogInfo(string infoMessage)
 		{
 			try
 			{
@@ -42,7 +42,7 @@ namespace WMessageServiceApi.Logging
 			}
 			catch (Exception exception)
 			{
-				//
+				Console.WriteLine(exception.ToString());
 			}
 		}
 	}

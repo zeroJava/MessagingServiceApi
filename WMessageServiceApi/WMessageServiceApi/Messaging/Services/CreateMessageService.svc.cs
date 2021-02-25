@@ -2,7 +2,6 @@
 using System.ServiceModel;
 using WMessageServiceApi.Authentication;
 using WMessageServiceApi.Exceptions.Datacontacts;
-using WMessageServiceApi.Logging;
 using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 using WMessageServiceApi.Messaging.DataEnumerations;
 using WMessageServiceApi.Messaging.ServiceBusinessLogics;
@@ -16,19 +15,25 @@ namespace WMessageServiceApi.Messaging.Services
         {
             try
             {
-                CreateMessageBl createMessageL = new CreateMessageBl();
-                return createMessageL.CreateMessage(message);
+                return new CreateMessageBl().CreateMessage(message);
             }
             catch (TokenValidationException exception)
             {
-                WriteErrorLog("Encontered a token validation error when trying to create a message.", exception);
-                ErrorContract error = new ErrorContract(exception.Message, StatusList.VALIDATION_ERROR);
+                string exMessage = "Encontered a token validation error when trying to create a message.";
+                
+                LogError(exMessage + "\n" + exception.ToString());
+
+                ErrorContract error = new ErrorContract(exMessage, StatusList.VALIDATION_ERROR);
                 throw new FaultException<ErrorContract>(error);
             }
             catch (Exception exception)
             {
-                WriteErrorLog("Encontered an error when trying to create a message.", exception);
-                MessageRequestTokenContract tokenContract = CreateMessageStateTokenContract(MessageReceivedState.FailedToProcessRequest, exception.Message);
+                string exMessage = "Encontered an error when trying to create a message.";
+
+                LogError(exMessage + "\n" + exception.ToString());
+
+                MessageRequestTokenContract tokenContract = CreateMessageStateTokenContract(MessageReceivedState.FailedToProcessRequest,
+                    exception.Message);
                 throw new FaultException<MessageRequestTokenContract>(tokenContract);
             }
         }
@@ -42,14 +47,9 @@ namespace WMessageServiceApi.Messaging.Services
             };
         }
 
-        private void WriteErrorLog(string message, Exception exception)
+        private void LogError(string message)
         {
-            LogFile.WriteErrorLog(message, exception);
-        }
-
-        private void WriteInfoLog(string message)
-        {
-            LogFile.WriteInfoLog(message);
+            Logging.AppLog.LogError(message);
         }
     }
 }

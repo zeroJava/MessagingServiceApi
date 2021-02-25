@@ -22,12 +22,12 @@
     <MetadataSource Address="http://192.168.0.12/Authorisation/Services/AccessService.svc" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="AccessService.xsd" MetadataType="Schema" ID="94853615-a311-4a8b-8970-37cacbfd070d" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?xsd=xsd0" />
-    <MetadataFile FileName="AccessService1.xsd" MetadataType="Schema" ID="5ed765a3-5c31-4aa2-81fd-b4ea5ff5f741" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?xsd=xsd3" />
-    <MetadataFile FileName="AccessService2.xsd" MetadataType="Schema" ID="fafc96ec-04e2-4fe4-831a-fd1650e2923f" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?xsd=xsd2" />
-    <MetadataFile FileName="AccessService.wsdl" MetadataType="Wsdl" ID="50164d6d-42fe-4c76-bb11-5381e87f65ac" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?wsdl" />
-    <MetadataFile FileName="AccessService.disco" MetadataType="Disco" ID="eb5d0c48-a59e-4a7f-b208-ce58e2b4f260" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?disco" />
-    <MetadataFile FileName="AccessService3.xsd" MetadataType="Schema" ID="045c4ce9-bdaa-44e8-97e1-57633a6724a8" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?xsd=xsd1" />
+    <MetadataFile FileName="AccessService.xsd" MetadataType="Schema" ID="298acda5-f15b-49c8-bc63-6d4061a14574" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?xsd=xsd0" />
+    <MetadataFile FileName="AccessService1.xsd" MetadataType="Schema" ID="7d8bf939-bf0e-41a6-85fc-e77e64d749c8" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?xsd=xsd3" />
+    <MetadataFile FileName="AccessService2.xsd" MetadataType="Schema" ID="bc58f758-e3f3-445b-862f-3598bba53610" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?xsd=xsd2" />
+    <MetadataFile FileName="AccessService.wsdl" MetadataType="Wsdl" ID="22c8ba8b-0ccc-418b-8a40-6a66e587cf49" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?wsdl" />
+    <MetadataFile FileName="AccessService.disco" MetadataType="Disco" ID="bc99a8cd-f3e9-40e6-b0f7-31156b2bd7c7" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?disco" />
+    <MetadataFile FileName="AccessService3.xsd" MetadataType="Schema" ID="1bf5d3f8-0971-4bed-8966-5d3e678236c6" SourceId="1" SourceUrl="http://192.168.0.12/Authorisation/Services/AccessService.svc?xsd=xsd1" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

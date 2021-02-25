@@ -20,19 +20,14 @@ namespace WMessageServiceApi.Messaging.Services
             catch (Exception exception)
             {
                 ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
-                WriteErrorLog("Error encountered when executing Update-dispatch-As-Received.", exception);
+                LogError("Error encountered when executing Update-dispatch-As-Received.", exception);
                 throw new FaultException<ErrorContract>(error);
             }
         }
 
-        private void WriteErrorLog(string message, Exception exception)
+        private void LogError(string message, Exception exception)
         {
-            LogFile.WriteErrorLog(message, exception);
-        }
-
-        private void WriteInfoLog(string message)
-        {
-            LogFile.WriteInfoLog(message);
+            AppLog.LogError(message + "\n" + exception.ToString());
         }
     }
 }
