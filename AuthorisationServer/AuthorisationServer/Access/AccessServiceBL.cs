@@ -54,7 +54,7 @@ namespace AuthorisationServer.Access
 			return organisationKey;
 		}
 
-		private void CheckKeyIsValid(string organisationName, string encrytedRequestOKey)
+		private void CheckKeyIsValid(string organisationName, string encryptedRequestOKey)
 		{
 			IOrganisationKeyRepository organisationKeyRepo = OrganisationKeyRepoFactory.GetOrganisationKeyRepository(DatabaseOption.DatabaseEngine,
 				DatabaseOption.DbConnectionString);
@@ -68,7 +68,7 @@ namespace AuthorisationServer.Access
 			//string requestOKey = SymmetricEncryption.Decrypt(encrytedRequestOKey);
 			//string dbOKey = SymmetricEncryption.Decrypt(organisationKey.OKey);
 
-			string requestOKey = encrytedRequestOKey;
+			string requestOKey = encryptedRequestOKey;
 			string dbOKey = organisationKey.OKey;
 
 			if (requestOKey != dbOKey)
