@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 namespace WMessageServiceApi.Messaging.DataContracts.UserContracts
 {
     [DataContract(Name = "UserInfoContract")]
+    [KnownType(typeof(AdvancedUserInfoContract))]
     public class UserInfoContract : IUserContract
     {
         [Required]
