@@ -61,7 +61,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
         private IUserRepository GetUserRepository()
         {
-            IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
+            IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine,
+                DatabaseOption.DbConnectionString);
             return userRepo;
         }
 

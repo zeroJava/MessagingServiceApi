@@ -27,6 +27,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
             {
                 return null;
             }
+
             List<UserInfoContract> userList = new List<UserInfoContract>();
             foreach (User user in users)
             {

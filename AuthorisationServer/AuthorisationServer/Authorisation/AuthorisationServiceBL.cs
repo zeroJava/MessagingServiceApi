@@ -19,7 +19,7 @@ namespace AuthorisationServer.Authorisation
 			{
 				throw new ApplicationException("Could not find user matching Username and Password.");
 			}
-			MessageDbCore.EntityClasses.Authorisation authorisation = CreateAuthorisation();
+			MessageDbCore.EntityClasses.Authorisation authorisation = CreateAuthorisation(user.Id);
 			PersistAuthorisation(authorisation);
 			return CreateAuthorisationResult(request, authorisation);
 		}
@@ -37,13 +37,14 @@ namespace AuthorisationServer.Authorisation
 			return user;
 		}
 
-		private MessageDbCore.EntityClasses.Authorisation CreateAuthorisation()
+		private MessageDbCore.EntityClasses.Authorisation CreateAuthorisation(long userId)
 		{
 			MessageDbCore.EntityClasses.Authorisation authorisation = new MessageDbCore.EntityClasses.Authorisation
 			{
 				AuthorisationCode = Guid.NewGuid(),
 				StartTime = DateTime.Now,
 				EndTime = DateTime.Now.AddDays(1),
+				UserId = userId,
 			};
 			return authorisation;
 		}

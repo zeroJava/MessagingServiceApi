@@ -139,13 +139,13 @@ namespace AuthorisationServer.Validation
 		}
 
 		private static bool CompareDates(DateTime datetimeOne, DateTime datetimeTwo)
-        {
+		{
 			return datetimeOne.Year == datetimeTwo.Year && datetimeOne.Month == datetimeTwo.Month &&
 				datetimeOne.Day == datetimeTwo.Day &&
 				datetimeOne.Hour == datetimeTwo.Hour &&
 				datetimeOne.Minute == datetimeTwo.Minute &&
 				datetimeOne.Second == datetimeTwo.Second;
-        }
+		}
 
 		public ValidationResponse UserCredentialValidation(string credential)
 		{
