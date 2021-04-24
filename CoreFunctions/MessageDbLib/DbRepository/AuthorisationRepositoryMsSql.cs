@@ -1,4 +1,4 @@
-﻿using MessageDbCore.EntityClasses;
+﻿using MessageDbCore.RepoEntity;
 using MessageDbCore.Repositories;
 using MessageDbLib.Constants.TableConstants;
 using MessageDbLib.DbEngine;

@@ -1,5 +1,5 @@
 ﻿using MessageDbCore.DbRepositoryInterfaces;
-using MessageDbCore.EntityClasses;
+using MessageDbCore.RepoEntity;
 using MessageDbCore.EntityInterfaces;
 using MessageDbCore.Repositories;
 using MessageDbLib.Constants;

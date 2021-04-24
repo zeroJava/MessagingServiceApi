@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace MessageDbCore.EntityClasses
+namespace MessageDbCore.RepoEntity
 {
     //[Table("MessageDispatch", Schema = "messagedbo")]
     [DataContract(Name = "MessageDispatch")]

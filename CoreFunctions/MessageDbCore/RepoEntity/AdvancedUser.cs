@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace MessageDbCore.EntityClasses
+namespace MessageDbCore.RepoEntity
 {
     [DataContract]
     public class AdvancedUser : User

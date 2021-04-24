@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessageDbCore.EntityClasses
+namespace MessageDbCore.RepoEntity
 {
 	[DataContract(Name = "OrganisationKey")]
 	public class OrganisationKey

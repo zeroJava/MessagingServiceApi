@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace MessageDbCore.EntityClasses
+namespace MessageDbCore.RepoEntity
 {
     /* Datacontract attributes only work with classes. Using these attributes
      * wcf can serialise the class, and send the data over the internet.

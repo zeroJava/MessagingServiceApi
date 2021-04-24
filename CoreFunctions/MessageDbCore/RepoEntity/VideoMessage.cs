@@ -2,10 +2,10 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace MessageDbCore.EntityClasses
+namespace MessageDbCore.RepoEntity
 {
-	[DataContract(Name = "PictureMessage")]
-	public class PictureMessage : Message, IMultiMediaMessage
+	[DataContract(Name = "VideoMessage")]
+	public class VideoMessage : Message, IMultiMediaMessage
 	{
 		[DataMember(Name = "UniqueGuid")]
 		public Guid UniqueGuid { get; set; }
@@ -19,7 +19,7 @@ namespace MessageDbCore.EntityClasses
 		[DataMember(Name = "FileSize")]
 		public double? FileSize { get; set; }
 
-		[DataMember(Name = "ImageType")]
-		public string ImageType { get; set; }
+		[DataMember(Name = "Length")]
+		public double? Length { get; set; }
 	}
 }

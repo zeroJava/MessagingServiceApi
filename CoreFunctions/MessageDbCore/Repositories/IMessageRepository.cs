@@ -1,4 +1,4 @@
-﻿using MessageDbCore.EntityClasses;
+﻿using MessageDbCore.RepoEntity;
 using System;
 using System.Collections.Generic;
 using System.Data;

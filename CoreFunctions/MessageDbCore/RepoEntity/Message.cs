@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace MessageDbCore.EntityClasses
+namespace MessageDbCore.RepoEntity
 {
     //[Table("MessageTable", Schema = "messagedbo")]
     [DataContract(Name = "MessageTable")]
