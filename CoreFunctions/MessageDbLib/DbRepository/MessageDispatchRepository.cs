@@ -10,9 +10,9 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace MessageDbLib.DbRepository.ADO
+namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-	public class MessageDispatchRepositoryMsSql : IMessageDispatchRepository
+	public class MessageDispatchRepository : IMessageDispatchRepository
 	{
 		private const string dispatchIdColumn = MessageDispatchColumn.ID;
 		private const string dispatchAliasIdColumn = "md.ID";
@@ -23,12 +23,12 @@ namespace MessageDbLib.DbRepository.ADO
 
 		public virtual string TableName { get; protected set; } = "messagedbo.MessageDispatchTable";
 
-		public MessageDispatchRepositoryMsSql(string connectionString)
+		public MessageDispatchRepository(string connectionString)
 		{
 			this.connectionString = connectionString;
 		}
 
-		public MessageDispatchRepositoryMsSql(string connectionString, IRepoTransaction repoTransaction)
+		public MessageDispatchRepository(string connectionString, IRepoTransaction repoTransaction)
 		{
 			this.connectionString = connectionString;
 			this.repoTransaction = repoTransaction;
@@ -51,7 +51,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.GetAllDispatches", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.GetAllDispatches", exception);
 			}
 		}
 
@@ -71,7 +71,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.GetDispatchMatchingId", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.GetDispatchMatchingId", exception);
 			}
 		}
 
@@ -107,7 +107,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.GetDispatchMatchingEmail", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.GetDispatchMatchingEmail", exception);
 			}
 		}
 
@@ -142,7 +142,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.GetDispatchMatchingMessageId", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.GetDispatchMatchingMessageId", exception);
 			}
 		}
 
@@ -176,7 +176,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.GetDispatchesNotReceivedMatchingEmail", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.GetDispatchesNotReceivedMatchingEmail", exception);
 			}
 		}
 
@@ -215,7 +215,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.GetDispatchesBetweenSenderReceiver", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.GetDispatchesBetweenSenderReceiver", exception);
 			}
 		}
 
@@ -303,7 +303,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.InsertDispatch", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.InsertDispatch", exception);
 			}
 		}
 
@@ -354,7 +354,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.UpdateDispatch", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.UpdateDispatch", exception);
 			}
 		}
 
@@ -416,7 +416,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepositoryMsSql.DeleteDispatch", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.DeleteDispatch", exception);
 			}
 		}
 

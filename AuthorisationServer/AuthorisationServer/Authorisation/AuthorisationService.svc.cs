@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AuthorisationServer.Access;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -22,7 +23,22 @@ namespace AuthorisationServer.Authorisation
             catch (Exception exception)
             {
                 LogError(exception.ToString());
-                throw new FaultException(exception.ToString());
+                throw new FaultException(exception.Message);
+            }
+        }
+
+        public AccessToken GetAuthorisationCodeImplicit(AuthorisationRequest request)
+        {
+            try
+            {
+                AuthorisationServiceBl authorisationService = new AuthorisationServiceBl();
+                return authorisationService.GetAuthorisationCodeImplicit(request);
+
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.ToString());
+                throw new FaultException(exception.Message);
             }
         }
 
@@ -30,5 +46,5 @@ namespace AuthorisationServer.Authorisation
         {
             Logging.AppLog.LogError(message);
         }
-    }
+	}
 }

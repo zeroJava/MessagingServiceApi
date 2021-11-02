@@ -1,7 +1,7 @@
 ﻿using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.Repositories;
 using MessageDbLib.Constants;
-using MessageDbLib.DbRepository;
+using MessageDbLib.DbRepository.ADO.MsSql;
 using System;
 
 namespace MessageDbLib.DbRepositoryFactories
@@ -15,7 +15,7 @@ namespace MessageDbLib.DbRepositoryFactories
 			{
 				case DatabaseEngineConstant.MSSQLADODOTNET:
 					{
-						return new DbRepository.ADO.MessageDispatchRepositoryMsSql(connectionString);
+						return new DbRepository.ADO.MsSql.MessageDispatchRepository(connectionString);
 					}
 				default:
 					{
@@ -33,13 +33,14 @@ namespace MessageDbLib.DbRepositoryFactories
 			{
 				case DatabaseEngineConstant.MSSQLADODOTNET:
 					{
-						RepoTransactionMsSql repoTransactionMsSql = repoTransaction as RepoTransactionMsSql;
+						RepoTransaction repoTransactionMsSql = repoTransaction as RepoTransaction;
 						if (repoTransactionMsSql == null)
 						{
 							string message = "Wrong Repo transaction type is injected into MessageDispatchRepoFactory to be used with MSSQL.";
 							throw new ApplicationException(message);
 						}
-						return new DbRepository.ADO.MessageDispatchRepositoryMsSql(connectionString, repoTransactionMsSql);
+						return new DbRepository.ADO.MsSql.MessageDispatchRepository(connectionString, 
+							repoTransactionMsSql);
 					}
 				default:
 					{

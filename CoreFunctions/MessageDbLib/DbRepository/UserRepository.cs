@@ -10,21 +10,21 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace MessageDbLib.DbRepository.ADO
+namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-	public class UserRepositoryMsSql : IUserRepository
+	public class UserRepository : IUserRepository
 	{
 		protected readonly string connectionString;
 		protected readonly IRepoTransaction repoTransaction;
 		protected readonly bool transactionModeEnabled = false;
 		public virtual string TableName { get; protected set; } = "dbo.UserTable";
 
-		public UserRepositoryMsSql(string connectionString)
+		public UserRepository(string connectionString)
 		{
 			this.connectionString = connectionString;
 		}
 
-		public UserRepositoryMsSql(string connectionString, IRepoTransaction repoTransaction)
+		public UserRepository(string connectionString, IRepoTransaction repoTransaction)
 		{
 			this.connectionString = connectionString;
 			this.repoTransaction = repoTransaction;
@@ -47,7 +47,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing UserRepositoryMsSql.GetAllUsers", exception);
+				throw new RepoDbException("Error while executing UserRepository.GetAllUsers", exception);
 			}
 		}
 
@@ -66,7 +66,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing UserRepositoryMsSql.GetUserMatchingId", exception);
+				throw new RepoDbException("Error while executing UserRepository.GetUserMatchingId", exception);
 			}
 		}
 
@@ -98,7 +98,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing UserRepositoryMsSql.GetUserMatchingUsername", exception);
+				throw new RepoDbException("Error while executing UserRepository.GetUserMatchingUsername", exception);
 			}
 		}
 
@@ -130,7 +130,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing UserRepositoryMsSql.GetUserMatchingUsernameAndPassword", exception);
+				throw new RepoDbException("Error while executing UserRepository.GetUserMatchingUsernameAndPassword", exception);
 			}
 		}
 
@@ -239,7 +239,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing UserRepositoryMsSql.InsertUser", exception);
+				throw new RepoDbException("Error while executing UserRepository.InsertUser", exception);
 			}
 		}
 
@@ -346,7 +346,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing UserRepositoryMsSql.UpdateUser", exception);
+				throw new RepoDbException("Error while executing UserRepository.UpdateUser", exception);
 			}
 		}
 
@@ -446,7 +446,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing UserRepositoryMsSql.DeleteUser", exception);
+				throw new RepoDbException("Error while executing UserRepository.DeleteUser", exception);
 			}
 		}
 

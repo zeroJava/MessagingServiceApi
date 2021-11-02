@@ -1,5 +1,6 @@
-﻿using MessageDbCore.DbRepositoryInterfaces;
-using MessageDbCore.EntityClasses;
+﻿using AuthorisationServer.Access;
+using MessageDbCore.DbRepositoryInterfaces;
+using MessageDbCore.RepoEntity;
 using MessageDbCore.Repositories;
 using MessageDbLib.Configurations;
 using MessageDbLib.DbRepositoryFactories;
@@ -19,7 +20,7 @@ namespace AuthorisationServer.Authorisation
 			{
 				throw new ApplicationException("Could not find user matching Username and Password.");
 			}
-			MessageDbCore.EntityClasses.Authorisation authorisation = CreateAuthorisation(user.Id);
+			MessageDbCore.RepoEntity.Authorisation authorisation = CreateAuthorisation(user.Id);
 			PersistAuthorisation(authorisation);
 			return CreateAuthorisationResult(request, authorisation);
 		}
@@ -37,9 +38,9 @@ namespace AuthorisationServer.Authorisation
 			return user;
 		}
 
-		private MessageDbCore.EntityClasses.Authorisation CreateAuthorisation(long userId)
+		private MessageDbCore.RepoEntity.Authorisation CreateAuthorisation(long userId)
 		{
-			MessageDbCore.EntityClasses.Authorisation authorisation = new MessageDbCore.EntityClasses.Authorisation
+			MessageDbCore.RepoEntity.Authorisation authorisation = new MessageDbCore.RepoEntity.Authorisation
 			{
 				AuthorisationCode = Guid.NewGuid(),
 				StartTime = DateTime.Now,
@@ -49,7 +50,7 @@ namespace AuthorisationServer.Authorisation
 			return authorisation;
 		}
 
-		private void PersistAuthorisation(MessageDbCore.EntityClasses.Authorisation authorisation)
+		private void PersistAuthorisation(MessageDbCore.RepoEntity.Authorisation authorisation)
 		{
 			IAuthorisationRepository authorisationRepo = AuthorisationRepoFactory.GetAuthorisationRepository(DatabaseOption.DatabaseEngine,
 				DatabaseOption.DbConnectionString);
@@ -57,7 +58,7 @@ namespace AuthorisationServer.Authorisation
 		}
 
 		private AuthorisationGrant CreateAuthorisationResult(AuthorisationRequest request,
-			MessageDbCore.EntityClasses.Authorisation authorisation)
+			MessageDbCore.RepoEntity.Authorisation authorisation)
 		{
 			AuthorisationGrant grant = new AuthorisationGrant
 			{
@@ -66,6 +67,57 @@ namespace AuthorisationServer.Authorisation
 				Callback = request.Callback,
 			};
 			return grant;
+		}
+
+		public AccessToken GetAuthorisationCodeImplicit(AuthorisationRequest request)
+		{
+			User user = GetUserMatching(request.Username, request.Password);
+			if (user == null)
+			{
+				throw new ApplicationException("Could not find user matching Username and Password.");
+			}
+
+			MessageDbCore.RepoEntity.Access access = CreateAccess(user.Id, request.Scope,
+				user.UserName);
+			PersistAccess(access);
+
+			AccessToken accessToken = CreateAccessToken(access);
+			return accessToken;
+		}
+
+		private MessageDbCore.RepoEntity.Access CreateAccess(long userId, string[] scope, string name)
+		{
+			DateTime currentDateTime = DateTime.Now;
+			MessageDbCore.RepoEntity.Access access = new MessageDbCore.RepoEntity.Access
+			{
+				Organisation = name,
+				Token = Guid.NewGuid().ToString(),
+				UserId = userId,
+				StartTime = currentDateTime,
+				EndTime = DateTime.Now.AddYears(100),
+				Scope = scope,
+			};
+			return access;
+		}
+
+		private void PersistAccess(MessageDbCore.RepoEntity.Access access)
+		{
+			IAccessRepository accessRepo = AccessRepoFactory.GetAuthorisationRepository(DatabaseOption.DatabaseEngine,
+				DatabaseOption.DbConnectionString);
+			accessRepo.InsertAccess(access);
+		}
+
+		private AccessToken CreateAccessToken(MessageDbCore.RepoEntity.Access access)
+		{
+			AccessToken accessToken = new AccessToken
+			{
+				Organisation = access.Organisation,
+				Token = access.Token,
+				StartTime = access.StartTime,
+				EndTime = access.EndTime,
+				Scope = access.Scope,
+			};
+			return accessToken;
 		}
 	}
 }

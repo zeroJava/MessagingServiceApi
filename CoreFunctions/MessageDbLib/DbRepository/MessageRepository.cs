@@ -12,9 +12,9 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace MessageDbLib.DbRepository.ADO
+namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-	public class MessageRepositoryMsSql : IMessageRepository
+	public class MessageRepository : IMessageRepository
 	{
 		protected string connectionString;
 		protected readonly IRepoTransaction repoTransaction;
@@ -22,12 +22,12 @@ namespace MessageDbLib.DbRepository.ADO
 
 		public virtual string TableName { get; protected set; } = "messagedbo.MessageTable";
 
-		public MessageRepositoryMsSql(string connectionString)
+		public MessageRepository(string connectionString)
 		{
 			this.connectionString = connectionString;
 		}
 
-		public MessageRepositoryMsSql(string connectionString, IRepoTransaction repoTransaction)
+		public MessageRepository(string connectionString, IRepoTransaction repoTransaction)
 		{
 			this.connectionString = connectionString;
 			this.repoTransaction = repoTransaction;
@@ -49,7 +49,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageRepositoryMsSql.GetMessageMatchingId", exception);
+				throw new RepoDbException("Error while executing MessageRepository.GetMessageMatchingId", exception);
 			}
 		}
 
@@ -83,7 +83,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageRepositoryMsSql.GetAllMessages", exception);
+				throw new RepoDbException("Error while executing MessageRepository.GetAllMessages", exception);
 			}
 		}
 
@@ -102,7 +102,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageRepositoryMsSql.GetMessageMatchingText", exception);
+				throw new RepoDbException("Error while executing MessageRepository.GetMessageMatchingText", exception);
 			}
 		}
 
@@ -229,7 +229,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageRepositoryMsSql.InsertMessage", exception);
+				throw new RepoDbException("Error while executing MessageRepository.InsertMessage", exception);
 			}
 		}
 
@@ -386,7 +386,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageRepositoryMsSql.UpdateMessage", exception);
+				throw new RepoDbException("Error while executing MessageRepository.UpdateMessage", exception);
 			}
 		}
 
@@ -587,7 +587,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageRepositoryMsSql.DeleteMessage", exception);
+				throw new RepoDbException("Error while executing MessageRepository.DeleteMessage", exception);
 			}
 		}
 

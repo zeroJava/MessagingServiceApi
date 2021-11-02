@@ -2,8 +2,8 @@
 using Cryptography;
 using Newtonsoft.Json;
 using System;
-using AccessEnity = MessageDbCore.EntityClasses.Access;
-using UserEntity = MessageDbCore.EntityClasses.User;
+using AccessEnity = MessageDbCore.RepoEntity.Access;
+using UserEntity = MessageDbCore.RepoEntity.User;
 using MessageDbCore.Repositories;
 using MessageDbLib.DbRepositoryFactories;
 using MessageDbLib.Configurations;

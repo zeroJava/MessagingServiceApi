@@ -3,9 +3,9 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace MessageDbLib.DbRepository
+namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-	public class RepoTransactionMsSql : IRepoTransaction
+	public class RepoTransaction : IRepoTransaction
 	{
 		protected readonly string connectionString;
 		protected readonly SqlConnection sqlConnection;
@@ -29,7 +29,7 @@ namespace MessageDbLib.DbRepository
 			}
 		}
 
-		public RepoTransactionMsSql(string connectionString)
+		public RepoTransaction(string connectionString)
 		{
 			this.connectionString = connectionString;
 			this.sqlConnection = new SqlConnection(connectionString);

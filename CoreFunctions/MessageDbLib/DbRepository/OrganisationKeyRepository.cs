@@ -9,21 +9,21 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace MessageDbLib.DbRepository.ADO
+namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-	public class OrganisationKeyRepositoryMsSql : IOrganisationKeyRepository
+	public class OrganisationKeyRepository : IOrganisationKeyRepository
 	{
 		protected readonly string connectionString;
 		protected readonly IRepoTransaction repoTransaction;
 		protected readonly bool transactionModeEnabled = false;
 		public virtual string TableName { get; protected set; } = "dbo.OrganisationKeyTable";
 
-		public OrganisationKeyRepositoryMsSql(string connectionString)
+		public OrganisationKeyRepository(string connectionString)
 		{
 			this.connectionString = connectionString;
 		}
 
-		public OrganisationKeyRepositoryMsSql(string connectionString, IRepoTransaction repoTransaction)
+		public OrganisationKeyRepository(string connectionString, IRepoTransaction repoTransaction)
 		{
 			this.connectionString = connectionString;
 			this.repoTransaction = repoTransaction;
@@ -45,7 +45,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing OrganisationKeyRepositoryMsSql.GetOrganisationKeyMatchingName", exception);
+				throw new RepoDbException("Error while executing OrganisationKeyRepository.GetOrganisationKeyMatchingName", exception);
 			}
 		}
 
@@ -105,7 +105,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing OrganisationKeyRepositoryMsSql.InsertOrganisationKey", exception);
+				throw new RepoDbException("Error while executing OrganisationKeyRepository.InsertOrganisationKey", exception);
 			}
 		}
 
@@ -147,7 +147,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing OrganisationKeyRepositoryMsSql.UpdateOrganisationKey", exception);
+				throw new RepoDbException("Error while executing OrganisationKeyRepository.UpdateOrganisationKey", exception);
 			}
 		}
 
@@ -196,7 +196,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing OrganisationKeyRepositoryMsSql.DeleteOrganisationKey", exception);
+				throw new RepoDbException("Error while executing OrganisationKeyRepository.DeleteOrganisationKey", exception);
 			}
 		}
 

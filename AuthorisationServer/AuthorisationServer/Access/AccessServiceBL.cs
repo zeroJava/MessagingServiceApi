@@ -1,12 +1,12 @@
 ﻿using Cryptography;
-using MessageDbCore.EntityClasses;
+using MessageDbCore.RepoEntity;
 using MessageDbCore.Repositories;
 using MessageDbLib.Configurations;
 using MessageDbLib.DbRepositoryFactories;
 using Newtonsoft.Json;
 using System;
-using AuthorisationEntity = MessageDbCore.EntityClasses.Authorisation;
-using AccessEnity = MessageDbCore.EntityClasses.Access;
+using AuthorisationEntity = MessageDbCore.RepoEntity.Authorisation;
+using AccessEnity = MessageDbCore.RepoEntity.Access;
 using MessageDbCore.DbRepositoryInterfaces;
 
 namespace AuthorisationServer.Access

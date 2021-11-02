@@ -9,9 +9,9 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace MessageDbLib.DbRepository.ADO
+namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-	public class AuthorisationRepositoryMsSql : IAuthorisationRepository
+	public class AuthorisationRepository : IAuthorisationRepository
 	{
 		protected readonly string connectionString;
 		protected readonly IRepoTransaction repoTransaction;
@@ -19,12 +19,12 @@ namespace MessageDbLib.DbRepository.ADO
 
 		public virtual string TableName { get; protected set; } = "dbo.AuthorisationTable";
 
-		public AuthorisationRepositoryMsSql(string connectionString)
+		public AuthorisationRepository(string connectionString)
 		{
 			this.connectionString = connectionString;
 		}
 
-		public AuthorisationRepositoryMsSql(string connectionString, IRepoTransaction repoTransaction)
+		public AuthorisationRepository(string connectionString, IRepoTransaction repoTransaction)
 		{
 			this.connectionString = connectionString;
 			this.repoTransaction = repoTransaction;
@@ -46,7 +46,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AuthorisationRepositoryMsSql.GetAuthorisationMatchingAuthCode", exception);
+				throw new RepoDbException("Error while executing AuthorisationRepository.GetAuthorisationMatchingAuthCode", exception);
 			}
 		}
 
@@ -58,7 +58,8 @@ namespace MessageDbLib.DbRepository.ADO
 			};
 
 			string columns = GetSelectColumns();
-			string query = string.Format("SELECT {0} FROM {1} WHERE AUTHORISATIONCODE = {2}", columns,
+			string query = string.Format("SELECT {0} FROM {1} WHERE AUTHORISATIONCODE = {2}",
+				columns,
 				TableName,
 				AuthorisationParameter.AUTHORISATION_CODE);
 
@@ -80,7 +81,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AuthorisationRepositoryMsSql.GetAuthorisationMatchingId", exception);
+				throw new RepoDbException("Error while executing AuthorisationRepository.GetAuthorisationMatchingId", exception);
 			}
 		}
 
@@ -114,7 +115,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AuthorisationRepositoryMsSql.GetAuthorisationsGreaterThanEndTime", exception);
+				throw new RepoDbException("Error while executing AuthorisationRepository.GetAuthorisationsGreaterThanEndTime", exception);
 			}
 		}
 
@@ -146,7 +147,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AuthorisationRepositoryMsSql.InsertAuthorisation", exception);
+				throw new RepoDbException("Error while executing AuthorisationRepository.InsertAuthorisation", exception);
 			}
 		}
 
@@ -195,7 +196,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AuthorisationRepositoryMsSql.UpdateAuthorisation", exception);
+				throw new RepoDbException("Error while executing AuthorisationRepository.UpdateAuthorisation", exception);
 			}
 		}
 
@@ -241,7 +242,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AuthorisationRepositoryMsSql.DeleteAuthorisation", exception);
+				throw new RepoDbException("Error while executing AuthorisationRepository.DeleteAuthorisation", exception);
 			}
 		}
 

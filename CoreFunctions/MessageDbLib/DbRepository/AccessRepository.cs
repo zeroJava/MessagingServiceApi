@@ -9,9 +9,9 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace MessageDbLib.DbRepository.ADO
+namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-	public class AccessRepositoryMsSql : IAccessRepository
+	public class AccessRepository : IAccessRepository
 	{
 		protected readonly string connectionString;
 		protected readonly IRepoTransaction repoTransaction;
@@ -19,12 +19,12 @@ namespace MessageDbLib.DbRepository.ADO
 
 		public virtual string TableName { get; protected set; } = "dbo.AccessTable";
 
-		public AccessRepositoryMsSql(string connectionString)
+		public AccessRepository(string connectionString)
 		{
 			this.connectionString = connectionString;
 		}
 
-		public AccessRepositoryMsSql(string connectionString, IRepoTransaction repoTransaction)
+		public AccessRepository(string connectionString, IRepoTransaction repoTransaction)
 		{
 			this.connectionString = connectionString;
 			this.repoTransaction = repoTransaction;
@@ -46,7 +46,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AccessRepositoryMsSql.GetAccessMatchingToken", exception);
+				throw new RepoDbException("Error while executing AccessRepository.GetAccessMatchingToken", exception);
 			}
 		}
 
@@ -80,7 +80,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AccessRepositoryMsSql.GetAccessMatchingId", exception);
+				throw new RepoDbException("Error while executing AccessRepository.GetAccessMatchingId", exception);
 			}
 		}
 
@@ -185,7 +185,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AccessRepositoryMsSql.InsertAccess", exception);
+				throw new RepoDbException("Error while executing AccessRepository.InsertAccess", exception);
 			}
 		}
 
@@ -252,7 +252,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AccessRepositoryMsSql.UpdateAccess", exception);
+				throw new RepoDbException("Error while executing AccessRepository.UpdateAccess", exception);
 			}
 		}
 
@@ -325,7 +325,7 @@ namespace MessageDbLib.DbRepository.ADO
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AccessRepositoryMsSql.DeleteAccess", exception);
+				throw new RepoDbException("Error while executing AccessRepository.DeleteAccess", exception);
 			}
 		}
 

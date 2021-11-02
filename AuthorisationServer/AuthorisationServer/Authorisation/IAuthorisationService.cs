@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AuthorisationServer.Access;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -13,5 +14,8 @@ namespace AuthorisationServer.Authorisation
     {
         [OperationContract]
         AuthorisationGrant GetAuthorisationCode(AuthorisationRequest request);
+
+        [OperationContract]
+        AccessToken GetAuthorisationCodeImplicit(AuthorisationRequest request);
     }
 }

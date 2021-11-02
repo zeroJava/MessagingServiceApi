@@ -108,9 +108,9 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
         private void AssignMessagesToDispatch(List<MessageDispatch> messageDispatches, long[] messageIds)
         {
             IMessageRepository messageRepo = GetMessageRepository();
-            List<Message> messages = messageRepo.GetAllMessages().Where(m => messageIds.Any(mi => mi == m.Id))
+            List<Message> messages = messageRepo.GetAllMessages().Where(m => messageIds
+                .Any(mi => mi == m.Id))
                 .ToList();
-
             if (messages == null)
             {
                 return;

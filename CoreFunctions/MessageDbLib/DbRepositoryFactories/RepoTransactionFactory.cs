@@ -1,6 +1,6 @@
 ﻿using MessageDbCore.Repositories;
 using MessageDbLib.Constants;
-using MessageDbLib.DbRepository;
+using MessageDbLib.DbRepository.ADO.MsSql;
 using System;
 
 namespace MessageDbLib.DbRepositoryFactories
@@ -13,7 +13,7 @@ namespace MessageDbLib.DbRepositoryFactories
 			{
 				case DatabaseEngineConstant.MSSQLADODOTNET:
 					{
-						return new RepoTransactionMsSql(connectionString);
+						return new RepoTransaction(connectionString);
 					}
 				default:
 					{

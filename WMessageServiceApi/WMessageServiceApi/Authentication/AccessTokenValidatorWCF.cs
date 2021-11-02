@@ -8,17 +8,12 @@ namespace WMessageServiceApi.Authentication
         public TokenValidationResult IsTokenValid(string encryptedToken)
         {
             TokenValidationResult tokenResult = new TokenValidationResult();
-            try
-            {
-                ValidationResponse result = Validate(encryptedToken);
-                tokenResult.IsValidationSuccess = result.ValidationIsSuccess;
-                tokenResult.Message = result.Message;
-                tokenResult.Status = result.Status;
-            }
-            catch (Exception exception)
-            {
-                throw;
-            }
+
+            ValidationResponse result = Validate(encryptedToken);
+            tokenResult.IsValidationSuccess = result.ValidationIsSuccess;
+            tokenResult.Message = result.Message;
+            tokenResult.Status = result.Status;
+
             return tokenResult;
         }
 
@@ -32,17 +27,12 @@ namespace WMessageServiceApi.Authentication
         public TokenValidationResult IsUserCredentialValid(string encryptedUserCred)
         {
             TokenValidationResult tokenResult = new TokenValidationResult();
-            try
-            {
-                ValidationResponse result = ValidateUserCredential(encryptedUserCred);
-                tokenResult.IsValidationSuccess = result.ValidationIsSuccess;
-                tokenResult.Message = result.Message;
-                tokenResult.Status = result.Status;
-            }
-            catch (Exception exception)
-            {
-                throw;
-            }
+
+            ValidationResponse result = ValidateUserCredential(encryptedUserCred);
+            tokenResult.IsValidationSuccess = result.ValidationIsSuccess;
+            tokenResult.Message = result.Message;
+            tokenResult.Status = result.Status;
+
             return tokenResult;
         }
 
