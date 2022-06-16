@@ -8,34 +8,34 @@ using WMessageServiceApi.Messaging.ServiceInterfaces;
 
 namespace WMessageServiceApi.Messaging.Services
 {
-    public class RetrieveUserService : IRetrieveUserService
-    {
-        public List<UserInfoContract> GetAllUsers()
-        {
-            try
-            {
-                RetrieveUserServiceBl retrieveUserBL = new RetrieveUserServiceBl();
-                return retrieveUserBL.GetAllUsers();
-            }
-            catch (Exception exception)
-            {
-                ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
-                throw new FaultException<ErrorContract>(error);
-            }
-        }
+	public class RetrieveUserService : IRetrieveUserService
+	{
+		public List<UserInfoContract> GetAllUsers()
+		{
+			try
+			{
+				RetrieveUserServiceFacade retrieveUserBL = new RetrieveUserServiceFacade();
+				return retrieveUserBL.GetAllUsers();
+			}
+			catch (Exception exception)
+			{
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
+				throw new FaultException<ErrorContract>(error);
+			}
+		}
 
-        public UserInfoContract GetUserMatchingUsernamePassword(string username, string password)
-        {
-            try
-            {
-                RetrieveUserServiceBl retrieveUserBL = new RetrieveUserServiceBl();
-                return retrieveUserBL.GetUserMatchingUsernamePassword(username, password);
-            }
-            catch (Exception exception)
-            {
-                ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
-                throw new FaultException<ErrorContract>(error);
-            }
-        }
-    }
+		public UserInfoContract GetUserMatchingUsernamePassword(string username, string password)
+		{
+			try
+			{
+				RetrieveUserServiceFacade retrieveUserBL = new RetrieveUserServiceFacade();
+				return retrieveUserBL.GetUserMatchingUsernamePassword(username, password);
+			}
+			catch (Exception exception)
+			{
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
+				throw new FaultException<ErrorContract>(error);
+			}
+		}
+	}
 }

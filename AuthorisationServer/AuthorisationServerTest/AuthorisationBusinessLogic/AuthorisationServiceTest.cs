@@ -31,7 +31,7 @@ namespace WMessageServiceApiTest.AuthorisationBusinessLogic
 				Password = "adtest",
 				Scope = new string[0],
 			};
-			AuthorisationServiceBl authorisationService = new AuthorisationServiceBl();
+			AuthorisationServiceFacade authorisationService = new AuthorisationServiceFacade();
 			AuthorisationGrant grant = authorisationService.GetAuthorisationCode(request);
 			return grant;
 		}
@@ -54,7 +54,7 @@ namespace WMessageServiceApiTest.AuthorisationBusinessLogic
 				Password = "adtest",
 				Scope = new string[0],
 			};
-			AuthorisationServiceBl authorisationService = new AuthorisationServiceBl();
+			AuthorisationServiceFacade authorisationService = new AuthorisationServiceFacade();
 			AccessToken accessToken = authorisationService.GetAuthorisationCodeImplicit(request);
 			return accessToken;
 		}

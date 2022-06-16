@@ -1,9 +1,5 @@
 ﻿using MessageDbCore.Enumerations;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MessageDbCore.Exceptions
 {
@@ -17,7 +13,7 @@ namespace MessageDbCore.Exceptions
 		}
 
 		public QueryResultException(string message, QueryFailReason failReason,
-			Exception innerException) : base (message, innerException)
+			Exception innerException) : base(message, innerException)
 		{
 			FailReason = failReason;
 		}

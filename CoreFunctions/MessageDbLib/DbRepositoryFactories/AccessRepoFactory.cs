@@ -14,7 +14,7 @@ namespace MessageDbLib.DbRepositoryFactories
 			{
 				case DatabaseEngineConstant.MSSQLADODOTNET:
 					{
-						IAccessRepository accessRepository = 
+						IAccessRepository accessRepository =
 							new DbRepository.ADO.MsSql.AccessRepository(connectionString);
 						return accessRepository;
 					}
@@ -40,7 +40,7 @@ namespace MessageDbLib.DbRepositoryFactories
 							string message = "Wrong Repo transaction type is injected into AccessRepoFactory to be used with MSSQL.";
 							throw new ApplicationException(message);
 						}
-						IAccessRepository authorisationRepository = 
+						IAccessRepository authorisationRepository =
 							new DbRepository.ADO.MsSql.AccessRepository(connectionString, repoTransaction);
 						return authorisationRepository;
 					}

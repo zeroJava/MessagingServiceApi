@@ -1,6 +1,5 @@
 ﻿using MessageDbCore.Repositories;
 using MessageDbLib.Constants;
-using MessageDbLib.DbRepository;
 using MessageDbLib.DbRepository.ADO.MsSql;
 using System;
 
@@ -15,7 +14,7 @@ namespace MessageDbLib.DbRepositoryFactories
 			{
 				case DatabaseEngineConstant.MSSQLADODOTNET:
 					{
-						IOrganisationKeyRepository organisationKeyRepository = 
+						IOrganisationKeyRepository organisationKeyRepository =
 							new OrganisationKeyRepository(connectionString);
 						return organisationKeyRepository;
 					}

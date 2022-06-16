@@ -7,25 +7,25 @@ using WMessageServiceApi.Messaging.ServiceInterfaces;
 
 namespace WMessageServiceApi.Messaging.Services
 {
-    public class UpdateUserDataService : IUpdateUserService
-    {
-        public void UpdateUser(NewUserDataContract userContract)
-        {
-            try
-            {
-                UpdateUserDataServiceBl updateUserDataBL = new UpdateUserDataServiceBl();
-                updateUserDataBL.UpdateUser(userContract);
-            }
-            catch (Exception exception)
-            {
-                ThrowEntityErrorMessage(exception.Message, StatusList.PROCESS_ERROR);
-            }
-        }
+	public class UpdateUserDataService : IUpdateUserService
+	{
+		public void UpdateUser(NewUserDataContract userContract)
+		{
+			try
+			{
+				UpdateUserDataServiceFacade updateUserDataBL = new UpdateUserDataServiceFacade();
+				updateUserDataBL.UpdateUser(userContract);
+			}
+			catch (Exception exception)
+			{
+				ThrowEntityErrorMessage(exception.Message, StatusList.PROCESS_ERROR);
+			}
+		}
 
-        private void ThrowEntityErrorMessage(string message, int status)
-        {
-            ErrorContract error = new ErrorContract(message, status);
-            throw new FaultException<ErrorContract>(error);
-        }
-    }
+		private void ThrowEntityErrorMessage(string message, int status)
+		{
+			ErrorContract error = new ErrorContract(message, status);
+			throw new FaultException<ErrorContract>(error);
+		}
+	}
 }

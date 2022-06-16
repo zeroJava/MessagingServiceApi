@@ -39,7 +39,7 @@ namespace MessageDbLib.DbRepositoryFactories
 							string message = "Wrong Repo transaction type is injected into MessageDispatchRepoFactory to be used with MSSQL.";
 							throw new ApplicationException(message);
 						}
-						return new DbRepository.ADO.MsSql.MessageDispatchRepository(connectionString, 
+						return new DbRepository.ADO.MsSql.MessageDispatchRepository(connectionString,
 							repoTransactionMsSql);
 					}
 				default:

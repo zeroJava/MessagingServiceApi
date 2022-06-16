@@ -364,3 +364,5 @@ MessageDbCore/Properties/AssemblyInfo.cs
 # Ingore test folder
 # WMessageServiceApiTest/Properties/AssemblyInfo.cs
 WMessageServiceApiTest/
+AuthorisationServer/AuthorisationServer/errorlogfile.txt
+AuthorisationServer/AuthorisationServer/infologfile.txt

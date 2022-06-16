@@ -3,6 +3,7 @@ using MessageDbCore.RepoEntity;
 using MessageDbCore.Repositories;
 using MessageDbLib.Constants.TableConstants;
 using MessageDbLib.DbEngine;
+using MessageDbLib.Extensions;
 using MessageDbLib.Utility;
 using System;
 using System.Collections.Generic;
@@ -173,42 +174,44 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 		}
 
-		private void PopulateStandardUser(User user, DbDataReader dataReader)
+		private void PopulateStandardUser(User user, DbDataReader reader)
 		{
-			if (dataReader[UserColumn.ID] != null &&
-				long.TryParse(dataReader[UserColumn.ID].ToString(), out long id))
+			/*if (reader[UserColumn.ID] != null &&
+				long.TryParse(reader[UserColumn.ID].ToString(), out long id))
 			{
 				user.Id = id;
 			}
-			if (dataReader[UserColumn.USERNAME] != null)
+			if (reader[UserColumn.USERNAME] != null)
 			{
-				user.UserName = dataReader[UserColumn.USERNAME].ToString();
+				user.UserName = reader[UserColumn.USERNAME].ToString();
 			}
-			if (dataReader[UserColumn.PASSWORD] != null)
+			if (reader[UserColumn.PASSWORD] != null)
 			{
-				user.Password = dataReader[UserColumn.PASSWORD].ToString();
+				user.Password = reader[UserColumn.PASSWORD].ToString();
 			}
-			if (dataReader[UserColumn.EMAIL_ADDRESS] != null)
+			if (reader[UserColumn.EMAIL_ADDRESS] != null)
 			{
-				user.EmailAddress = dataReader[UserColumn.EMAIL_ADDRESS].ToString();
+				user.EmailAddress = reader[UserColumn.EMAIL_ADDRESS].ToString();
 			}
-			if (dataReader[UserColumn.FIRSTNAME] != null)
+			if (reader[UserColumn.FIRSTNAME] != null)
 			{
-				user.FirstName = dataReader[UserColumn.FIRSTNAME].ToString();
+				user.FirstName = reader[UserColumn.FIRSTNAME].ToString();
 			}
-			if (dataReader[UserColumn.SURNAME] != null)
+			if (reader[UserColumn.SURNAME] != null)
 			{
-				user.Surname = dataReader[UserColumn.SURNAME].ToString();
+				user.Surname = reader[UserColumn.SURNAME].ToString();
 			}
-			if (dataReader[UserColumn.DOB] != null &&
-				DateTime.TryParse(dataReader[UserColumn.DOB].ToString(), out DateTime dob))
+			if (reader[UserColumn.DOB] != null &&
+				DateTime.TryParse(reader[UserColumn.DOB].ToString(), out DateTime dob))
 			{
 				user.DOB = dob;
 			}
-			if (dataReader[UserColumn.GENDER] != null)
+			if (reader[UserColumn.GENDER] != null)
 			{
-				user.Gender = dataReader[UserColumn.GENDER].ToString();
-			}
+				user.Gender = reader[UserColumn.GENDER].ToString();
+			}*/
+			user.Id = reader.GetLongValue(UserParameter.ID);
+			user.UserName = reader.GetStrValue(UserColumn.USERNAME);
 		}
 
 		private void PopulateAdvancedUser(AdvancedUser advancedUser, DbDataReader dataReader)

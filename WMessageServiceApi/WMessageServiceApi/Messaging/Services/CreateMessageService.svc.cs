@@ -10,46 +10,46 @@ using WMessageServiceApi.Messaging.ServiceInterfaces;
 namespace WMessageServiceApi.Messaging.Services
 {
 	public class CreateMessageService : ICreateMessageService
-    {
-        public MessageRequestTokenContract CreateMessage(MessageContract message)
-        {
-            try
-            {
-                return new CreateMessageBl().CreateMessage(message);
-            }
-            catch (TokenValidationException exception)
-            {
-                string exMessage = "Encontered a token validation error when trying to create a message.";
-                
-                LogError(exMessage + "\n" + exception.ToString());
+	{
+		public MessageRequestTokenContract CreateMessage(MessageContract message)
+		{
+			try
+			{
+				return new CreateMessageFacade().CreateMessage(message);
+			}
+			catch (TokenValidationException exception)
+			{
+				string exMessage = "Encontered a token validation error when trying to create a message.";
 
-                ErrorContract error = new ErrorContract(exMessage, StatusList.VALIDATION_ERROR);
-                throw new FaultException<ErrorContract>(error);
-            }
-            catch (Exception exception)
-            {
-                string exMessage = "Encontered an error when trying to create a message.";
+				LogError(exMessage + "\n" + exception.ToString());
 
-                LogError(exMessage + "\n" + exception.ToString());
+				ErrorContract error = new ErrorContract(exMessage, StatusList.VALIDATION_ERROR);
+				throw new FaultException<ErrorContract>(error);
+			}
+			catch (Exception exception)
+			{
+				string exMessage = "Encontered an error when trying to create a message.";
 
-                MessageRequestTokenContract tokenContract = CreateMessageStateTokenContract(MessageReceivedState.FailedToProcessRequest,
-                    exception.Message);
-                throw new FaultException<MessageRequestTokenContract>(tokenContract);
-            }
-        }
+				LogError(exMessage + "\n" + exception.ToString());
 
-        private MessageRequestTokenContract CreateMessageStateTokenContract(MessageReceivedState recievedState, string message)
-        {
-            return new MessageRequestTokenContract
-            {
-                MessageRecievedState = recievedState,
-                Message = message
-            };
-        }
+				MessageRequestTokenContract tokenContract = CreateMessageStateTokenContract(MessageReceivedState.FailedToProcessRequest,
+					 exception.Message);
+				throw new FaultException<MessageRequestTokenContract>(tokenContract);
+			}
+		}
 
-        private void LogError(string message)
-        {
-            Logging.AppLog.LogError(message);
-        }
-    }
+		private MessageRequestTokenContract CreateMessageStateTokenContract(MessageReceivedState recievedState, string message)
+		{
+			return new MessageRequestTokenContract
+			{
+				MessageRecievedState = recievedState,
+				Message = message
+			};
+		}
+
+		private void LogError(string message)
+		{
+			Logging.AppLog.LogError(message);
+		}
+	}
 }
