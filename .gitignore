@@ -366,3 +366,5 @@ MessageDbCore/Properties/AssemblyInfo.cs
 WMessageServiceApiTest/
 AuthorisationServer/AuthorisationServer/errorlogfile.txt
 AuthorisationServer/AuthorisationServer/infologfile.txt
+WMessageServiceApi/.editorconfig
+WMessageServiceApi/WMessageServiceApi/.editorconfig

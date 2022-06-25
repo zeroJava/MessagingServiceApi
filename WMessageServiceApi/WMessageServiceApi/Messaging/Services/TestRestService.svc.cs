@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.ServiceModel.Activation;
 using WMessageServiceApi.Messaging.ServiceInterfaces;
 
@@ -16,9 +15,9 @@ namespace WMessageServiceApi.Messaging.Services
 				DateTime.Now.ToString());
 			Write(message);
 			return new RValue
-         {
+			{
 				Value = message,
-         };
+			};
 		}
 
 		public void PostTest()

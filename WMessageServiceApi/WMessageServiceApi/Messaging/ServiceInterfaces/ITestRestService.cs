@@ -8,14 +8,14 @@ namespace WMessageServiceApi.Messaging.ServiceInterfaces
 	public interface ITestRestService
 	{
 		[OperationContract]
-		[WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, 
-			ResponseFormat = WebMessageFormat.Json, 
-			BodyStyle = WebMessageBodyStyle.Wrapped, 
+		[WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json,
+			ResponseFormat = WebMessageFormat.Json,
+			BodyStyle = WebMessageBodyStyle.Wrapped,
 			UriTemplate = "PostTest")]
 		void PostTest();
 
 		[OperationContract]
-		[WebInvoke(Method = "*", RequestFormat = WebMessageFormat.Json, 
+		[WebInvoke(Method = "*", RequestFormat = WebMessageFormat.Json,
 			ResponseFormat = WebMessageFormat.Json,
 			BodyStyle = WebMessageBodyStyle.Wrapped,
 			UriTemplate = "PostTestTwo")]
@@ -23,7 +23,7 @@ namespace WMessageServiceApi.Messaging.ServiceInterfaces
 
 		[OperationContract]
 		[WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json,
-			ResponseFormat = WebMessageFormat.Json, 
+			ResponseFormat = WebMessageFormat.Json,
 			BodyStyle = WebMessageBodyStyle.Wrapped,
 			UriTemplate = "PostTestThree")]
 		void PostTestThree(string number, int intNumber);
@@ -38,8 +38,8 @@ namespace WMessageServiceApi.Messaging.ServiceInterfaces
 
 	[DataContract]
 	public class RValue
-   {
+	{
 		[DataMember]
-		public string Value { get; set; }	
-   }
+		public string Value { get; set; }
+	}
 }

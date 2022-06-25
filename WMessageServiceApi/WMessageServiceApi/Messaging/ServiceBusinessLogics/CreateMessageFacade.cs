@@ -12,139 +12,139 @@ using WMessageServiceApi.Messaging.DataEnumerations;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-   public class CreateMessageFacade
-   {
-      public MessageRequestTokenContract CreateMessage(IMessageContract message)
-      {
-         ValidateAccessToken(message.AccessToken);
+	public class CreateMessageFacade
+	{
+		public MessageRequestTokenContract CreateMessage(IMessageContract message)
+		{
+			ValidateAccessToken(message.AccessToken);
 
-         if (message.EmailAccounts == null || message.EmailAccounts.Count <= 0)
-         {
-            throw new InvalidOperationException("Message contract does not have ant emails attahed.");
-         }
+			if (message.EmailAccounts == null || message.EmailAccounts.Count <= 0)
+			{
+				throw new InvalidOperationException("Message contract does not have ant emails attahed.");
+			}
 
-         LogInfo(string.Format("Going to create message. Message content\n{0}",
-            message.Message));
-         Message newMessage = CreateNewMessage(message);
+			LogInfo(string.Format("Going to create message. Message content\n{0}",
+				message.Message));
+			Message newMessage = CreateNewMessage(message);
 
-         //PersistMessage(newMessage);
-         //CreateMessageDispatch(message, newMessage);
+			//PersistMessage(newMessage);
+			//CreateMessageDispatch(message, newMessage);
 
-         ProcessNewMessage(message, newMessage);
-         //PersistMessageToMongoDbService(newMessage);
+			ProcessNewMessage(message, newMessage);
+			//PersistMessageToMongoDbService(newMessage);
 
-         return CreateMessageStateTokenContract(MessageReceivedState.AcknowledgedRequest, "Message was successfully acknowledged and persisted in our system.");
-      }
+			return CreateMessageStateTokenContract(MessageReceivedState.AcknowledgedRequest, "Message was successfully acknowledged and persisted in our system.");
+		}
 
-      private void ValidateAccessToken(string encryptedToken)
-      {
-         string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
+		private void ValidateAccessToken(string encryptedToken)
+		{
+			string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
 
-         IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
-         TokenValidationResult result = tokenValidator.IsTokenValid(encryptedToken);
+			IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
+			TokenValidationResult result = tokenValidator.IsTokenValid(encryptedToken);
 
-         if (!result.IsValidationSuccess)
-         {
-            throw new TokenValidationException(result.Message, result.Status);
-         }
-      }
+			if (!result.IsValidationSuccess)
+			{
+				throw new TokenValidationException(result.Message, result.Status);
+			}
+		}
 
-      private MessageRequestTokenContract CreateMessageStateTokenContract(
-         MessageReceivedState recievedState,
-         string message)
-      {
-         return new MessageRequestTokenContract
-         {
-            MessageRecievedState = recievedState,
-            Message = message
-         };
-      }
+		private MessageRequestTokenContract CreateMessageStateTokenContract(
+			MessageReceivedState recievedState,
+			string message)
+		{
+			return new MessageRequestTokenContract
+			{
+				MessageRecievedState = recievedState,
+				Message = message
+			};
+		}
 
-      private Message CreateNewMessage(IMessageContract messageContract)
-      {
-         User user = RetrieveUser(messageContract.UserName);
-         Message newMessage = new Message
-         {
-            MessageText = messageContract.Message,
-            SenderId = user.Id,
-            SenderEmailAddress = user.EmailAddress,
-            MessageCreated = messageContract.MessageCreated
-         };
-         return newMessage;
-      }
+		private Message CreateNewMessage(IMessageContract messageContract)
+		{
+			User user = RetrieveUser(messageContract.UserName);
+			Message newMessage = new Message
+			{
+				MessageText = messageContract.Message,
+				SenderId = user.Id,
+				SenderEmailAddress = user.EmailAddress,
+				MessageCreated = messageContract.MessageCreated
+			};
+			return newMessage;
+		}
 
-      private User RetrieveUser(string userName)
-      {
-         IUserRepository userRepo = UserRepoFactory.GetUserRepository(
-            DatabaseOption.DatabaseEngine,
-            DatabaseOption.DbConnectionString);
-         User user = userRepo.GetUserMatchingUsername(userName);
-         if (user == null)
-         {
-            throw new InvalidOperationException("Sender could not be found in our current repo");
-         }
-         return user;
-      }
+		private User RetrieveUser(string userName)
+		{
+			IUserRepository userRepo = UserRepoFactory.GetUserRepository(
+				DatabaseOption.DatabaseEngine,
+				DatabaseOption.DbConnectionString);
+			User user = userRepo.GetUserMatchingUsername(userName);
+			if (user == null)
+			{
+				throw new InvalidOperationException("Sender could not be found in our current repo");
+			}
+			return user;
+		}
 
-      private void ProcessNewMessage(IMessageContract messageContract,
-         Message message)
-      {
-         using (var repoTransaction = RepoTransactionFactory.GetRepoTransaction(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString))
-         {
-            try
-            {
-               repoTransaction.BeginTransaction();
-               PersistMessage(message, repoTransaction);
-               ProcessMessageDispatch(messageContract, message, repoTransaction);
-               repoTransaction.Commit();
-            }
-            catch (Exception exception)
-            {
-               var logMessage = $"Unabled to process new message request\n" +
-                  $"{exception}";
-               LogError("Unable to process new message request");
-               repoTransaction.Callback();
-               throw;
-            }
-         }
-      }
+		private void ProcessNewMessage(IMessageContract messageContract,
+			Message message)
+		{
+			using (var repoTransaction = RepoTransactionFactory.GetRepoTransaction(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString))
+			{
+				try
+				{
+					repoTransaction.BeginTransaction();
+					PersistMessage(message, repoTransaction);
+					ProcessMessageDispatch(messageContract, message, repoTransaction);
+					repoTransaction.Commit();
+				}
+				catch (Exception exception)
+				{
+					var logMessage = $"Unabled to process new message request\n" +
+						$"{exception}";
+					LogError("Unable to process new message request");
+					repoTransaction.Callback();
+					throw;
+				}
+			}
+		}
 
-      private void PersistMessage(Message message,
-         IRepoTransaction repoTransaction)
-      {
-         DatabaseEngineConstant databaseEngine = DatabaseOption.DatabaseEngine;
-         var messageRepo = MessageRepoFactory.GetMessageRepository(databaseEngine, DatabaseOption.DbConnectionString, 
-            repoTransaction);
-         messageRepo.InsertMessage(message);
-         LogInfo("Message persisting was successful");
-      }
+		private void PersistMessage(Message message,
+			IRepoTransaction repoTransaction)
+		{
+			DatabaseEngineConstant databaseEngine = DatabaseOption.DatabaseEngine;
+			var messageRepo = MessageRepoFactory.GetMessageRepository(databaseEngine, DatabaseOption.DbConnectionString,
+				repoTransaction);
+			messageRepo.InsertMessage(message);
+			LogInfo("Message persisting was successful");
+		}
 
-      private void ProcessMessageDispatch(IMessageContract messageContract,
-         Message message,
-         IRepoTransaction repoTransaction)
-      {
-         foreach (var emailAddress in messageContract.EmailAccounts)
-         {
-            MessageDispatch messageDispatch = new MessageDispatch
-            {
-               EmailAddress = emailAddress,
-               MessageId = message.Id,
-               MessageReceived = false
-            };
-            PersistMessagedispatch(messageDispatch, repoTransaction);
-         }
-      }
+		private void ProcessMessageDispatch(IMessageContract messageContract,
+			Message message,
+			IRepoTransaction repoTransaction)
+		{
+			foreach (var emailAddress in messageContract.EmailAccounts)
+			{
+				MessageDispatch messageDispatch = new MessageDispatch
+				{
+					EmailAddress = emailAddress,
+					MessageId = message.Id,
+					MessageReceived = false
+				};
+				PersistMessagedispatch(messageDispatch, repoTransaction);
+			}
+		}
 
-      private void PersistMessagedispatch(MessageDispatch messageDispatch,
-         IRepoTransaction repoTransaction)
-      {
-         var dispatchRepo = MessageDispatchRepoFactory.GetDispatchRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString,
-            repoTransaction);
-         dispatchRepo.InsertDispatch(messageDispatch);
-         LogInfo("Message-Dispatch persisting was successful");
-      }
+		private void PersistMessagedispatch(MessageDispatch messageDispatch,
+			IRepoTransaction repoTransaction)
+		{
+			var dispatchRepo = MessageDispatchRepoFactory.GetDispatchRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString,
+				repoTransaction);
+			dispatchRepo.InsertDispatch(messageDispatch);
+			LogInfo("Message-Dispatch persisting was successful");
+		}
 
-      /*private void PersistMessageToMongoDbService(Message message)
+		/*private void PersistMessageToMongoDbService(Message message)
 	 {
 		 try
 		 {
@@ -165,14 +165,14 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		 }
 	 }*/
 
-      private void LogError(string message)
-      {
-         AppLog.LogError(message);
-      }
+		private void LogError(string message)
+		{
+			AppLog.LogError(message);
+		}
 
-      private void LogInfo(string message)
-      {
-         AppLog.LogInfo(message + ".");
-      }
-   }
+		private void LogInfo(string message)
+		{
+			AppLog.LogInfo(message + ".");
+		}
+	}
 }

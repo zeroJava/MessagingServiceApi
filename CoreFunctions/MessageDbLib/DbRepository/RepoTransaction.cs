@@ -5,119 +5,119 @@ using System.Data.SqlClient;
 
 namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-   public class RepoTransaction : IRepoTransaction
-   {
-      protected readonly string connectionString;
-      protected readonly SqlConnection sqlConnection;
-      protected SqlTransaction sqlTransaction;
+	public class RepoTransaction : IRepoTransaction
+	{
+		protected readonly string connectionString;
+		protected readonly SqlConnection sqlConnection;
+		protected SqlTransaction sqlTransaction;
 
-      public bool TransactionInvoked { get; protected set; }
+		public bool TransactionInvoked { get; protected set; }
 
-      public IDbConnection DbConnection
-      {
-         get
-         {
-            return sqlConnection;
-         }
-      }
+		public IDbConnection DbConnection
+		{
+			get
+			{
+				return sqlConnection;
+			}
+		}
 
-      public IDbTransaction DbTransaction
-      {
-         get
-         {
-            return sqlTransaction;
-         }
-      }
+		public IDbTransaction DbTransaction
+		{
+			get
+			{
+				return sqlTransaction;
+			}
+		}
 
-      public RepoTransaction(string connectionString)
-      {
-         this.connectionString = connectionString;
-         this.sqlConnection = new SqlConnection(connectionString);
-      }
+		public RepoTransaction(string connectionString)
+		{
+			this.connectionString = connectionString;
+			this.sqlConnection = new SqlConnection(connectionString);
+		}
 
-      public void BeginTransaction()
-      {
-         if (sqlConnection == null)
-         {
-            return;
-         }
-         OpenConnection(sqlConnection);
-         sqlTransaction = sqlConnection.BeginTransaction();
-         TransactionInvoked = true;
-      }
+		public void BeginTransaction()
+		{
+			if (sqlConnection == null)
+			{
+				return;
+			}
+			OpenConnection(sqlConnection);
+			sqlTransaction = sqlConnection.BeginTransaction();
+			TransactionInvoked = true;
+		}
 
-      protected void OpenConnection(SqlConnection sqlConnection)
-      {
-         if (sqlConnection.State == ConnectionState.Closed)
-         {
-            sqlConnection.Open();
-         }
-         else if (sqlConnection.State == ConnectionState.Broken)
-         {
-            sqlConnection.Close();
-            sqlConnection.Open();
-         }
-      }
+		protected void OpenConnection(SqlConnection sqlConnection)
+		{
+			if (sqlConnection.State == ConnectionState.Closed)
+			{
+				sqlConnection.Open();
+			}
+			else if (sqlConnection.State == ConnectionState.Broken)
+			{
+				sqlConnection.Close();
+				sqlConnection.Open();
+			}
+		}
 
-      public void Callback()
-      {
-         try
-         {
-            if (sqlTransaction == null)
-            {
-               return;
-            }
-            sqlTransaction.Rollback();
-         }
-         catch (Exception exception)
-         {
-            Console.WriteLine(exception.ToString());
-         }
-      }
+		public void Callback()
+		{
+			try
+			{
+				if (sqlTransaction == null)
+				{
+					return;
+				}
+				sqlTransaction.Rollback();
+			}
+			catch (Exception exception)
+			{
+				Console.WriteLine(exception.ToString());
+			}
+		}
 
-      public void Callback(string transactionName)
-      {
-         try
-         {
-            if (sqlTransaction == null)
-            {
-               return;
-            }
-            sqlTransaction.Rollback(transactionName);
-         }
-         catch (Exception exception)
-         {
-            Console.WriteLine(exception.ToString());
-         }
-      }
+		public void Callback(string transactionName)
+		{
+			try
+			{
+				if (sqlTransaction == null)
+				{
+					return;
+				}
+				sqlTransaction.Rollback(transactionName);
+			}
+			catch (Exception exception)
+			{
+				Console.WriteLine(exception.ToString());
+			}
+		}
 
-      public void Commit()
-      {
-         if (sqlTransaction == null)
-         {
-            return;
-         }
-         sqlTransaction.Commit();
-      }
+		public void Commit()
+		{
+			if (sqlTransaction == null)
+			{
+				return;
+			}
+			sqlTransaction.Commit();
+		}
 
-      public void Dispose()
-      {
-         try
-         {
-            if (sqlTransaction != null)
-            {
-               sqlTransaction.Dispose();
-            }
-            if (sqlConnection != null)
-            {
-               sqlConnection.Close();
-               sqlConnection.Dispose();
-            }
-         }
-         catch (Exception exception)
-         {
-            Console.WriteLine(exception.ToString());
-         }
-      }
-   }
+		public void Dispose()
+		{
+			try
+			{
+				if (sqlTransaction != null)
+				{
+					sqlTransaction.Dispose();
+				}
+				if (sqlConnection != null)
+				{
+					sqlConnection.Close();
+					sqlConnection.Dispose();
+				}
+			}
+			catch (Exception exception)
+			{
+				Console.WriteLine(exception.ToString());
+			}
+		}
+	}
 }
