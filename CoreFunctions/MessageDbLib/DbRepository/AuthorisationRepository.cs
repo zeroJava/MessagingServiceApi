@@ -1,13 +1,15 @@
 ﻿using MessageDbCore.RepoEntity;
 using MessageDbCore.Repositories;
-using MessageDbLib.Constants.TableConstants;
 using MessageDbLib.DbEngine;
+using MessageDbLib.Extensions;
 using MessageDbLib.Utility;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
+using Prmetr = MessageDbLib.Constants.TableConstants.AuthorisationParameter;
+using Column = MessageDbLib.Constants.TableConstants.AuthorisationColumn;
 
 namespace MessageDbLib.DbRepository.ADO.MsSql
 {
@@ -54,14 +56,14 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter(AuthorisationParameter.AUTHORISATION_CODE, guid),
+				new SqlParameter(Prmetr.AUTHORISATION_CODE, guid),
 			};
 
 			string columns = GetSelectColumns();
 			string query = string.Format("SELECT {0} FROM {1} WHERE AUTHORISATIONCODE = {2}",
 				columns,
 				TableName,
-				AuthorisationParameter.AUTHORISATION_CODE);
+				Prmetr.AUTHORISATION_CODE);
 
 			return new QueryBody(query, parameters);
 		}
@@ -89,13 +91,13 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter(AuthorisationParameter.ID, id),
+				new SqlParameter(Prmetr.ID, id),
 			};
 
 			string columns = GetSelectColumns();
 			string query = string.Format("SELECT {0} FROM {1} WHERE ID = {2}", columns,
 				TableName,
-				AuthorisationParameter.ID);
+				Prmetr.ID);
 
 			return new QueryBody(query, parameters);
 		}
@@ -123,13 +125,13 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter(AuthorisationParameter.END_TIME, dateTime),
+				new SqlParameter(Prmetr.END_TIME, dateTime),
 			};
 
 			string columns = GetSelectColumns();
 			string query = string.Format("SELECT {0} FROM {1} WHERE ENDTIME >= {2}", columns,
 				TableName,
-				AuthorisationParameter.END_TIME);
+				Prmetr.END_TIME);
 
 			return new QueryBody(query, parameters);
 		}
@@ -155,22 +157,22 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter(AuthorisationParameter.AUTHORISATION_CODE, GetDBValue(authorisation.AuthorisationCode)),
-				new SqlParameter(AuthorisationParameter.START_TIME, GetDBValue(authorisation.StartTime)),
-				new SqlParameter(AuthorisationParameter.END_TIME, GetDBValue(authorisation.EndTime)),
-				new SqlParameter(AuthorisationParameter.USER_ID, GetDBValue(authorisation.UserId)),
+				new SqlParameter(Prmetr.AUTHORISATION_CODE, GetDBValue(authorisation.AuthorisationCode)),
+				new SqlParameter(Prmetr.START_TIME, GetDBValue(authorisation.StartTime)),
+				new SqlParameter(Prmetr.END_TIME, GetDBValue(authorisation.EndTime)),
+				new SqlParameter(Prmetr.USER_ID, GetDBValue(authorisation.UserId)),
 			};
 
 			string insertSection = string.Format("INSERT INTO {0}({1}, {2}, {3}, {4})", TableName,
-				AuthorisationColumn.AUTHORISATION_CODE,
-				AuthorisationColumn.START_TIME,
-				AuthorisationColumn.END_TIME,
-				AuthorisationColumn.USER_ID);
+				Column.AUTHORISATION_CODE,
+				Column.START_TIME,
+				Column.END_TIME,
+				Column.USER_ID);
 
-			string valueSection = string.Format("VALUES ({0}, {1}, {2}, {3})", AuthorisationParameter.AUTHORISATION_CODE,
-				AuthorisationParameter.START_TIME,
-				AuthorisationParameter.END_TIME,
-				AuthorisationParameter.USER_ID);
+			string valueSection = string.Format("VALUES ({0}, {1}, {2}, {3})", Prmetr.AUTHORISATION_CODE,
+				Prmetr.START_TIME,
+				Prmetr.END_TIME,
+				Prmetr.USER_ID);
 
 			string query = string.Format("{0} {1}", insertSection, valueSection);
 
@@ -204,21 +206,21 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter(AuthorisationParameter.ID, GetDBValue(authorisation.Id)),
-				new SqlParameter(AuthorisationParameter.AUTHORISATION_CODE, GetDBValue(authorisation.AuthorisationCode)),
-				new SqlParameter(AuthorisationParameter.START_TIME, GetDBValue(authorisation.StartTime)),
-				new SqlParameter(AuthorisationParameter.END_TIME, GetDBValue(authorisation.EndTime)),
-				new SqlParameter(AuthorisationParameter.USER_ID, GetDBValue(authorisation.UserId)),
+				new SqlParameter(Prmetr.ID, GetDBValue(authorisation.Id)),
+				new SqlParameter(Prmetr.AUTHORISATION_CODE, GetDBValue(authorisation.AuthorisationCode)),
+				new SqlParameter(Prmetr.START_TIME, GetDBValue(authorisation.StartTime)),
+				new SqlParameter(Prmetr.END_TIME, GetDBValue(authorisation.EndTime)),
+				new SqlParameter(Prmetr.USER_ID, GetDBValue(authorisation.UserId)),
 			};
 
 			string updateStr = string.Format("UPDATE {0} SET", TableName);
 
-			string setAuthCode = string.Format("{0} = {1}", AuthorisationColumn.AUTHORISATION_CODE, AuthorisationParameter.AUTHORISATION_CODE);
-			string setStartTime = string.Format("{0} = {1}", AuthorisationColumn.START_TIME, AuthorisationParameter.START_TIME);
-			string setEndTime = string.Format("{0} = {1}", AuthorisationColumn.END_TIME, AuthorisationParameter.END_TIME);
-			string setUserId = string.Format("{0} = {1}", AuthorisationColumn.USER_ID, AuthorisationParameter.USER_ID);
+			string setAuthCode = string.Format("{0} = {1}", Column.AUTHORISATION_CODE, Prmetr.AUTHORISATION_CODE);
+			string setStartTime = string.Format("{0} = {1}", Column.START_TIME, Prmetr.START_TIME);
+			string setEndTime = string.Format("{0} = {1}", Column.END_TIME, Prmetr.END_TIME);
+			string setUserId = string.Format("{0} = {1}", Column.USER_ID, Prmetr.USER_ID);
 
-			string whereId = string.Format("WHERE {0} = {1}", AuthorisationColumn.ID, GetDBValue(authorisation.Id));
+			string whereId = string.Format("WHERE {0} = {1}", Column.ID, GetDBValue(authorisation.Id));
 
 			string query = string.Format("{0} {1}, {2}, {3}, {4} {5}", updateStr, setAuthCode,
 				setStartTime,
@@ -250,11 +252,11 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter(AuthorisationParameter.ID, GetDBValue(authorisation.Id)),
+				new SqlParameter(Prmetr.ID, GetDBValue(authorisation.Id)),
 			};
 
 			string query = string.Format("DELETE FROM {0} WHERE ID = {1}", TableName,
-				AuthorisationParameter.ID);
+				Prmetr.ID);
 
 			return new QueryBody(query, parameters);
 		}
@@ -267,11 +269,11 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		protected static string GetSelectColumns()
 		{
 			string columns = string.Format("{0}, {1}, {2}, {3}, {4}",
-				AuthorisationColumn.ID,
-				AuthorisationColumn.AUTHORISATION_CODE,
-				AuthorisationColumn.START_TIME,
-				AuthorisationColumn.END_TIME,
-				AuthorisationColumn.USER_ID);
+				Column.ID,
+				Column.AUTHORISATION_CODE,
+				Column.START_TIME,
+				Column.END_TIME,
+				Column.USER_ID);
 			return columns;
 		}
 
@@ -300,59 +302,11 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 
 		private void PopulateAuthorisation(Authorisation authorisation, DbDataReader dataReader)
 		{
-			string idColumnStr = dataReader[AuthorisationColumn.ID] != null ?
-				dataReader[AuthorisationColumn.ID].ToString() :
-				string.Empty;
-
-			if (!string.IsNullOrEmpty(idColumnStr) &&
-				long.TryParse(idColumnStr, out long id))
-			{
-				authorisation.Id = id;
-			}
-
-			Guid guidResult;
-			string authorisationColumnStr = dataReader[AuthorisationColumn.AUTHORISATION_CODE] != null ?
-				dataReader[AuthorisationColumn.AUTHORISATION_CODE].ToString() :
-				string.Empty;
-
-			if (!string.IsNullOrEmpty(authorisationColumnStr) &&
-				Guid.TryParse(authorisationColumnStr, out guidResult))
-			{
-				authorisation.AuthorisationCode = guidResult;
-			}
-
-			DateTime starttime;
-			string starttimeStr = dataReader[AuthorisationColumn.START_TIME] != null ?
-				dataReader[AuthorisationColumn.START_TIME].ToString() :
-				string.Empty;
-
-			if (!string.IsNullOrEmpty(starttimeStr) &&
-				DateTime.TryParse(starttimeStr, out starttime))
-			{
-				authorisation.StartTime = starttime;
-			}
-
-			DateTime endtime;
-			string endtimeStr = dataReader[AuthorisationColumn.END_TIME] != null ?
-				dataReader[AuthorisationColumn.END_TIME].ToString() :
-				string.Empty;
-
-			if (!string.IsNullOrEmpty(endtimeStr) &&
-				DateTime.TryParse(endtimeStr, out endtime))
-			{
-				authorisation.EndTime = endtime;
-			}
-
-			long userId;
-			string userIdStr = dataReader[AuthorisationColumn.USER_ID] != null ?
-				dataReader[AuthorisationColumn.USER_ID].ToString() :
-				string.Empty;
-
-			if (!string.IsNullOrEmpty(userIdStr) &&
-				long.TryParse(userIdStr, out userId))
-			{
-				authorisation.UserId = userId;
-			}
+			authorisation.Id = dataReader.GetInt64(Column.ID);
+			authorisation.AuthorisationCode = dataReader.GetGuid(Column.AUTHORISATION_CODE);
+			authorisation.StartTime = dataReader.GetDateTime(Column.START_TIME);
+			authorisation.EndTime = dataReader.GetDateTime(Column.END_TIME);
+			authorisation.UserId = dataReader.GetInt64(Column.USER_ID);
 		}
 
 		protected object GetDBValue(object value)

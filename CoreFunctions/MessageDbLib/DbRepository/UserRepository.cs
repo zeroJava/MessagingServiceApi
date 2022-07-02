@@ -1,7 +1,6 @@
 ﻿using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.RepoEntity;
 using MessageDbCore.Repositories;
-using MessageDbLib.Constants.TableConstants;
 using MessageDbLib.DbEngine;
 using MessageDbLib.Extensions;
 using MessageDbLib.Utility;
@@ -10,6 +9,8 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
+using Prmetr = MessageDbLib.Constants.TableConstants.UserParameter;
+using Column = MessageDbLib.Constants.TableConstants.UserColumn;
 
 namespace MessageDbLib.DbRepository.ADO.MsSql
 {
@@ -36,10 +37,9 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			try
 			{
-				string columns = GetSelectColumns();
-				string query = string.Format("SELECT {0} FROM {1}", columns, TableName);
-
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query, null, connectionString))
+            QueryBody queryBody = GetAllUsersQuery();
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, null, 
+               connectionString))
 				{
 					List<User> users = new List<User>();
 					mssqlDbEngine.ExecuteReaderQuery(users, OnPopulateResultListCallBack);
@@ -52,12 +52,22 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 		}
 
-		public User GetUserMatchingId(long id)
+      private QueryBody GetAllUsersQuery()
+      {
+         SqlParameter[] sqlParameters = new SqlParameter[0];
+
+         string columns = GetSelectColumns();
+         string query = string.Format("SELECT {0} FROM {1}", columns, TableName);
+
+         return new QueryBody(query, sqlParameters);
+      }
+
+      public User GetUserMatchingId(long id)
 		{
 			try
 			{
-				Tuple<string, SqlParameter[]> query = GetUserMatchingIdQuery(id);
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+				QueryBody queryBody = GetUserMatchingIdQuery(id);
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
 					connectionString))
 				{
 					List<User> users = new List<User>();
@@ -71,25 +81,26 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 		}
 
-		private Tuple<string, SqlParameter[]> GetUserMatchingIdQuery(long id)
+		private QueryBody GetUserMatchingIdQuery(long id)
 		{
 			SqlParameter[] sqlParameters = new SqlParameter[]
 			{
-				new SqlParameter(UserParameter.ID, id)
+				new SqlParameter(Prmetr.ID, id)
 			};
 
 			string columns = GetSelectColumns();
 			string query = string.Format("SELECT {0} FROM {1} WHERE ID = {2}", columns, TableName,
-				UserParameter.ID);
-			return Tuple.Create(query, sqlParameters);
+				Prmetr.ID);
+
+			return new QueryBody(query, sqlParameters);
 		}
 
 		public User GetUserMatchingUsername(string username)
 		{
 			try
 			{
-				Tuple<string, SqlParameter[]> query = GetUserMatchingUsernameQuery(username);
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+				QueryBody queryBody = GetUserMatchingUsernameQuery(username);
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
 					connectionString))
 				{
 					List<User> users = new List<User>();
@@ -103,25 +114,26 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 		}
 
-		private Tuple<string, SqlParameter[]> GetUserMatchingUsernameQuery(string username)
+		private QueryBody GetUserMatchingUsernameQuery(string username)
 		{
 			SqlParameter[] sqlParameters = new SqlParameter[]
 			{
-				new SqlParameter(UserParameter.USERNAME, username)
+				new SqlParameter(Prmetr.USERNAME, username)
 			};
 
 			string columns = GetSelectColumns();
 			string query = string.Format("SELECT {0} FROM {1} WHERE USERNAME = {2}", columns, TableName,
-				UserParameter.USERNAME);
-			return Tuple.Create(query, sqlParameters);
+				Prmetr.USERNAME);
+
+			return new QueryBody(query, sqlParameters);
 		}
 
 		public User GetUserMatchingUsernameAndPassword(string username, string password)
 		{
 			try
 			{
-				Tuple<string, SqlParameter[]> query = GetUsersMatchUsernameAndPasswordQuery(username, password);
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+				QueryBody queryBody = GetUsersMatchUsernameAndPasswordQuery(username, password);
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
 					connectionString))
 				{
 					List<User> users = new List<User>();
@@ -135,27 +147,28 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 		}
 
-		private Tuple<string, SqlParameter[]> GetUsersMatchUsernameAndPasswordQuery(string username, string password)
+		private QueryBody GetUsersMatchUsernameAndPasswordQuery(string username, string password)
 		{
 			SqlParameter[] sqlParameters = new SqlParameter[]
 			{
-				new SqlParameter(UserParameter.USERNAME, username),
-				new SqlParameter(UserParameter.PASSWORD, password)
+				new SqlParameter(Prmetr.USERNAME, username),
+				new SqlParameter(Prmetr.PASSWORD, password)
 			};
 
 			string columns = GetSelectColumns();
 			string query = string.Format("SELECT {0} FROM {1} WHERE USERNAME = {2} AND PASSWORD = {3}", columns,
 				TableName,
-				UserParameter.USERNAME,
-				UserParameter.PASSWORD);
-			return Tuple.Create(query, sqlParameters);
+				Prmetr.USERNAME,
+				Prmetr.PASSWORD);
+
+			return new QueryBody(query, sqlParameters);
 		}
 
 		private User OnPopulateResultListCallBack(DbDataReader dataReader)
 		{
 			bool isAdvancedUser = false;
-			if (dataReader[UserColumn.IS_ADVANCED_USER] != null &&
-				bool.TryParse(dataReader[UserColumn.IS_ADVANCED_USER].ToString(), out bool result))
+			if (dataReader[Column.IS_ADVANCED_USER] != null &&
+				bool.TryParse(dataReader[Column.IS_ADVANCED_USER].ToString(), out bool result))
 			{
 				isAdvancedUser = result;
 			}
@@ -176,71 +189,29 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 
 		private void PopulateStandardUser(User user, DbDataReader reader)
 		{
-			/*if (reader[UserColumn.ID] != null &&
-				long.TryParse(reader[UserColumn.ID].ToString(), out long id))
-			{
-				user.Id = id;
-			}
-			if (reader[UserColumn.USERNAME] != null)
-			{
-				user.UserName = reader[UserColumn.USERNAME].ToString();
-			}
-			if (reader[UserColumn.PASSWORD] != null)
-			{
-				user.Password = reader[UserColumn.PASSWORD].ToString();
-			}
-			if (reader[UserColumn.EMAIL_ADDRESS] != null)
-			{
-				user.EmailAddress = reader[UserColumn.EMAIL_ADDRESS].ToString();
-			}
-			if (reader[UserColumn.FIRSTNAME] != null)
-			{
-				user.FirstName = reader[UserColumn.FIRSTNAME].ToString();
-			}
-			if (reader[UserColumn.SURNAME] != null)
-			{
-				user.Surname = reader[UserColumn.SURNAME].ToString();
-			}
-			if (reader[UserColumn.DOB] != null &&
-				DateTime.TryParse(reader[UserColumn.DOB].ToString(), out DateTime dob))
-			{
-				user.DOB = dob;
-			}
-			if (reader[UserColumn.GENDER] != null)
-			{
-				user.Gender = reader[UserColumn.GENDER].ToString();
-			}*/
-			user.Id = reader.GetInt64(UserParameter.ID);
-			user.UserName = reader.GetString(UserColumn.USERNAME);
-			user.Password = reader.GetString(UserColumn.PASSWORD);
-			user.EmailAddress = reader.GetString(UserColumn.EMAIL_ADDRESS);
-			user.FirstName = reader.GetString(UserColumn.FIRSTNAME);
-			user.Surname = reader.GetString(UserColumn.SURNAME);
-			user.DOB = reader.GetDateTime(UserColumn.DOB);
-			user.Gender = reader.GetString(UserColumn.GENDER);
+			user.Id = reader.GetInt64(Column.ID);
+			user.UserName = reader.GetString(Column.USERNAME);
+			user.Password = reader.GetString(Column.PASSWORD);
+			user.EmailAddress = reader.GetString(Column.EMAIL_ADDRESS);
+			user.FirstName = reader.GetString(Column.FIRSTNAME);
+			user.Surname = reader.GetString(Column.SURNAME);
+			user.DOB = reader.GetNlDateTime(Column.DOB);
+			user.Gender = reader.GetString(Column.GENDER);
 		}
 
 		private void PopulateAdvancedUser(AdvancedUser advancedUser, DbDataReader dataReader)
 		{
-			if (dataReader[UserColumn.ADVANCED_USER_START_DATE] != null &&
-				DateTime.TryParse(dataReader[UserColumn.ADVANCED_USER_START_DATE].ToString(), out DateTime startDateTime))
-			{
-				advancedUser.AdvanceStartDatetime = startDateTime;
-			}
-			if (dataReader[UserColumn.ADVANCED_USER_END_DATE] != null &&
-				DateTime.TryParse(dataReader[UserColumn.ADVANCED_USER_END_DATE].ToString(), out DateTime endDateTime))
-			{
-				advancedUser.AdvanceEndDatetime = endDateTime;
-			}
+			advancedUser.AdvanceStartDatetime = dataReader.GetNlDateTime(Column.ADVANCED_USER_START_DATE);
+			advancedUser.AdvanceEndDatetime = dataReader.GetNlDateTime(Column.ADVANCED_USER_END_DATE);
 		}
 
 		public void InsertUser(User user)
 		{
 			try
 			{
-				Tuple<string, SqlParameter[]> query = user is AdvancedUser ? GetAdvancedUserInsertQuery(user as AdvancedUser) :
+				QueryBody queryBody = user is AdvancedUser ? GetAdvancedUserInsertQuery(user as AdvancedUser) :
 					GetUserInsertQuery(user);
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
 					connectionString))
 				{
 					mssqlDbEngine.ExecuteQueryInsertCallback(user, OnPopulateIdCallBack);
@@ -252,87 +223,89 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 		}
 
-		private Tuple<string, SqlParameter[]> GetUserInsertQuery(User user)
+		private QueryBody GetUserInsertQuery(User user)
 		{
 			SqlParameter[] sqlParameters = new SqlParameter[]
 			{
-				new SqlParameter(UserParameter.USERNAME, GetValidValue(user.UserName)),
-				new SqlParameter(UserParameter.PASSWORD, GetValidValue(user.Password)),
-				new SqlParameter(UserParameter.EMAIL_ADDRESS, GetValidValue(user.EmailAddress)),
-				new SqlParameter(UserParameter.FIRSTNAME, GetValidValue(user.FirstName)),
-				new SqlParameter(UserParameter.SECONDNAME, GetValidValue(user.Surname)),
-				new SqlParameter(UserParameter.DOB, GetValidValue(user.DOB)),
-				new SqlParameter(UserParameter.GENDER, GetValidValue(user.Gender)),
-				new SqlParameter(UserParameter.IS_ADVANCED_USER, GetValidValue(false))
+				new SqlParameter(Prmetr.USERNAME, GetValidValue(user.UserName)),
+				new SqlParameter(Prmetr.PASSWORD, GetValidValue(user.Password)),
+				new SqlParameter(Prmetr.EMAIL_ADDRESS, GetValidValue(user.EmailAddress)),
+				new SqlParameter(Prmetr.FIRSTNAME, GetValidValue(user.FirstName)),
+				new SqlParameter(Prmetr.SECONDNAME, GetValidValue(user.Surname)),
+				new SqlParameter(Prmetr.DOB, GetValidValue(user.DOB)),
+				new SqlParameter(Prmetr.GENDER, GetValidValue(user.Gender)),
+				new SqlParameter(Prmetr.IS_ADVANCED_USER, GetValidValue(false))
 			};
 
 			string insertColumns = string.Format("INSERT INTO {0}({1}, {2}, {3}, {4}, {5}, {6}, {7}, {8})", TableName,
-				UserColumn.USERNAME,
-				UserColumn.PASSWORD,
-				UserColumn.EMAIL_ADDRESS,
-				UserColumn.FIRSTNAME,
-				UserColumn.SURNAME,
-				UserColumn.DOB,
-				UserColumn.GENDER,
-				UserColumn.IS_ADVANCED_USER);
+				Column.USERNAME,
+				Column.PASSWORD,
+				Column.EMAIL_ADDRESS,
+				Column.FIRSTNAME,
+				Column.SURNAME,
+				Column.DOB,
+				Column.GENDER,
+				Column.IS_ADVANCED_USER);
 
 			string valueSection = string.Format("VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})",
-				UserParameter.USERNAME,
-				UserParameter.PASSWORD,
-				UserParameter.EMAIL_ADDRESS,
-				UserParameter.FIRSTNAME,
-				UserParameter.SECONDNAME,
-				UserParameter.DOB,
-				UserParameter.GENDER,
-				UserParameter.IS_ADVANCED_USER);
+				Prmetr.USERNAME,
+				Prmetr.PASSWORD,
+				Prmetr.EMAIL_ADDRESS,
+				Prmetr.FIRSTNAME,
+				Prmetr.SECONDNAME,
+				Prmetr.DOB,
+				Prmetr.GENDER,
+				Prmetr.IS_ADVANCED_USER);
 
 			string query = string.Format("{0} {1}", insertColumns, valueSection);
-			return Tuple.Create(query, sqlParameters);
+
+			return new QueryBody(query, sqlParameters);
 		}
 
-		private Tuple<string, SqlParameter[]> GetAdvancedUserInsertQuery(AdvancedUser user)
+		private QueryBody GetAdvancedUserInsertQuery(AdvancedUser user)
 		{
 			SqlParameter[] sqlParameters = new SqlParameter[]
 			{
-				new SqlParameter(UserParameter.USERNAME, GetValidValue(user.UserName)),
-				new SqlParameter(UserParameter.PASSWORD, GetValidValue(user.Password)),
-				new SqlParameter(UserParameter.EMAIL_ADDRESS, GetValidValue(user.EmailAddress)),
-				new SqlParameter(UserParameter.FIRSTNAME, GetValidValue(user.FirstName)),
-				new SqlParameter(UserParameter.SECONDNAME, GetValidValue(user.Surname)),
-				new SqlParameter(UserParameter.DOB, GetValidValue(user.DOB)),
-				new SqlParameter(UserParameter.GENDER, GetValidValue(user.Gender)),
-				new SqlParameter(UserParameter.IS_ADVANCED_USER, GetValidValue(true)),
-				new SqlParameter(UserParameter.ADVANCED_USER_START_DATE, GetValidValue(user.AdvanceStartDatetime)),
-				new SqlParameter(UserParameter.ADVANCED_USER_END_DATE, GetValidValue(user.AdvanceEndDatetime))
+				new SqlParameter(Prmetr.USERNAME, GetValidValue(user.UserName)),
+				new SqlParameter(Prmetr.PASSWORD, GetValidValue(user.Password)),
+				new SqlParameter(Prmetr.EMAIL_ADDRESS, GetValidValue(user.EmailAddress)),
+				new SqlParameter(Prmetr.FIRSTNAME, GetValidValue(user.FirstName)),
+				new SqlParameter(Prmetr.SECONDNAME, GetValidValue(user.Surname)),
+				new SqlParameter(Prmetr.DOB, GetValidValue(user.DOB)),
+				new SqlParameter(Prmetr.GENDER, GetValidValue(user.Gender)),
+				new SqlParameter(Prmetr.IS_ADVANCED_USER, GetValidValue(true)),
+				new SqlParameter(Prmetr.ADVANCED_USER_START_DATE, GetValidValue(user.AdvanceStartDatetime)),
+				new SqlParameter(Prmetr.ADVANCED_USER_END_DATE, GetValidValue(user.AdvanceEndDatetime))
 			};
 
 			string insertColumns = string.Format("INSERT INTO {0}({1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10})",
 				TableName,
-				UserColumn.USERNAME,
-				UserColumn.PASSWORD,
-				UserColumn.EMAIL_ADDRESS,
-				UserColumn.FIRSTNAME,
-				UserColumn.SURNAME,
-				UserColumn.DOB,
-				UserColumn.GENDER,
-				UserColumn.IS_ADVANCED_USER,
-				UserColumn.ADVANCED_USER_START_DATE,
-				UserColumn.ADVANCED_USER_END_DATE);
+				Column.USERNAME,
+				Column.PASSWORD,
+				Column.EMAIL_ADDRESS,
+				Column.FIRSTNAME,
+				Column.SURNAME,
+				Column.DOB,
+				Column.GENDER,
+				Column.IS_ADVANCED_USER,
+				Column.ADVANCED_USER_START_DATE,
+				Column.ADVANCED_USER_END_DATE);
 
 			string valueSection = string.Format("VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9})",
-				UserParameter.USERNAME,
-				UserParameter.PASSWORD,
-				UserParameter.EMAIL_ADDRESS,
-				UserParameter.FIRSTNAME,
-				UserParameter.SECONDNAME,
-				UserParameter.DOB,
-				UserParameter.GENDER,
-				UserParameter.IS_ADVANCED_USER,
-				UserParameter.ADVANCED_USER_START_DATE,
-				UserParameter.ADVANCED_USER_END_DATE);
+				Prmetr.USERNAME,
+				Prmetr.PASSWORD,
+				Prmetr.EMAIL_ADDRESS,
+				Prmetr.FIRSTNAME,
+				Prmetr.SECONDNAME,
+				Prmetr.DOB,
+				Prmetr.GENDER,
+				Prmetr.IS_ADVANCED_USER,
+				Prmetr.ADVANCED_USER_START_DATE,
+				Prmetr.ADVANCED_USER_END_DATE);
 
 			string query = string.Format("{0} {1}", insertColumns, valueSection);
-			return Tuple.Create(query, sqlParameters);
+
+			return new QueryBody(query, sqlParameters);
 		}
 
 		private void OnPopulateIdCallBack(User user, object result)
@@ -345,9 +318,9 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			try
 			{
-				Tuple<string, SqlParameter[]> query = user is AdvancedUser ? GetUpdateAdvancedUserQuery(user as AdvancedUser) :
+				QueryBody queryBody = user is AdvancedUser ? GetUpdateAdvancedUserQuery(user as AdvancedUser) :
 					GetUpdateUserQuery(user);
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2,
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
 					connectionString))
 				{
 					mssqlDbEngine.ExecuteQuery();
@@ -359,29 +332,29 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 		}
 
-		private Tuple<string, SqlParameter[]> GetUpdateUserQuery(User user)
+		private QueryBody GetUpdateUserQuery(User user)
 		{
 			SqlParameter[] sqlParameters = new SqlParameter[]
 			{
-				new SqlParameter(UserParameter.ID, GetValidValue(user.Id)),
-				new SqlParameter(UserParameter.PASSWORD, GetValidValue(user.Password)),
-				new SqlParameter(UserParameter.FIRSTNAME, GetValidValue(user.FirstName)),
-				new SqlParameter(UserParameter.SECONDNAME, GetValidValue(user.Surname)),
-				new SqlParameter(UserParameter.DOB, GetValidValue(user.DOB)),
-				new SqlParameter(UserParameter.GENDER, GetValidValue(user.Gender)),
-				new SqlParameter(UserParameter.EMAIL_ADDRESS, GetValidValue(user.EmailAddress))
+				new SqlParameter(Prmetr.ID, GetValidValue(user.Id)),
+				new SqlParameter(Prmetr.PASSWORD, GetValidValue(user.Password)),
+				new SqlParameter(Prmetr.FIRSTNAME, GetValidValue(user.FirstName)),
+				new SqlParameter(Prmetr.SECONDNAME, GetValidValue(user.Surname)),
+				new SqlParameter(Prmetr.DOB, GetValidValue(user.DOB)),
+				new SqlParameter(Prmetr.GENDER, GetValidValue(user.Gender)),
+				new SqlParameter(Prmetr.EMAIL_ADDRESS, GetValidValue(user.EmailAddress))
 			};
 
 			string updateTable = string.Format("UPDATE {0} SET", TableName);
 
-			string setPassword = string.Format("{0} = {1}", UserColumn.PASSWORD, UserParameter.PASSWORD);
-			string setFirstName = string.Format("{0} = {1}", UserColumn.FIRSTNAME, UserParameter.FIRSTNAME);
-			string setSecondName = string.Format("{0} = {1}", UserColumn.SURNAME, UserParameter.SECONDNAME);
-			string setDob = string.Format("{0} = {1}", UserColumn.DOB, UserParameter.DOB);
-			string setGender = string.Format("{0} = {1}", UserColumn.GENDER, UserParameter.GENDER);
-			string setEmailAddress = string.Format("{0} = {1}", UserColumn.EMAIL_ADDRESS, UserParameter.EMAIL_ADDRESS);
+			string setPassword = string.Format("{0} = {1}", Column.PASSWORD, Prmetr.PASSWORD);
+			string setFirstName = string.Format("{0} = {1}", Column.FIRSTNAME, Prmetr.FIRSTNAME);
+			string setSecondName = string.Format("{0} = {1}", Column.SURNAME, Prmetr.SECONDNAME);
+			string setDob = string.Format("{0} = {1}", Column.DOB, Prmetr.DOB);
+			string setGender = string.Format("{0} = {1}", Column.GENDER, Prmetr.GENDER);
+			string setEmailAddress = string.Format("{0} = {1}", Column.EMAIL_ADDRESS, Prmetr.EMAIL_ADDRESS);
 
-			string whereId = string.Format("WHERE {0} = {1}", UserColumn.ID, UserParameter.ID);
+			string whereId = string.Format("WHERE {0} = {1}", Column.ID, Prmetr.ID);
 
 			string query = string.Format("{0} {1}, {2}, {3}, {4}, {5}, {6} {7}", updateTable,
 				setPassword,
@@ -391,36 +364,37 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 				setGender,
 				setEmailAddress,
 				whereId);
-			return Tuple.Create(query, sqlParameters);
+
+			return new QueryBody(query, sqlParameters);
 		}
 
-		private Tuple<string, SqlParameter[]> GetUpdateAdvancedUserQuery(AdvancedUser advancedUser)
+		private QueryBody GetUpdateAdvancedUserQuery(AdvancedUser advancedUser)
 		{
 			SqlParameter[] sqlParameters = new SqlParameter[]
 			{
-				new SqlParameter(UserParameter.ID, GetValidValue(advancedUser.Id)),
-				new SqlParameter(UserParameter.PASSWORD, GetValidValue(advancedUser.Password)),
-				new SqlParameter(UserParameter.FIRSTNAME, GetValidValue(advancedUser.FirstName)),
-				new SqlParameter(UserParameter.SECONDNAME, GetValidValue(advancedUser.Surname)),
-				new SqlParameter(UserParameter.DOB, GetValidValue(advancedUser.DOB)),
-				new SqlParameter(UserParameter.GENDER, GetValidValue(advancedUser.Gender)),
-				new SqlParameter(UserParameter.EMAIL_ADDRESS, GetValidValue(advancedUser.EmailAddress)),
-				new SqlParameter(UserParameter.ADVANCED_USER_START_DATE, GetValidValue(advancedUser.AdvanceStartDatetime)),
-				new SqlParameter(UserParameter.ADVANCED_USER_END_DATE, GetValidValue(advancedUser.AdvanceEndDatetime))
+				new SqlParameter(Prmetr.ID, GetValidValue(advancedUser.Id)),
+				new SqlParameter(Prmetr.PASSWORD, GetValidValue(advancedUser.Password)),
+				new SqlParameter(Prmetr.FIRSTNAME, GetValidValue(advancedUser.FirstName)),
+				new SqlParameter(Prmetr.SECONDNAME, GetValidValue(advancedUser.Surname)),
+				new SqlParameter(Prmetr.DOB, GetValidValue(advancedUser.DOB)),
+				new SqlParameter(Prmetr.GENDER, GetValidValue(advancedUser.Gender)),
+				new SqlParameter(Prmetr.EMAIL_ADDRESS, GetValidValue(advancedUser.EmailAddress)),
+				new SqlParameter(Prmetr.ADVANCED_USER_START_DATE, GetValidValue(advancedUser.AdvanceStartDatetime)),
+				new SqlParameter(Prmetr.ADVANCED_USER_END_DATE, GetValidValue(advancedUser.AdvanceEndDatetime))
 			};
 
 			string updateTable = string.Format("UPDATE {0} SET", TableName);
 
-			string setPassword = string.Format("{0} = {1}", UserColumn.PASSWORD, UserParameter.PASSWORD);
-			string setFirstName = string.Format("{0} = {1}", UserColumn.FIRSTNAME, UserParameter.FIRSTNAME);
-			string setSecondName = string.Format("{0} = {1}", UserColumn.SURNAME, UserParameter.SECONDNAME);
-			string setDob = string.Format("{0} = {1}", UserColumn.DOB, UserParameter.DOB);
-			string setGender = string.Format("{0} = {1}", UserColumn.GENDER, UserParameter.GENDER);
-			string setEmailAddress = string.Format("{0} = {1}", UserColumn.EMAIL_ADDRESS, UserParameter.EMAIL_ADDRESS);
-			string setAdvanStartDate = string.Format("{0} = {1}", UserColumn.ADVANCED_USER_START_DATE, UserParameter.ADVANCED_USER_START_DATE);
-			string setAdvanceEndDate = string.Format("{0} = {1}", UserColumn.ADVANCED_USER_END_DATE, UserParameter.ADVANCED_USER_END_DATE);
+			string setPassword = string.Format("{0} = {1}", Column.PASSWORD, Prmetr.PASSWORD);
+			string setFirstName = string.Format("{0} = {1}", Column.FIRSTNAME, Prmetr.FIRSTNAME);
+			string setSecondName = string.Format("{0} = {1}", Column.SURNAME, Prmetr.SECONDNAME);
+			string setDob = string.Format("{0} = {1}", Column.DOB, Prmetr.DOB);
+			string setGender = string.Format("{0} = {1}", Column.GENDER, Prmetr.GENDER);
+			string setEmailAddress = string.Format("{0} = {1}", Column.EMAIL_ADDRESS, Prmetr.EMAIL_ADDRESS);
+			string setAdvanStartDate = string.Format("{0} = {1}", Column.ADVANCED_USER_START_DATE, Prmetr.ADVANCED_USER_START_DATE);
+			string setAdvanceEndDate = string.Format("{0} = {1}", Column.ADVANCED_USER_END_DATE, Prmetr.ADVANCED_USER_END_DATE);
 
-			string whereId = string.Format("WHERE {0} = {1}", UserColumn.ID, UserParameter.ID);
+			string whereId = string.Format("WHERE {0} = {1}", Column.ID, Prmetr.ID);
 
 			string query = string.Format("{0} {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8} {9}", updateTable,
 				setPassword,
@@ -432,7 +406,8 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 				setAdvanStartDate,
 				setAdvanceEndDate,
 				whereId);
-			return Tuple.Create(query, sqlParameters);
+
+			return new QueryBody(query, sqlParameters);
 		}
 
 		public void DeleteUser(User user)
@@ -441,12 +416,12 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			{
 				SqlParameter[] sqlParameters = new SqlParameter[]
 				{
-					new SqlParameter(UserParameter.ID, GetValidValue(user.Id))
+					new SqlParameter(Prmetr.ID, GetValidValue(user.Id))
 				};
 
 				string sqlQuery = string.Format("DELETE FROM {0} WHERE {1} = {2}", TableName,
-					UserColumn.ID,
-					UserParameter.ID);
+					Column.ID,
+					Prmetr.ID);
 				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(sqlQuery, sqlParameters,
 					connectionString))
 				{
@@ -467,17 +442,17 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		protected static string GetSelectColumns()
 		{
 			string columns = string.Format("{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}",
-				UserColumn.ID,
-				UserColumn.USERNAME,
-				UserColumn.PASSWORD,
-				UserColumn.EMAIL_ADDRESS,
-				UserColumn.FIRSTNAME,
-				UserColumn.SURNAME,
-				UserColumn.DOB,
-				UserColumn.GENDER,
-				UserColumn.IS_ADVANCED_USER,
-				UserColumn.ADVANCED_USER_START_DATE,
-				UserColumn.ADVANCED_USER_END_DATE);
+				Column.ID,
+				Column.USERNAME,
+				Column.PASSWORD,
+				Column.EMAIL_ADDRESS,
+				Column.FIRSTNAME,
+				Column.SURNAME,
+				Column.DOB,
+				Column.GENDER,
+				Column.IS_ADVANCED_USER,
+				Column.ADVANCED_USER_START_DATE,
+				Column.ADVANCED_USER_END_DATE);
 			return columns;
 		}
 

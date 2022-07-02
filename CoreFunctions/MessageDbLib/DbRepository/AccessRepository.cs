@@ -1,13 +1,15 @@
 ﻿using MessageDbCore.RepoEntity;
 using MessageDbCore.Repositories;
-using MessageDbLib.Constants.TableConstants;
 using MessageDbLib.DbEngine;
+using MessageDbLib.Extensions;
 using MessageDbLib.Utility;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
+using Prmetr = MessageDbLib.Constants.TableConstants.AccessParameter;
+using Column = MessageDbLib.Constants.TableConstants.AccessColumn;
 
 namespace MessageDbLib.DbRepository.ADO.MsSql
 {
@@ -54,13 +56,13 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter(AccessParameter.TOKEN, token)
+				new SqlParameter(Prmetr.TOKEN, token)
 			};
 
 			string columns = GetSelectColumns();
 			string query = string.Format("SELECT {0} FROM {1} WHERE TOKEN = {2}", columns,
 				TableName,
-				AccessParameter.TOKEN);
+				Prmetr.TOKEN);
 
 			return new QueryBody(query, parameters);
 		}
@@ -88,13 +90,13 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter(AccessParameter.ID, id)
+				new SqlParameter(Prmetr.ID, id)
 			};
 
 			string columns = GetSelectColumns();
 			string query = string.Format("SELECT {0} FROM {1} WHERE ID = {2}", columns,
 				TableName,
-				AccessParameter.ID);
+				Prmetr.ID);
 
 			return new QueryBody(query, parameters);
 		}
@@ -108,58 +110,14 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 
 		private void PopulateAccess(Access access, DbDataReader dataReader)
 		{
-			string idColumn = dataReader[AccessColumn.ID] != null ? dataReader[AccessColumn.ID].ToString() :
-				string.Empty;
+			access.Id = dataReader.GetInt64(Column.ID);
+			access.Organisation = dataReader.GetString(Column.ORGANISATION);
+			access.Token = dataReader.GetString(Column.TOKEN);
+			access.UserId = dataReader.GetInt64(Column.USER_ID);
+			access.StartTime = dataReader.GetDateTime(Column.START_TIME);
+			access.EndTime = dataReader.GetDateTime(Column.END_TIME);
 
-			long id;
-			if (!string.IsNullOrEmpty(idColumn) &&
-				long.TryParse(idColumn, out id))
-			{
-				access.Id = id;
-			}
-
-			if (dataReader[AccessColumn.ORGANISATION] != null)
-			{
-				access.Organisation = dataReader[AccessColumn.ORGANISATION].ToString();
-			}
-
-			if (dataReader[AccessColumn.TOKEN] != null)
-			{
-				access.Token = dataReader[AccessColumn.TOKEN].ToString();
-			}
-
-			string useridColumn = dataReader[AccessColumn.USER_ID] != null ? dataReader[AccessColumn.USER_ID].ToString() : string.Empty;
-
-			long userid;
-			if (!string.IsNullOrEmpty(useridColumn) &&
-				long.TryParse(useridColumn, out userid))
-			{
-				access.UserId = userid;
-			}
-
-			string starttimeColumn = dataReader[AccessColumn.START_TIME] != null ? dataReader[AccessColumn.START_TIME].ToString() :
-				string.Empty;
-
-			DateTime starttime;
-			if (!string.IsNullOrEmpty(starttimeColumn) &&
-				DateTime.TryParse(starttimeColumn, out starttime))
-			{
-				access.StartTime = starttime;
-			}
-
-			string endtimeColumn = dataReader[AccessColumn.END_TIME] != null ? dataReader[AccessColumn.END_TIME].ToString() :
-				string.Empty;
-
-			DateTime endtime;
-			if (!string.IsNullOrEmpty(endtimeColumn) &&
-				DateTime.TryParse(endtimeColumn, out endtime))
-			{
-				access.EndTime = endtime;
-			}
-
-			string scopeColumn = dataReader[AccessColumn.SCOPE] != null ? dataReader[AccessColumn.SCOPE].ToString() :
-				string.Empty;
-
+			string scopeColumn = dataReader.GetString(Column.SCOPE);
 			string[] scope = new string[0];
 			if (!string.IsNullOrEmpty(scopeColumn))
 			{
@@ -193,28 +151,28 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter(AccessParameter.ORGANISATION, GetDBValue(access.Organisation)),
-				new SqlParameter(AccessParameter.TOKEN, GetDBValue(access.Token)),
-				new SqlParameter(AccessParameter.USER_ID, GetDBValue(access.UserId)),
-				new SqlParameter(AccessParameter.START_TIME, GetDBValue(access.StartTime)),
-				new SqlParameter(AccessParameter.END_TIME, GetDBValue(access.EndTime)),
-				new SqlParameter(AccessParameter.SCOPE, GetDBValue(JoinScopeList(access.Scope))),
+				new SqlParameter(Prmetr.ORGANISATION, GetDBValue(access.Organisation)),
+				new SqlParameter(Prmetr.TOKEN, GetDBValue(access.Token)),
+				new SqlParameter(Prmetr.USER_ID, GetDBValue(access.UserId)),
+				new SqlParameter(Prmetr.START_TIME, GetDBValue(access.StartTime)),
+				new SqlParameter(Prmetr.END_TIME, GetDBValue(access.EndTime)),
+				new SqlParameter(Prmetr.SCOPE, GetDBValue(JoinScopeList(access.Scope))),
 			};
 
 			string insert = string.Format("INSERT INTO {0}({1}, {2}, {3}, {4}, {5}, {6})", TableName,
-				AccessColumn.ORGANISATION,
-				AccessColumn.TOKEN,
-				AccessColumn.USER_ID,
-				AccessColumn.START_TIME,
-				AccessColumn.END_TIME,
-				AccessColumn.SCOPE);
+				Column.ORGANISATION,
+				Column.TOKEN,
+				Column.USER_ID,
+				Column.START_TIME,
+				Column.END_TIME,
+				Column.SCOPE);
 
-			string values = string.Format("VALUES ({0}, {1}, {2}, {3}, {4}, {5})", AccessParameter.ORGANISATION,
-				AccessParameter.TOKEN,
-				AccessParameter.USER_ID,
-				AccessParameter.START_TIME,
-				AccessParameter.END_TIME,
-				AccessParameter.SCOPE);
+			string values = string.Format("VALUES ({0}, {1}, {2}, {3}, {4}, {5})", Prmetr.ORGANISATION,
+				Prmetr.TOKEN,
+				Prmetr.USER_ID,
+				Prmetr.START_TIME,
+				Prmetr.END_TIME,
+				Prmetr.SCOPE);
 
 			string stringquery = string.Format("{0} {1}", insert, values);
 
@@ -260,37 +218,37 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter(AccessParameter.ID, GetDBValue(access.Id)),
-				new SqlParameter(AccessParameter.ORGANISATION, GetDBValue(access.Organisation)),
-				new SqlParameter(AccessParameter.TOKEN, GetDBValue(access.Token)),
-				new SqlParameter(AccessParameter.USER_ID, GetDBValue(access.UserId)),
-				new SqlParameter(AccessParameter.START_TIME, GetDBValue(access.StartTime)),
-				new SqlParameter(AccessParameter.END_TIME, GetDBValue(access.EndTime)),
-				new SqlParameter(AccessParameter.SCOPE, GetDBValue(JoinScopeList(access.Scope))),
+				new SqlParameter(Prmetr.ID, GetDBValue(access.Id)),
+				new SqlParameter(Prmetr.ORGANISATION, GetDBValue(access.Organisation)),
+				new SqlParameter(Prmetr.TOKEN, GetDBValue(access.Token)),
+				new SqlParameter(Prmetr.USER_ID, GetDBValue(access.UserId)),
+				new SqlParameter(Prmetr.START_TIME, GetDBValue(access.StartTime)),
+				new SqlParameter(Prmetr.END_TIME, GetDBValue(access.EndTime)),
+				new SqlParameter(Prmetr.SCOPE, GetDBValue(JoinScopeList(access.Scope))),
 			};
 
 			string updateTable = string.Format("UPDATE {0} SET", TableName);
 
-			string setOrganisation = string.Format("{0} = {1}", AccessColumn.ORGANISATION,
-				AccessParameter.ORGANISATION);
+			string setOrganisation = string.Format("{0} = {1}", Column.ORGANISATION,
+				Prmetr.ORGANISATION);
 
-			string setToken = string.Format("{0} = {1}", AccessColumn.TOKEN,
-				AccessParameter.TOKEN);
+			string setToken = string.Format("{0} = {1}", Column.TOKEN,
+				Prmetr.TOKEN);
 
-			string setUserId = string.Format("{0} = {1}", AccessColumn.USER_ID,
-				AccessParameter.USER_ID);
+			string setUserId = string.Format("{0} = {1}", Column.USER_ID,
+				Prmetr.USER_ID);
 
-			string setStartTime = string.Format("{0} = {1}", AccessColumn.START_TIME,
-				AccessParameter.START_TIME);
+			string setStartTime = string.Format("{0} = {1}", Column.START_TIME,
+				Prmetr.START_TIME);
 
-			string setEndTime = string.Format("{0} = {1}", AccessColumn.END_TIME,
-				AccessParameter.END_TIME);
+			string setEndTime = string.Format("{0} = {1}", Column.END_TIME,
+				Prmetr.END_TIME);
 
-			string setScope = string.Format("{0} = {1}", AccessColumn.SCOPE,
-				AccessParameter.SCOPE);
+			string setScope = string.Format("{0} = {1}", Column.SCOPE,
+				Prmetr.SCOPE);
 
-			string whereId = string.Format("WHERE {0} = {1}", AccessColumn.ID,
-				AccessParameter.ID);
+			string whereId = string.Format("WHERE {0} = {1}", Column.ID,
+				Prmetr.ID);
 
 			string query = string.Format("{0} {1}, {2}, {3}, {4}, {5}, {6} {7}", updateTable,
 				setOrganisation,
@@ -310,12 +268,12 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			{
 				SqlParameter[] sqlParameters = new SqlParameter[]
 				{
-					new SqlParameter(AccessParameter.ID, GetDBValue(access.Id))
+					new SqlParameter(Prmetr.ID, GetDBValue(access.Id))
 				};
 
 				string sqlQuery = string.Format("DELETE FROM {0} WHERE {1} = {2}", TableName,
-					AccessColumn.ID,
-					AccessParameter.ID);
+					Column.ID,
+					Prmetr.ID);
 
 				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(sqlQuery, sqlParameters,
 					connectionString))
@@ -332,13 +290,13 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		protected static string GetSelectColumns()
 		{
 			string columns = string.Format("{0}, {1}, {2}, {3}, {4}, {5}, {6}",
-				AccessColumn.ID,
-				AccessColumn.ORGANISATION,
-				AccessColumn.TOKEN,
-				AccessColumn.USER_ID,
-				AccessColumn.START_TIME,
-				AccessColumn.END_TIME,
-				AccessColumn.SCOPE);
+				Column.ID,
+				Column.ORGANISATION,
+				Column.TOKEN,
+				Column.USER_ID,
+				Column.START_TIME,
+				Column.END_TIME,
+				Column.SCOPE);
 			return columns;
 		}
 
