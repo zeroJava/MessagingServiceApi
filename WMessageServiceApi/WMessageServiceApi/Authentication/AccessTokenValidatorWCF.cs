@@ -6,14 +6,13 @@ namespace WMessageServiceApi.Authentication
 	{
 		public TokenValidationResult IsTokenValid(string encryptedToken)
 		{
-			TokenValidationResult tokenResult = new TokenValidationResult();
-
 			ValidationResponse result = Validate(encryptedToken);
-			tokenResult.IsValidationSuccess = result.ValidationIsSuccess;
-			tokenResult.Message = result.Message;
-			tokenResult.Status = result.Status;
-
-			return tokenResult;
+			return new TokenValidationResult
+			{
+				IsValidationSuccess = result.ValidationIsSuccess,
+				Message = result.Message,
+				Status = result.Status,
+			};
 		}
 
 		private ValidationResponse Validate(string encrptedToken)
@@ -25,14 +24,13 @@ namespace WMessageServiceApi.Authentication
 
 		public TokenValidationResult IsUserCredentialValid(string encryptedUserCred)
 		{
-			TokenValidationResult tokenResult = new TokenValidationResult();
-
 			ValidationResponse result = ValidateUserCredential(encryptedUserCred);
-			tokenResult.IsValidationSuccess = result.ValidationIsSuccess;
-			tokenResult.Message = result.Message;
-			tokenResult.Status = result.Status;
-
-			return tokenResult;
+			return new TokenValidationResult
+			{
+				IsValidationSuccess = result.ValidationIsSuccess,
+				Message = result.Message,
+				Status = result.Status
+			};
 		}
 
 		private ValidationResponse ValidateUserCredential(string encrptedToken)

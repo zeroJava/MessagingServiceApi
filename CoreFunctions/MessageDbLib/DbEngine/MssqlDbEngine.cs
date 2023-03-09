@@ -24,7 +24,7 @@ namespace MessageDbLib.DbEngine
 		{
 			this.SqlQuery = sqlQuery;
 			base.ConnectionString = connectionString;
-			this.mssqlParameters = mssqlParameters ?? (new SqlParameter[0]);
+			this.mssqlParameters = mssqlParameters ?? new SqlParameter[0];
 			this.sqlConnection = new SqlConnection(connectionString);
 		}
 
