@@ -9,6 +9,7 @@ using WMessageServiceApi.Authentication;
 using WMessageServiceApi.Logging;
 using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 using WMessageServiceApi.Messaging.DataEnumerations;
+using Transaction = MessageDbLib.DbRepositoryFactories.RepoTransactionFactory;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
@@ -20,26 +21,23 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 			if (message.EmailAccounts == null || message.EmailAccounts.Count <= 0)
 			{
-				throw new InvalidOperationException("Message contract does not have ant emails attahed.");
+				throw new InvalidOperationException("Message contract does not have" +
+					" ant emails attahed.");
 			}
 
 			LogInfo(string.Format("Going to create message. Message content\n{0}",
 				message.Message));
 			Message newMessage = CreateNewMessage(message);
-
-			//PersistMessage(newMessage);
-			//CreateMessageDispatch(message, newMessage);
-
 			ProcessNewMessage(message, newMessage);
 			//PersistMessageToMongoDbService(newMessage);
 
-			return CreateMessageStateTokenContract(MessageReceivedState.AcknowledgedRequest, "Message was successfully acknowledged and persisted in our system.");
+			return CreateMessageStateTokenContract(MessageReceivedState.AcknowledgedRequest,
+				"Message was successfully acknowledged and persisted in our system.");
 		}
 
 		private void ValidateAccessToken(string encryptedToken)
 		{
 			string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
-
 			IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
 			TokenValidationResult result = tokenValidator.IsTokenValid(encryptedToken);
 
@@ -79,17 +77,15 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				DatabaseOption.DatabaseEngine,
 				DatabaseOption.DbConnectionString);
 			User user = userRepo.GetUserMatchingUsername(userName);
-			if (user == null)
-			{
-				throw new InvalidOperationException("Sender could not be found in our current repo");
-			}
-			return user;
+			return user ?? throw new InvalidOperationException("Sender could not" +
+				"be found in our current repo");
 		}
 
 		private void ProcessNewMessage(IMessageContract messageContract,
 			Message message)
 		{
-			using (var repoTransaction = RepoTransactionFactory.GetRepoTransaction(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString))
+			using (IRepoTransaction repoTransaction = Transaction.GetRepoTransaction(
+				DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString))
 			{
 				try
 				{
@@ -113,8 +109,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			IRepoTransaction repoTransaction)
 		{
 			DatabaseEngineConstant databaseEngine = DatabaseOption.DatabaseEngine;
-			var messageRepo = MessageRepoFactory.GetMessageRepository(databaseEngine, DatabaseOption.DbConnectionString,
-				repoTransaction);
+			var messageRepo = MessageRepoFactory.GetMessageRepository(databaseEngine,
+				DatabaseOption.DbConnectionString, repoTransaction);
 			messageRepo.InsertMessage(message);
 			LogInfo("Message persisting was successful");
 		}
@@ -138,32 +134,33 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		private void PersistMessagedispatch(MessageDispatch messageDispatch,
 			IRepoTransaction repoTransaction)
 		{
-			var dispatchRepo = MessageDispatchRepoFactory.GetDispatchRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString,
+			var dispatchRepo = MessageDispatchRepoFactory.GetDispatchRepository(
+				DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString,
 				repoTransaction);
 			dispatchRepo.InsertDispatch(messageDispatch);
 			LogInfo("Message-Dispatch persisting was successful");
 		}
 
 		/*private void PersistMessageToMongoDbService(Message message)
-	 {
-		 try
 		 {
-			 RabbitMqProducerClass rabbitMqProducer = new RabbitMqProducerClass(QueueTypeConstant.MongoDbPersistentUserService,
-				 QueueTypeConstant.MongoDbPersistentUserService);
-			 rabbitMqProducer.ExecuteMessageQueueing(message);
-			 WriteInfoLog("Queueing message to Message-Queue was successful.");
-		 }
-		 catch (Exception exception)
-		 {
-			 MessageQueueErrorContract error = new MessageQueueErrorContract()
+			 try
 			 {
-				 Message = "Error encountered when trying to queue to message queue.",
-				 ExceptionMessage = exception.Message
-			 };
-			 WriteErrorLog("Error encountered when queueing message to Message-Queue.", exception);
-			 //throw new FaultException<MessageQueueErrorContract>(error);
-		 }
-	 }*/
+				 RabbitMqProducerClass rabbitMqProducer = new RabbitMqProducerClass(QueueTypeConstant.MongoDbPersistentUserService,
+					 QueueTypeConstant.MongoDbPersistentUserService);
+				 rabbitMqProducer.ExecuteMessageQueueing(message);
+				 WriteInfoLog("Queueing message to Message-Queue was successful.");
+			 }
+			 catch (Exception exception)
+			 {
+				 MessageQueueErrorContract error = new MessageQueueErrorContract()
+				 {
+					 Message = "Error encountered when trying to queue to message queue.",
+					 ExceptionMessage = exception.Message
+				 };
+				 WriteErrorLog("Error encountered when queueing message to Message-Queue.", exception);
+				 //throw new FaultException<MessageQueueErrorContract>(error);
+			 }
+		 }*/
 
 		private void LogError(string message)
 		{
