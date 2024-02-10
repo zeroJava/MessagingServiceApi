@@ -6,6 +6,7 @@ using System;
 using System.ServiceModel;
 using WMessageServiceApi.Exceptions.Datacontacts;
 using WMessageServiceApi.Messaging.DataContracts.UserContracts;
+using stringCheck = WMessageServiceApi.Extensions.StringExtension;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
@@ -17,36 +18,41 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				 userContract.UserName == null ||
 				 userContract.UserName == string.Empty)
 			{
-				string message = userContract == null ? "The user contract, recieved is null." : "Username is empty";
+				string message = userContract == null ?
+					"The user contract, recieved is null." : "Username is empty";
 				ThrowEntityErrorMessage(message, StatusList.PROCESS_ERROR);
 			}
 			User user = GetUserEntityObject(userContract.UserName);
 			if (user == null)
 			{
-				throw new InvalidOperationException(string.Format("Could not find user with username: {0}", userContract.UserName));
+				throw new InvalidOperationException($"Could not find user with" +
+					$" username: {userContract.UserName}");
 			}
 			UpdateUserEntityObject(user, userContract);
-			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
+			IUserRepository userRepo = UserRepoFactory.GetUserRepository(
+				DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
 			userRepo.UpdateUser(user);
 		}
 
 		private User GetUserEntityObject(string userName)
 		{
-			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString); ;
+			IUserRepository userRepo = UserRepoFactory.GetUserRepository(
+				DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
 			return userRepo.GetUserMatchingUsername(userName);
 		}
 
-		private void UpdateUserEntityObject(User userEntityObject, INewUserDataContract userContract)
+		private void UpdateUserEntityObject(User userEntityObject,
+			INewUserDataContract userContract)
 		{
-			if (userContract.FirstName != null && userContract.FirstName != string.Empty)
+			if (stringCheck.IsNotNullEmpty(userContract.FirstName))
 			{
 				userEntityObject.FirstName = userContract.FirstName;
 			}
-			if (userContract.Surname != null && userContract.Surname != string.Empty)
+			if (stringCheck.IsNotNullEmpty(userContract.Surname))
 			{
 				userEntityObject.Surname = userContract.Surname;
 			}
-			if (userContract.EmailAddress != null && userContract.EmailAddress != string.Empty)
+			if (stringCheck.IsNotNullEmpty(userContract.EmailAddress))
 			{
 				userEntityObject.EmailAddress = userContract.EmailAddress;
 			}
