@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace WMessageServiceApi.Extensions
+﻿namespace WMessageServiceApi.Extensions
 {
 	public static class StringExtension
 	{
