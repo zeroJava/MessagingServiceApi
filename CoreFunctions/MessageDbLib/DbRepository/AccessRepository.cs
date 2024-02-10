@@ -2,35 +2,35 @@
 using MessageDbCore.Repositories;
 using MessageDbLib.DbEngine;
 using MessageDbLib.Extensions;
-using MessageDbLib.Utility;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
-using Prmetr = MessageDbLib.Constants.TableConstants.AccessParameter;
 using Column = MessageDbLib.Constants.TableConstants.AccessColumn;
+using Prmetr = MessageDbLib.Constants.TableConstants.AccessParameter;
 
 namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-	public class AccessRepository : IAccessRepository
+	public class AccessRepository : BaseRepository, IAccessRepository
 	{
-		protected readonly string connectionString;
-		protected readonly IRepoTransaction repoTransaction;
-		protected readonly bool transactionModeEnabled = false;
+		//protected readonly string connectionString;
+		//protected readonly IRepoTransaction repoTransaction;
+		//protected readonly bool transactionModeEnabled = false;
 
 		public virtual string TableName { get; protected set; } = "dbo.AccessTable";
 
-		public AccessRepository(string connectionString)
+		public AccessRepository(string connectionString) : base(connectionString)
 		{
-			this.connectionString = connectionString;
+			//this.connectionString = connectionString;
 		}
 
-		public AccessRepository(string connectionString, IRepoTransaction repoTransaction)
+		public AccessRepository(string connectionString, IRepoTransaction repoTransaction) :
+			base(connectionString, repoTransaction)
 		{
-			this.connectionString = connectionString;
-			this.repoTransaction = repoTransaction;
-			this.transactionModeEnabled = true;
+			//this.connectionString = connectionString;
+			//this.repoTransaction = repoTransaction;
+			//this.transactionModeEnabled = true;
 		}
 
 		public Access GetAccessMatchingToken(string token)
@@ -300,7 +300,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			return columns;
 		}
 
-		protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
+		/*protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
 			string connectionString)
 		{
 			if (transactionModeEnabled &&
@@ -319,6 +319,6 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		protected object GetDBValue(object value)
 		{
 			return DbValueUtil.GetValidValue(value);
-		}
+		}*/
 	}
 }

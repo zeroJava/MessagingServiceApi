@@ -2,35 +2,37 @@
 using MessageDbCore.Repositories;
 using MessageDbLib.DbEngine;
 using MessageDbLib.Extensions;
-using MessageDbLib.Utility;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
-using Prmetr = MessageDbLib.Constants.TableConstants.AuthorisationParameter;
 using Column = MessageDbLib.Constants.TableConstants.AuthorisationColumn;
+using Prmetr = MessageDbLib.Constants.TableConstants.AuthorisationParameter;
 
 namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-	public class AuthorisationRepository : IAuthorisationRepository
+	public class AuthorisationRepository : BaseRepository, IAuthorisationRepository
 	{
-		protected readonly string connectionString;
-		protected readonly IRepoTransaction repoTransaction;
-		protected readonly bool transactionModeEnabled = false;
+		//protected readonly string connectionString;
+		//protected readonly IRepoTransaction repoTransaction;
+		//protected readonly bool transactionModeEnabled = false;
 
 		public virtual string TableName { get; protected set; } = "dbo.AuthorisationTable";
 
-		public AuthorisationRepository(string connectionString)
+		public AuthorisationRepository(string connectionString) :
+			base(connectionString)
 		{
-			this.connectionString = connectionString;
+			//this.connectionString = connectionString;
 		}
 
-		public AuthorisationRepository(string connectionString, IRepoTransaction repoTransaction)
+		public AuthorisationRepository(string connectionString,
+			IRepoTransaction repoTransaction) : base(connectionString,
+				repoTransaction)
 		{
-			this.connectionString = connectionString;
-			this.repoTransaction = repoTransaction;
-			this.transactionModeEnabled = true;
+			//this.connectionString = connectionString;
+			//this.repoTransaction = repoTransaction;
+			//this.transactionModeEnabled = true;
 		}
 
 		public Authorisation GetAuthorisationMatchingAuthCode(Guid guid)
@@ -277,7 +279,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			return columns;
 		}
 
-		protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
+		/*protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
 			string connectionString)
 		{
 			if (transactionModeEnabled &&
@@ -291,7 +293,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			MssqlDbEngine mssqlDbEngine = new MssqlDbEngine(query, mssqlParameters,
 				connectionString);
 			return mssqlDbEngine;
-		}
+		}*/
 
 		private Authorisation OnPopulateResultListCallBack(DbDataReader dataReader)
 		{
@@ -309,9 +311,9 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			authorisation.UserId = dataReader.GetInt64(Column.USER_ID);
 		}
 
-		protected object GetDBValue(object value)
+		/*protected object GetDBValue(object value)
 		{
 			return DbValueUtil.GetValidValue(value);
-		}
+		}*/
 	}
 }

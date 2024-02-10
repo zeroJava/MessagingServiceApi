@@ -15,27 +15,30 @@ using Column = MessageDbLib.Constants.TableConstants.MessageDispatchColumn;
 
 namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-   public class MessageDispatchRepository : IMessageDispatchRepository
+   public class MessageDispatchRepository : BaseRepository, IMessageDispatchRepository
    {
       private const string dispatchIdColumn = Column.ID;
       private const string dispatchAliasIdColumn = "md.ID";
 
-      protected string connectionString;
-      protected readonly IRepoTransaction repoTransaction;
-      protected readonly bool transactionModeEnabled = false;
+      //protected string connectionString;
+      //protected readonly IRepoTransaction repoTransaction;
+      //protected readonly bool transactionModeEnabled = false;
 
       public virtual string TableName { get; protected set; } = "messagedbo.MessageDispatchTable";
 
-      public MessageDispatchRepository(string connectionString)
+      public MessageDispatchRepository(string connectionString) :
+         base(connectionString)
       {
-         this.connectionString = connectionString;
+         //this.connectionString = connectionString;
       }
 
-      public MessageDispatchRepository(string connectionString, IRepoTransaction repoTransaction)
+      public MessageDispatchRepository(string connectionString,
+         IRepoTransaction repoTransaction) : base(connectionString,
+            repoTransaction)
       {
-         this.connectionString = connectionString;
-         this.repoTransaction = repoTransaction;
-         this.transactionModeEnabled = true;
+         //this.connectionString = connectionString;
+         //this.repoTransaction = repoTransaction;
+         //this.transactionModeEnabled = true;
       }
 
       public List<MessageDispatch> GetAllDispatches()
@@ -417,7 +420,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
          return columns;
       }
 
-      protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
+      /*protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
          string connectionString)
       {
          if (transactionModeEnabled && repoTransaction != null)
@@ -435,6 +438,6 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
       protected static object GetDBValue(object value)
       {
          return DbValueUtil.GetValidValue(value);
-      }
+      }*/
    }
 }

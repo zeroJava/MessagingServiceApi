@@ -16,24 +16,17 @@ using Column = MessageDbLib.Constants.TableConstants.MessageColumn;
 
 namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-   public class MessageRepository : IMessageRepository
+   public class MessageRepository : BaseRepository, IMessageRepository
    {
-      protected string connectionString;
-      protected readonly IRepoTransaction repoTransaction;
-      protected readonly bool transactionModeEnabled = false;
-
       public virtual string TableName { get; protected set; } = "messagedbo.MessageTable";
 
-      public MessageRepository(string connectionString)
+      public MessageRepository(string connectionString) : base(connectionString)
       {
-         this.connectionString = connectionString;
       }
 
-      public MessageRepository(string connectionString, IRepoTransaction repoTransaction)
+      public MessageRepository(string connectionString, IRepoTransaction repoTransaction) :
+         base(connectionString, repoTransaction)
       {
-         this.connectionString = connectionString;
-         this.repoTransaction = repoTransaction;
-         this.transactionModeEnabled = true;
       }
 
       public Message GetMessageMatchingId(long messageId)
@@ -577,26 +570,6 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
             Column.IMAGE_TYPE,
             Column.LENGTH);
          return columns;
-      }
-
-      protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
-         string connectionString)
-      {
-         if (transactionModeEnabled && repoTransaction != null)
-         {
-            MssqlDbEngine transactionMssqlEngine = new MssqlDbEngine(query, mssqlParameters,
-               connectionString,
-               repoTransaction);
-            return transactionMssqlEngine;
-         }
-
-         MssqlDbEngine mssqlDbEngine = new MssqlDbEngine(query, mssqlParameters, connectionString);
-         return mssqlDbEngine;
-      }
-
-      protected object GetDBValue(object value)
-      {
-         return DbValueUtil.GetValidValue(value);
       }
    }
 }

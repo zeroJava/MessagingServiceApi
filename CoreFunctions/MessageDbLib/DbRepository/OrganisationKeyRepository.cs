@@ -13,23 +13,26 @@ using Column = MessageDbLib.Constants.TableConstants.OrganisationKeyColumn;
 
 namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-   public class OrganisationKeyRepository : IOrganisationKeyRepository
+   public class OrganisationKeyRepository : BaseRepository, IOrganisationKeyRepository
    {
-      protected readonly string connectionString;
-      protected readonly IRepoTransaction repoTransaction;
-      protected readonly bool transactionModeEnabled = false;
+      //protected readonly string connectionString;
+      //protected readonly IRepoTransaction repoTransaction;
+      //protected readonly bool transactionModeEnabled = false;
       public virtual string TableName { get; protected set; } = "dbo.OrganisationKeyTable";
 
-      public OrganisationKeyRepository(string connectionString)
+      public OrganisationKeyRepository(string connectionString) :
+         base(connectionString)
       {
-         this.connectionString = connectionString;
+         //this.connectionString = connectionString;
       }
 
-      public OrganisationKeyRepository(string connectionString, IRepoTransaction repoTransaction)
+      public OrganisationKeyRepository(string connectionString,
+         IRepoTransaction repoTransaction) : base(connectionString,
+            repoTransaction)
       {
-         this.connectionString = connectionString;
-         this.repoTransaction = repoTransaction;
-         this.transactionModeEnabled = true;
+         //this.connectionString = connectionString;
+         //this.repoTransaction = repoTransaction;
+         //this.transactionModeEnabled = true;
       }
 
       public OrganisationKey GetOrganisationKeyMatchingName(string name)
@@ -198,7 +201,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
          return columns;
       }
 
-      protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
+      /*protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
          string connectionString)
       {
          if (transactionModeEnabled &&
@@ -217,6 +220,6 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
       protected object GetDBValue(object value)
       {
          return DbValueUtil.GetValidValue(value);
-      }
+      }*/
    }
 }

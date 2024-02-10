@@ -14,23 +14,25 @@ using Column = MessageDbLib.Constants.TableConstants.UserColumn;
 
 namespace MessageDbLib.DbRepository.ADO.MsSql
 {
-	public class UserRepository : IUserRepository
+	public class UserRepository : BaseRepository, IUserRepository
 	{
-		protected readonly string connectionString;
-		protected readonly IRepoTransaction repoTransaction;
-		protected readonly bool transactionModeEnabled = false;
+		//protected readonly string connectionString;
+		//protected readonly IRepoTransaction repoTransaction;
+		//protected readonly bool transactionModeEnabled = false;
 		public virtual string TableName { get; protected set; } = "dbo.UserTable";
 
-		public UserRepository(string connectionString)
+		public UserRepository(string connectionString) :
+			base(connectionString)
 		{
 			this.connectionString = connectionString;
 		}
 
-		public UserRepository(string connectionString, IRepoTransaction repoTransaction)
+		public UserRepository(string connectionString, IRepoTransaction repoTransaction) :
+			base(connectionString, repoTransaction)
 		{
-			this.connectionString = connectionString;
-			this.repoTransaction = repoTransaction;
-			this.transactionModeEnabled = true;
+			//this.connectionString = connectionString;
+			//this.repoTransaction = repoTransaction;
+			//this.transactionModeEnabled = true;
 		}
 
 		public List<User> GetAllUsers()
@@ -227,14 +229,14 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] sqlParameters = new SqlParameter[]
 			{
-				new SqlParameter(Prmetr.USERNAME, GetValidValue(user.UserName)),
-				new SqlParameter(Prmetr.PASSWORD, GetValidValue(user.Password)),
-				new SqlParameter(Prmetr.EMAIL_ADDRESS, GetValidValue(user.EmailAddress)),
-				new SqlParameter(Prmetr.FIRSTNAME, GetValidValue(user.FirstName)),
-				new SqlParameter(Prmetr.SECONDNAME, GetValidValue(user.Surname)),
-				new SqlParameter(Prmetr.DOB, GetValidValue(user.DOB)),
-				new SqlParameter(Prmetr.GENDER, GetValidValue(user.Gender)),
-				new SqlParameter(Prmetr.IS_ADVANCED_USER, GetValidValue(false))
+				new SqlParameter(Prmetr.USERNAME, GetDBValue(user.UserName)),
+				new SqlParameter(Prmetr.PASSWORD, GetDBValue(user.Password)),
+				new SqlParameter(Prmetr.EMAIL_ADDRESS, GetDBValue(user.EmailAddress)),
+				new SqlParameter(Prmetr.FIRSTNAME, GetDBValue(user.FirstName)),
+				new SqlParameter(Prmetr.SECONDNAME, GetDBValue(user.Surname)),
+				new SqlParameter(Prmetr.DOB, GetDBValue(user.DOB)),
+				new SqlParameter(Prmetr.GENDER, GetDBValue(user.Gender)),
+				new SqlParameter(Prmetr.IS_ADVANCED_USER, GetDBValue(false))
 			};
 
 			string insertColumns = string.Format("INSERT INTO {0}({1}, {2}, {3}, {4}, {5}, {6}, {7}, {8})", TableName,
@@ -266,16 +268,16 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] sqlParameters = new SqlParameter[]
 			{
-				new SqlParameter(Prmetr.USERNAME, GetValidValue(user.UserName)),
-				new SqlParameter(Prmetr.PASSWORD, GetValidValue(user.Password)),
-				new SqlParameter(Prmetr.EMAIL_ADDRESS, GetValidValue(user.EmailAddress)),
-				new SqlParameter(Prmetr.FIRSTNAME, GetValidValue(user.FirstName)),
-				new SqlParameter(Prmetr.SECONDNAME, GetValidValue(user.Surname)),
-				new SqlParameter(Prmetr.DOB, GetValidValue(user.DOB)),
-				new SqlParameter(Prmetr.GENDER, GetValidValue(user.Gender)),
-				new SqlParameter(Prmetr.IS_ADVANCED_USER, GetValidValue(true)),
-				new SqlParameter(Prmetr.ADVANCED_USER_START_DATE, GetValidValue(user.AdvanceStartDatetime)),
-				new SqlParameter(Prmetr.ADVANCED_USER_END_DATE, GetValidValue(user.AdvanceEndDatetime))
+				new SqlParameter(Prmetr.USERNAME, GetDBValue(user.UserName)),
+				new SqlParameter(Prmetr.PASSWORD, GetDBValue(user.Password)),
+				new SqlParameter(Prmetr.EMAIL_ADDRESS, GetDBValue(user.EmailAddress)),
+				new SqlParameter(Prmetr.FIRSTNAME, GetDBValue(user.FirstName)),
+				new SqlParameter(Prmetr.SECONDNAME, GetDBValue(user.Surname)),
+				new SqlParameter(Prmetr.DOB, GetDBValue(user.DOB)),
+				new SqlParameter(Prmetr.GENDER, GetDBValue(user.Gender)),
+				new SqlParameter(Prmetr.IS_ADVANCED_USER, GetDBValue(true)),
+				new SqlParameter(Prmetr.ADVANCED_USER_START_DATE, GetDBValue(user.AdvanceStartDatetime)),
+				new SqlParameter(Prmetr.ADVANCED_USER_END_DATE, GetDBValue(user.AdvanceEndDatetime))
 			};
 
 			string insertColumns = string.Format("INSERT INTO {0}({1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10})",
@@ -336,13 +338,13 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] sqlParameters = new SqlParameter[]
 			{
-				new SqlParameter(Prmetr.ID, GetValidValue(user.Id)),
-				new SqlParameter(Prmetr.PASSWORD, GetValidValue(user.Password)),
-				new SqlParameter(Prmetr.FIRSTNAME, GetValidValue(user.FirstName)),
-				new SqlParameter(Prmetr.SECONDNAME, GetValidValue(user.Surname)),
-				new SqlParameter(Prmetr.DOB, GetValidValue(user.DOB)),
-				new SqlParameter(Prmetr.GENDER, GetValidValue(user.Gender)),
-				new SqlParameter(Prmetr.EMAIL_ADDRESS, GetValidValue(user.EmailAddress))
+				new SqlParameter(Prmetr.ID, GetDBValue(user.Id)),
+				new SqlParameter(Prmetr.PASSWORD, GetDBValue(user.Password)),
+				new SqlParameter(Prmetr.FIRSTNAME, GetDBValue(user.FirstName)),
+				new SqlParameter(Prmetr.SECONDNAME, GetDBValue(user.Surname)),
+				new SqlParameter(Prmetr.DOB, GetDBValue(user.DOB)),
+				new SqlParameter(Prmetr.GENDER, GetDBValue(user.Gender)),
+				new SqlParameter(Prmetr.EMAIL_ADDRESS, GetDBValue(user.EmailAddress))
 			};
 
 			string updateTable = string.Format("UPDATE {0} SET", TableName);
@@ -372,15 +374,15 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] sqlParameters = new SqlParameter[]
 			{
-				new SqlParameter(Prmetr.ID, GetValidValue(advancedUser.Id)),
-				new SqlParameter(Prmetr.PASSWORD, GetValidValue(advancedUser.Password)),
-				new SqlParameter(Prmetr.FIRSTNAME, GetValidValue(advancedUser.FirstName)),
-				new SqlParameter(Prmetr.SECONDNAME, GetValidValue(advancedUser.Surname)),
-				new SqlParameter(Prmetr.DOB, GetValidValue(advancedUser.DOB)),
-				new SqlParameter(Prmetr.GENDER, GetValidValue(advancedUser.Gender)),
-				new SqlParameter(Prmetr.EMAIL_ADDRESS, GetValidValue(advancedUser.EmailAddress)),
-				new SqlParameter(Prmetr.ADVANCED_USER_START_DATE, GetValidValue(advancedUser.AdvanceStartDatetime)),
-				new SqlParameter(Prmetr.ADVANCED_USER_END_DATE, GetValidValue(advancedUser.AdvanceEndDatetime))
+				new SqlParameter(Prmetr.ID, GetDBValue(advancedUser.Id)),
+				new SqlParameter(Prmetr.PASSWORD, GetDBValue(advancedUser.Password)),
+				new SqlParameter(Prmetr.FIRSTNAME, GetDBValue(advancedUser.FirstName)),
+				new SqlParameter(Prmetr.SECONDNAME, GetDBValue(advancedUser.Surname)),
+				new SqlParameter(Prmetr.DOB, GetDBValue(advancedUser.DOB)),
+				new SqlParameter(Prmetr.GENDER, GetDBValue(advancedUser.Gender)),
+				new SqlParameter(Prmetr.EMAIL_ADDRESS, GetDBValue(advancedUser.EmailAddress)),
+				new SqlParameter(Prmetr.ADVANCED_USER_START_DATE, GetDBValue(advancedUser.AdvanceStartDatetime)),
+				new SqlParameter(Prmetr.ADVANCED_USER_END_DATE, GetDBValue(advancedUser.AdvanceEndDatetime))
 			};
 
 			string updateTable = string.Format("UPDATE {0} SET", TableName);
@@ -416,7 +418,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			{
 				SqlParameter[] sqlParameters = new SqlParameter[]
 				{
-					new SqlParameter(Prmetr.ID, GetValidValue(user.Id))
+					new SqlParameter(Prmetr.ID, GetDBValue(user.Id))
 				};
 
 				string sqlQuery = string.Format("DELETE FROM {0} WHERE {1} = {2}", TableName,
@@ -456,7 +458,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			return columns;
 		}
 
-		protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
+		/*protected MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
 			string connectionString)
 		{
 			if (transactionModeEnabled &&
@@ -475,6 +477,6 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		protected object GetValidValue(object value)
 		{
 			return DbValueUtil.GetValidValue(value);
-		}
+		}*/
 	}
 }
