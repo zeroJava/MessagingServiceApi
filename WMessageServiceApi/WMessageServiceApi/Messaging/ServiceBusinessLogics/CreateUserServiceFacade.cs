@@ -81,7 +81,9 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 		private bool UsernameAlreadyExist(string userName)
 		{
-			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
+			IUserRepository userRepo = UserRepoFactory.GetUserRepository(
+				DatabaseOption.DatabaseEngine,
+				DatabaseOption.DbConnectionString);
 			//Func<User, bool> funcQuery = u => string.Equals(u.USERNAME, userName, StringComparison.InvariantCultureIgnoreCase);
 			User user = userRepo.GetUserMatchingUsername(userName);
 			return user != null;

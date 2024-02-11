@@ -3,14 +3,13 @@ using MessageDbCore.RepoEntity;
 using MessageDbCore.Repositories;
 using MessageDbLib.DbEngine;
 using MessageDbLib.Extensions;
-using MessageDbLib.Utility;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
-using Prmetr = MessageDbLib.Constants.TableConstants.UserParameter;
 using Column = MessageDbLib.Constants.TableConstants.UserColumn;
+using Prmetr = MessageDbLib.Constants.TableConstants.UserParameter;
 
 namespace MessageDbLib.DbRepository.ADO.MsSql
 {
@@ -39,9 +38,9 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			try
 			{
-            QueryBody queryBody = GetAllUsersQuery();
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, null, 
-               connectionString))
+				QueryBody queryBody = GetAllUsersQuery();
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, null,
+					connectionString))
 				{
 					List<User> users = new List<User>();
 					mssqlDbEngine.ExecuteReaderQuery(users, OnPopulateResultListCallBack);
@@ -54,17 +53,17 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 		}
 
-      private QueryBody GetAllUsersQuery()
-      {
-         SqlParameter[] sqlParameters = new SqlParameter[0];
+		private QueryBody GetAllUsersQuery()
+		{
+			SqlParameter[] sqlParameters = new SqlParameter[0];
 
-         string columns = GetSelectColumns();
-         string query = string.Format("SELECT {0} FROM {1}", columns, TableName);
+			string columns = GetSelectColumns();
+			string query = string.Format("SELECT {0} FROM {1}", columns, TableName);
 
-         return new QueryBody(query, sqlParameters);
-      }
+			return new QueryBody(query, sqlParameters);
+		}
 
-      public User GetUserMatchingId(long id)
+		public User GetUserMatchingId(long id)
 		{
 			try
 			{

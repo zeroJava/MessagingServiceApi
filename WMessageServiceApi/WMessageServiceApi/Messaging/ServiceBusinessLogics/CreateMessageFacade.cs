@@ -5,57 +5,39 @@ using MessageDbLib.Configurations;
 using MessageDbLib.Constants;
 using MessageDbLib.DbRepositoryFactories;
 using System;
-using WMessageServiceApi.Authentication;
-using WMessageServiceApi.Logging;
 using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 using WMessageServiceApi.Messaging.DataEnumerations;
 using Transaction = MessageDbLib.DbRepositoryFactories.RepoTransactionFactory;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public class CreateMessageFacade
+	public class CreateMessageFacade : BaseFacade
 	{
 		public MessageRequestTokenContract CreateMessage(IMessageContract message)
 		{
 			ValidateAccessToken(message.AccessToken);
+			CheckMessageContent(message);
 
-			if (message.EmailAccounts == null || message.EmailAccounts.Count <= 0)
-			{
-				throw new InvalidOperationException("Message contract does not have" +
-					" ant emails attahed.");
-			}
-
-			LogInfo(string.Format("Going to create message. Message content\n{0}",
-				message.Message));
+			LogInfo("Saving message");
 			Message newMessage = CreateNewMessage(message);
 			ProcessNewMessage(message, newMessage);
 			//PersistMessageToMongoDbService(newMessage);
-
-			return CreateMessageStateTokenContract(MessageReceivedState.AcknowledgedRequest,
-				"Message was successfully acknowledged and persisted in our system.");
-		}
-
-		private void ValidateAccessToken(string encryptedToken)
-		{
-			string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
-			IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
-			TokenValidationResult result = tokenValidator.IsTokenValid(encryptedToken);
-
-			if (!result.IsValidationSuccess)
+			var requestToken = new MessageRequestTokenContract
 			{
-				throw new TokenValidationException(result.Message, result.Status);
-			}
-		}
-
-		private MessageRequestTokenContract CreateMessageStateTokenContract(
-			MessageReceivedState recievedState,
-			string message)
-		{
-			return new MessageRequestTokenContract
-			{
-				MessageRecievedState = recievedState,
-				Message = message
+				MessageRecievedState = MessageReceivedState.AcknowledgedRequest,
+				Message = "Message was successfully acknowledged and persisted" +
+				"in our system."
 			};
+			return requestToken;
+		}
+
+		private void CheckMessageContent(IMessageContract message)
+		{
+			if (message.EmailAccounts == null || message.EmailAccounts.Count <= 0)
+			{
+				throw new InvalidOperationException("Message contract does not have" +
+					" any emails attahed.");
+			}
 		}
 
 		private Message CreateNewMessage(IMessageContract messageContract)
@@ -74,8 +56,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		private User RetrieveUser(string userName)
 		{
 			IUserRepository userRepo = UserRepoFactory.GetUserRepository(
-				DatabaseOption.DatabaseEngine,
-				DatabaseOption.DbConnectionString);
+				DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
 			User user = userRepo.GetUserMatchingUsername(userName);
 			return user ?? throw new InvalidOperationException("Sender could not" +
 				"be found in our current repo");
@@ -96,9 +77,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				}
 				catch (Exception exception)
 				{
-					var logMessage = $"Unabled to process new message request\n" +
-						$"{exception}";
-					LogError("Unable to process new message request");
+					LogError("Unable to process new message request", exception);
 					repoTransaction.Callback();
 					throw;
 				}
@@ -161,15 +140,5 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				 //throw new FaultException<MessageQueueErrorContract>(error);
 			 }
 		 }*/
-
-		private void LogError(string message)
-		{
-			AppLog.LogError(message);
-		}
-
-		private void LogInfo(string message)
-		{
-			AppLog.LogInfo(message + ".");
-		}
 	}
 }
