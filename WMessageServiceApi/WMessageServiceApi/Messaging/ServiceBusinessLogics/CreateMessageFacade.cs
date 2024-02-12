@@ -13,15 +13,38 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
 	public class CreateMessageFacade : BaseFacade
 	{
-		public MessageRequestTokenContract CreateMessage(IMessageContract message)
+		public MessageRequestTokenContract CreateMessage(IMessageContract contract)
 		{
-			ValidateAccessToken(message.AccessToken);
-			CheckMessageContent(message);
+			ValidateAccessToken(contract.AccessToken);
+			CheckMessageContent(contract);
 
-			LogInfo("Saving message");
-			Message newMessage = CreateNewMessage(message);
-			ProcessNewMessage(message, newMessage);
-			//PersistMessageToMongoDbService(newMessage);
+			LogInfo("Saving contract");
+			User user = RetrieveUser(contract.UserName);
+			Message msg = new Message
+			{
+				MessageText = contract.Message,
+				SenderId = user.Id,
+				SenderEmailAddress = user.EmailAddress,
+				MessageCreated = contract.MessageCreated
+			};
+			using (IRepoTransaction repoTransaction = Transaction.GetRepoTransaction(
+				DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString))
+			{
+				try
+				{
+					repoTransaction.BeginTransaction();
+					PersistMessage(msg, repoTransaction);
+					ProcessMessageDispatch(contract, msg, repoTransaction);
+					repoTransaction.Commit();
+				}
+				catch (Exception exception)
+				{
+					LogError("Could not save message to DB", exception);
+					repoTransaction.Callback();
+					throw;
+				}
+			}
+			//PersistMessageToMongoDbService(msg);
 			var requestToken = new MessageRequestTokenContract
 			{
 				MessageRecievedState = MessageReceivedState.AcknowledgedRequest,
@@ -40,19 +63,6 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			}
 		}
 
-		private Message CreateNewMessage(IMessageContract messageContract)
-		{
-			User user = RetrieveUser(messageContract.UserName);
-			Message newMessage = new Message
-			{
-				MessageText = messageContract.Message,
-				SenderId = user.Id,
-				SenderEmailAddress = user.EmailAddress,
-				MessageCreated = messageContract.MessageCreated
-			};
-			return newMessage;
-		}
-
 		private User RetrieveUser(string userName)
 		{
 			IUserRepository userRepo = UserRepoFactory.GetUserRepository(
@@ -60,28 +70,6 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			User user = userRepo.GetUserMatchingUsername(userName);
 			return user ?? throw new InvalidOperationException("Sender could not" +
 				"be found in our current repo");
-		}
-
-		private void ProcessNewMessage(IMessageContract messageContract,
-			Message message)
-		{
-			using (IRepoTransaction repoTransaction = Transaction.GetRepoTransaction(
-				DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString))
-			{
-				try
-				{
-					repoTransaction.BeginTransaction();
-					PersistMessage(message, repoTransaction);
-					ProcessMessageDispatch(messageContract, message, repoTransaction);
-					repoTransaction.Commit();
-				}
-				catch (Exception exception)
-				{
-					LogError("Unable to process new message request", exception);
-					repoTransaction.Callback();
-					throw;
-				}
-			}
 		}
 
 		private void PersistMessage(Message message,
@@ -95,10 +83,9 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		}
 
 		private void ProcessMessageDispatch(IMessageContract messageContract,
-			Message message,
-			IRepoTransaction repoTransaction)
+			Message message, IRepoTransaction repoTransaction)
 		{
-			foreach (var emailAddress in messageContract.EmailAccounts)
+			foreach (string emailAddress in messageContract.EmailAccounts)
 			{
 				MessageDispatch messageDispatch = new MessageDispatch
 				{
@@ -120,23 +107,23 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			LogInfo("Message-Dispatch persisting was successful");
 		}
 
-		/*private void PersistMessageToMongoDbService(Message message)
+		/*private void PersistMessageToMongoDbService(Message contract)
 		 {
 			 try
 			 {
 				 RabbitMqProducerClass rabbitMqProducer = new RabbitMqProducerClass(QueueTypeConstant.MongoDbPersistentUserService,
 					 QueueTypeConstant.MongoDbPersistentUserService);
-				 rabbitMqProducer.ExecuteMessageQueueing(message);
-				 WriteInfoLog("Queueing message to Message-Queue was successful.");
+				 rabbitMqProducer.ExecuteMessageQueueing(contract);
+				 WriteInfoLog("Queueing contract to Message-Queue was successful.");
 			 }
 			 catch (Exception exception)
 			 {
 				 MessageQueueErrorContract error = new MessageQueueErrorContract()
 				 {
-					 Message = "Error encountered when trying to queue to message queue.",
+					 Message = "Error encountered when trying to queue to contract queue.",
 					 ExceptionMessage = exception.Message
 				 };
-				 WriteErrorLog("Error encountered when queueing message to Message-Queue.", exception);
+				 WriteErrorLog("Error encountered when queueing contract to Message-Queue.", exception);
 				 //throw new FaultException<MessageQueueErrorContract>(error);
 			 }
 		 }*/
