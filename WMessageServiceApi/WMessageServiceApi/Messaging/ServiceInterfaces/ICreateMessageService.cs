@@ -7,6 +7,6 @@ namespace WMessageServiceApi.Messaging.ServiceInterfaces
 	public interface ICreateMessageService
 	{
 		[OperationContract]
-		MessageRequestTokenContract CreateMessage(MessageContract message);
+		MessageRequestTokenContract CreateMessage(MessageRequest message);
 	}
 }

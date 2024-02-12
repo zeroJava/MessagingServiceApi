@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 {
-	public interface IMessageContract
+	public interface IMessageRequest
 	{
 		string AccessToken { get; set; }
 		string UserName { get; set; }

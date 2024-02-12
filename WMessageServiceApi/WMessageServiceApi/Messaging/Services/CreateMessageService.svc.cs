@@ -11,7 +11,7 @@ namespace WMessageServiceApi.Messaging.Services
 {
 	public class CreateMessageService : BaseService, ICreateMessageService
 	{
-		public MessageRequestTokenContract CreateMessage(MessageContract message)
+		public MessageRequestTokenContract CreateMessage(MessageRequest message)
 		{
 			try
 			{

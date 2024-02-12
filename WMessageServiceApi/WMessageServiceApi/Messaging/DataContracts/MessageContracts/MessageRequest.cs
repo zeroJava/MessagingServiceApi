@@ -5,9 +5,9 @@ using System.Runtime.Serialization;
 namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 {
 	[DataContract]
-	[KnownType(typeof(PictureMessageContract))]
-	[KnownType(typeof(VideoMessageContract))]
-	public class MessageContract : IMessageContract
+	[KnownType(typeof(PictureMessageRequest))]
+	[KnownType(typeof(VideoMessageRequest))]
+	public class MessageRequest : IMessageRequest
 	{
 		[DataMember]
 		public string AccessToken { get; set; }
