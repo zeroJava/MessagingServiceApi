@@ -9,7 +9,7 @@ using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public class RetrieveMessageServiceFacade : BaseFacade
+	public class RetrieveMessageServiceBl : BaseBusinessLayer
 	{
 		public List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
 		{
@@ -43,7 +43,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		private IUserRepository GetUserRepository()
 		{
 			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine,
-				 DatabaseOption.DbConnectionString);
+				DatabaseOption.DbConnectionString);
 			return userRepo;
 		}
 
@@ -81,7 +81,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		private IMessageDispatchRepository GetMessageDispatchRepository()
 		{
 			return MessageDispatchRepoFactory.GetDispatchRepository(DatabaseOption.DatabaseEngine,
-				 DatabaseOption.DbConnectionString);
+				DatabaseOption.DbConnectionString);
 		}
 
 		private void AssignMessagesToDispatch(List<MessageDispatch> messageDispatches, long[] messageIds)
@@ -107,7 +107,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		private IMessageRepository GetMessageRepository()
 		{
 			return MessageRepoFactory.GetMessageRepository(DatabaseOption.DatabaseEngine,
-				 DatabaseOption.DbConnectionString);
+				DatabaseOption.DbConnectionString);
 		}
 
 		private List<MessageDispatchInfoContract> CreateDispatchInfoList(
@@ -159,24 +159,30 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			{
 				throw new ApplicationException("Username value passed is empty.");
 			}
-
 			User user = GetUserMatchingUsername(username) ??
-				throw new ApplicationException("Could not find a matching Username.");
-			string infotext = string.Format("Getting messages between sender: {0} and receiver: {1}.",
-				 messageRequest.SenderEmailAddress,
-				 messageRequest.ReceiverEmailAddress);
-			LogInfo(infotext);
+				throw new ApplicationException($"Could not find user matching {username}");
+			List<MessageDispatchInfoContract> dispatchInfos =
+				GetDispatchesBetweenSenderReceiver(messageRequest, user);
+
+			return dispatchInfos;
+		}
+
+		private List<MessageDispatchInfoContract> GetDispatchesBetweenSenderReceiver(
+			IRetrieveMessageRequest messageRequest, User user)
+		{
+			LogInfo($"Getting messages between {messageRequest.SenderEmailAddress} and" +
+				$" {messageRequest.ReceiverEmailAddress}");
 
 			IMessageDispatchRepository dispatchRepo = GetMessageDispatchRepository();
-			List<MessageDispatch> messageDispatches = dispatchRepo.GetDispatchesBetweenSenderReceiver(
-				messageRequest.SenderEmailAddress,
-				messageRequest.ReceiverEmailAddress,
-				messageRequest.MessageIdThreshold,
-				messageRequest.NumberOfMessages);
-			List<MessageDispatchInfoContract> messageDispatchInfos = CreateDispatchInfoList(
-				messageDispatches, user.Id);
-
-			return messageDispatchInfos;
+			List<MessageDispatch> dispatches =
+				dispatchRepo.GetDispatchesBetweenSenderReceiver(
+					messageRequest.SenderEmailAddress,
+					messageRequest.ReceiverEmailAddress,
+					messageRequest.MessageIdThreshold,
+					messageRequest.NumberOfMessages);
+			List<MessageDispatchInfoContract> dispatchInfos =
+				CreateDispatchInfoList(dispatches, user.Id);
+			return dispatchInfos;
 		}
 	}
 }

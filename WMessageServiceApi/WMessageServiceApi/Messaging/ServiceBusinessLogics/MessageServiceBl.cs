@@ -11,7 +11,7 @@ using Transaction = MessageDbLib.DbRepositoryFactories.RepoTransactionFactory;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public class CreateMessageFacade : BaseFacade
+	public class MessageServiceBl : BaseBusinessLayer
 	{
 		public MessageRequestTokenContract CreateMessage(IMessageContract contract)
 		{

@@ -8,7 +8,7 @@ using WMessageServiceApi.Messaging.DataContracts.UserContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public class CreateUserServiceFacade
+	public class CreateUserServiceBl
 	{
 		public void CreateNewAdvancedUser(NewAdvancedUserDataContract advanceUserContract)
 		{
@@ -25,8 +25,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 		public void CreateNewUser(INewUserDataContract userContract)
 		{
-			if (userContract.UserName != null &&
-				userContract.UserName != "" &&
+			if (userContract.UserName != null && userContract.UserName != "" &&
 				UsernameAlreadyExist(userContract.UserName))
 			{
 				throw new InvalidOperationException("This username has already been taken.");

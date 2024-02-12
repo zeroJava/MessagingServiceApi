@@ -9,48 +9,32 @@ using WMessageServiceApi.Messaging.ServiceInterfaces;
 
 namespace WMessageServiceApi.Messaging.Services
 {
-	public class CreateMessageService : ICreateMessageService
+	public class CreateMessageService : BaseService, ICreateMessageService
 	{
 		public MessageRequestTokenContract CreateMessage(MessageContract message)
 		{
 			try
 			{
-				var createMessageFacade = new CreateMessageFacade();
+				MessageServiceBl createMessageFacade = new MessageServiceBl();
 				return createMessageFacade.CreateMessage(message);
 			}
 			catch (TokenValidationException exception)
 			{
-				string exMessage = "Encontered a token validation error when " +
-					"trying to create a message.";
-				LogError(exMessage + "\n" + exception.ToString());
-
-				ErrorContract error = new ErrorContract(exMessage,
+				LogError("Error validationg token\n" + exception.ToString());
+				ErrorContract error = new ErrorContract("Error validating token",
 					StatusList.VALIDATION_ERROR);
 				throw new FaultException<ErrorContract>(error);
 			}
 			catch (Exception exception)
 			{
-				string exMessage = "Encontered an error when trying to create a message.";
-				LogError(exMessage + "\n" + exception.ToString());
-
-				MessageRequestTokenContract tokenContract = CreateMessageStateTokenContract(
-					MessageReceivedState.FailedToProcessRequest, exception.Message);
+				LogError("Error creating message\n" + exception.ToString());
+				var tokenContract = new MessageRequestTokenContract
+				{
+					MessageRecievedState = MessageReceivedState.FailedToProcessRequest,
+					Message = exception.Message,
+				};
 				throw new FaultException<MessageRequestTokenContract>(tokenContract);
 			}
-		}
-
-		private MessageRequestTokenContract CreateMessageStateTokenContract(MessageReceivedState recievedState, string message)
-		{
-			return new MessageRequestTokenContract
-			{
-				MessageRecievedState = recievedState,
-				Message = message
-			};
-		}
-
-		private void LogError(string message)
-		{
-			Logging.AppLog.LogError(message);
 		}
 	}
 }
