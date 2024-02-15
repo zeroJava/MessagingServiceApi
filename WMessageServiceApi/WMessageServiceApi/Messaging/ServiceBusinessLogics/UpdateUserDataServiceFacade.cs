@@ -20,7 +20,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			{
 				string message = userContract == null ?
 					"The user contract, recieved is null." : "Username is empty";
-				ThrowEntityErrorMessage(message, StatusList.PROCESS_ERROR);
+				ThrowEntityErrorMessage(message, StatusList.ProcessError);
 			}
 			User user = GetUserEntityObject(userContract.UserName);
 			if (user == null)

@@ -14,7 +14,7 @@ namespace MessageDbCore.DbRepositoryInterfaces
 		List<MessageDispatch> GetAllDispatches();
 		List<MessageDispatch> GetDispatchesMatchingMessageId(long messageId);
 		List<MessageDispatch> GetDispatchesMatchingEmail(string email);
-		List<MessageDispatch> GetDispatchesNotReceivedMatchingEmail(string email);
+		List<MessageDispatch> GetDispatchesNotReceived(string email);
 		List<MessageDispatch> GetDispatchesBetweenSenderReceiver(string senderEmailAddress, string receiverEmailAddress,
 			 long messageIdThreshold,
 			 int numberOfMessages);

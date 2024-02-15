@@ -15,14 +15,14 @@ namespace WMessageServiceApi.Messaging.Services
 		{
 			try
 			{
-				MessageServiceBl createMessageFacade = new MessageServiceBl();
+				MessageLogic createMessageFacade = new MessageLogic();
 				return createMessageFacade.CreateMessage(message);
 			}
 			catch (TokenValidationException exception)
 			{
 				LogError("Error validationg token\n" + exception.ToString());
 				ErrorContract error = new ErrorContract("Error validating token",
-					StatusList.VALIDATION_ERROR);
+					StatusList.ValidationError);
 				throw new FaultException<ErrorContract>(error);
 			}
 			catch (Exception exception)

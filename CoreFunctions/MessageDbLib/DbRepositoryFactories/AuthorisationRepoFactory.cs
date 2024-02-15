@@ -12,7 +12,7 @@ namespace MessageDbLib.DbRepositoryFactories
 		{
 			switch (databaseEngineOption)
 			{
-				case DatabaseEngineConstant.MSSQLADODOTNET:
+				case DatabaseEngineConstant.MsSqlAdoDotNet:
 					{
 						IAuthorisationRepository authorisationRepository =
 							new DbRepository.ADO.MsSql.AuthorisationRepository(connectionString);
@@ -32,7 +32,7 @@ namespace MessageDbLib.DbRepositoryFactories
 		{
 			switch (databaseEngineOption)
 			{
-				case DatabaseEngineConstant.MSSQLADODOTNET:
+				case DatabaseEngineConstant.MsSqlAdoDotNet:
 					{
 						RepoTransaction repoTransactionMsSql = repoTransaction as RepoTransaction;
 						if (repoTransactionMsSql == null)

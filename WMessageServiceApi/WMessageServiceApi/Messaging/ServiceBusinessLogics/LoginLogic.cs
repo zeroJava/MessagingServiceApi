@@ -6,7 +6,7 @@ using WMessageServiceApi.Messaging.DataContracts.LoginContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public class LoginServiceBl : BaseBusinessLayer
+	public class LoginLogic : BaseLogic
 	{
 		public LoginTokenContract ExecuteEncryptedLoginIn(string encryptedUser, string encryptedPassword)
 		{

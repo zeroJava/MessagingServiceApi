@@ -19,7 +19,7 @@ namespace WMessageServiceApi.Messaging.Services
 			}
 			catch (Exception exception)
 			{
-				ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.ProcessError);
 				throw new FaultException<ErrorContract>(error);
 			}
 		}
@@ -33,7 +33,7 @@ namespace WMessageServiceApi.Messaging.Services
 			}
 			catch (Exception exception)
 			{
-				ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.ProcessError);
 				throw new FaultException<ErrorContract>(error);
 			}
 		}

@@ -11,7 +11,7 @@ namespace MessageDbLib.DbRepositoryFactories
 		{
 			switch (databaseEngineOption)
 			{
-				case DatabaseEngineConstant.MSSQLADODOTNET:
+				case DatabaseEngineConstant.MsSqlAdoDotNet:
 					{
 						return new RepoTransaction(connectionString);
 					}

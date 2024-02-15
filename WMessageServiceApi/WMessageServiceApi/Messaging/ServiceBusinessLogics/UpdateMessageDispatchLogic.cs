@@ -7,11 +7,11 @@ using WMessageServiceApi.Logging;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public static class UpdateMessageDispatchServiceFacade
+	public static class UpdateMessageDispatchLogic
 	{
 		public static void UpdateDispatchAsReceived(long dispatchId, DateTime receivedDateTime)
 		{
-			WriteInfoLog(string.Format("Recieved dispatch update request for dispatch (id): {0}.", dispatchId));
+			WriteInfoLog($"Recieved dispatch update request for dispatch (id): {dispatchId}");
 
 			IMessageDispatchRepository dispatchRepo = GetDispatchRepository();
 			MessageDispatch dispatch = dispatchRepo.GetDispatchMatchingId(dispatchId);

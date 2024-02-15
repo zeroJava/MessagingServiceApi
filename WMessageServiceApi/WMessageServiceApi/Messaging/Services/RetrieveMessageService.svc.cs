@@ -16,19 +16,19 @@ namespace WMessageServiceApi.Messaging.Services
 		{
 			try
 			{
-				RetrieveMessageServiceBl retrieveMessageBL = new RetrieveMessageServiceBl();
+				RetrieveMessageLogic retrieveMessageBL = new RetrieveMessageLogic();
 				return retrieveMessageBL.GetMessagesSentToUser(messageRequest);
 			}
 			catch (TokenValidationException exception)
 			{
 				LogError("Encontered a token validation error getting messages set to user.", exception);
-				ErrorContract error = new ErrorContract(exception.Message, StatusList.VALIDATION_ERROR);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.ValidationError);
 				throw new FaultException<ErrorContract>(error);
 			}
 			catch (Exception exception)
 			{
 				LogError("Error encountered when getting messages-sent-to-user.", exception);
-				ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.ProcessError);
 				throw new FaultException<ErrorContract>(error);
 			}
 		}
@@ -37,19 +37,19 @@ namespace WMessageServiceApi.Messaging.Services
 		{
 			try
 			{
-				RetrieveMessageServiceBl retrieveMessageBL = new RetrieveMessageServiceBl();
+				RetrieveMessageLogic retrieveMessageBL = new RetrieveMessageLogic();
 				return retrieveMessageBL.GetMsgDispatchesBetweenSenderReceiver(messageRequest);
 			}
 			catch (TokenValidationException exception)
 			{
 				LogError("Encontered a token validation error getting messages between sender and receiver.", exception);
-				ErrorContract error = new ErrorContract(exception.Message, StatusList.VALIDATION_ERROR);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.ValidationError);
 				throw new FaultException<ErrorContract>(error);
 			}
 			catch (Exception exception)
 			{
 				LogError("Error encountered when Getting-Message-Dispatches-Between-Sender-Receiver.", exception);
-				ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.ProcessError);
 				throw new FaultException<ErrorContract>(error);
 			}
 		}

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace WMessageServiceApi.Messaging.Services
+﻿namespace WMessageServiceApi.Messaging.Services
 {
 	public abstract class BaseService
 	{

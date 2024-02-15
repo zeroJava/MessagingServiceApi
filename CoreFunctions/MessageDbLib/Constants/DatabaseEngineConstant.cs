@@ -13,7 +13,7 @@
 	{
 		//Mssql_EntityFramework,
 		//Mysql_EntityFramework,
-		MSSQLADODOTNET,
+		MsSqlAdoDotNet,
 		//Mysql_CustomEngine,
 	}
 }

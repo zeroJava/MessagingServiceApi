@@ -9,9 +9,10 @@ using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public class RetrieveMessageServiceBl : BaseBusinessLayer
+	public class RetrieveMessageLogic : BaseLogic
 	{
-		public List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
+		public List<MessageDispatchInfoContract> GetMessagesSentToUser(
+			IRetrieveMessageRequest messageRequest)
 		{
 			ValidateAccessToken(messageRequest.UserAccessToken);
 			CheckRequestContent(messageRequest);
@@ -42,12 +43,13 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 		private IUserRepository GetUserRepository()
 		{
-			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine,
-				DatabaseOption.DbConnectionString);
+			IUserRepository userRepo = UserRepoFactory.GetUserRepository(
+				DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
 			return userRepo;
 		}
 
-		private List<MessageDispatchInfoContract> MessagesSentToUser(long? userId, string receiverEmailAddress)
+		private List<MessageDispatchInfoContract> MessagesSentToUser(long? userId,
+			string receiverEmailAddress)
 		{
 			List<MessageDispatch> messageDispathes = null;
 
@@ -57,24 +59,21 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				return null;
 			}
 			AssignMessagesToDispatch(messageDispathes, messageIds);
-			List<MessageDispatchInfoContract> dispatchInfos = CreateDispatchInfoList(messageDispathes, userId);
+			List<MessageDispatchInfoContract> dispatchInfos = 
+				GetDispatchInfo(messageDispathes, userId);
 
 			return dispatchInfos;
 		}
 
-		private long[] GetMessageIds(string receiverEmailAddress, ref List<MessageDispatch> messageDispatches)
+		private long[] GetMessageIds(string receiverEmailAddress,
+			ref List<MessageDispatch> messageDispatches)
 		{
-			var dispatchRepo = GetMessageDispatchRepository();
-			messageDispatches = dispatchRepo.GetDispatchesNotReceivedMatchingEmail(receiverEmailAddress);
-			if (messageDispatches == null || messageDispatches.Count() == 0)
-			{
-				return null;
-			}
-			long[] messageids = messageDispatches.Where(mt => mt.MessageId != null)
+			IMessageDispatchRepository dispatchRepo = GetMessageDispatchRepository();
+			messageDispatches = dispatchRepo.GetDispatchesNotReceived(receiverEmailAddress);
+			long[] messageids = messageDispatches?.Where(mt => mt.MessageId != null)
 				.Select(mt => mt.MessageId.Value)
 				.Distinct()
 				.ToArray();
-
 			return messageids;
 		}
 
@@ -84,10 +83,12 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				DatabaseOption.DbConnectionString);
 		}
 
-		private void AssignMessagesToDispatch(List<MessageDispatch> messageDispatches, long[] messageIds)
+		private void AssignMessagesToDispatch(List<MessageDispatch> messageDispatches,
+			long[] messageIds)
 		{
-			var messageRepo = GetMessageRepository();
-			var messages = messageRepo.GetAllMessages().Where(m => messageIds.Any(mi => mi == m.Id))
+			IMessageRepository messageRepo = GetMessageRepository();
+			List<Message> messages = messageRepo.GetAllMessages()
+				?.Where(m => messageIds.Any(mi => mi == m.Id))
 				.ToList();
 			if (messages == null)
 			{
@@ -95,7 +96,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			}
 			foreach (var dispatch in messageDispatches)
 			{
-				var message = messages.FirstOrDefault(m => m.Id == dispatch.MessageId);
+				Message message = messages.FirstOrDefault(m => m.Id == dispatch.MessageId);
 				if (message != null)
 				{
 					dispatch.Message = message;
@@ -110,7 +111,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				DatabaseOption.DbConnectionString);
 		}
 
-		private List<MessageDispatchInfoContract> CreateDispatchInfoList(
+		private List<MessageDispatchInfoContract> GetDispatchInfo(
 			List<MessageDispatch> messageDispatches, long? userId)
 		{
 			try
@@ -118,22 +119,24 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				var msgDispatchinfos = new List<MessageDispatchInfoContract>();
 				foreach (MessageDispatch dispatch in messageDispatches)
 				{
-					bool userIsSender = dispatch.Message.SenderId == userId;
-					MessageDispatchInfoContract dispatchInfo = CreateMessageDispatchInfoObj(
-						dispatch, dispatch.Message, userIsSender);
+					bool isSender = dispatch.Message.SenderId == userId;
+					MessageDispatchInfoContract dispatchInfo = 
+						CreateMessageDispatchInfoObj(dispatch, dispatch.Message,
+						isSender);
 					msgDispatchinfos.Add(dispatchInfo);
 				}
 				return msgDispatchinfos;
 			}
 			catch (Exception exception)
 			{
-				LogError("Error encountered when executing Convert-Message-Dispatch-To-Contract.", exception);
+				LogError("Error encountered when executing Convert-Message-Dispatch-To-Contract.",
+					exception);
 				return null;
 			}
 		}
 
-		private MessageDispatchInfoContract CreateMessageDispatchInfoObj(MessageDispatch messageDispatch, Message message,
-			 bool senderCurrentUser)
+		private MessageDispatchInfoContract CreateMessageDispatchInfoObj(
+			MessageDispatch messageDispatch, Message message, bool senderCurrentUser)
 		{
 			LogInfo("Creating message dispatch info contract.");
 			return new MessageDispatchInfoContract
@@ -150,7 +153,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			};
 		}
 
-		public List<MessageDispatchInfoContract> GetMsgDispatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest)
+		public List<MessageDispatchInfoContract> GetMsgDispatchesBetweenSenderReceiver(
+			IRetrieveMessageRequest messageRequest)
 		{
 			ValidateAccessToken(messageRequest.UserAccessToken);
 
@@ -180,8 +184,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 					messageRequest.ReceiverEmailAddress,
 					messageRequest.MessageIdThreshold,
 					messageRequest.NumberOfMessages);
-			List<MessageDispatchInfoContract> dispatchInfos =
-				CreateDispatchInfoList(dispatches, user.Id);
+			List<MessageDispatchInfoContract> dispatchInfos = GetDispatchInfo(dispatches,
+				user.Id);
 			return dispatchInfos;
 		}
 	}

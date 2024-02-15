@@ -18,7 +18,7 @@ namespace WMessageServiceApi.Messaging.Services
 			}
 			catch (Exception exception)
 			{
-				ThrowEntityErrorMessage(exception.Message, StatusList.PROCESS_ERROR);
+				ThrowEntityErrorMessage(exception.Message, StatusList.ProcessError);
 			}
 		}
 

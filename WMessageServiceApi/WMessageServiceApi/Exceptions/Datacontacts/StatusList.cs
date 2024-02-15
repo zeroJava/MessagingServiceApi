@@ -2,9 +2,9 @@
 {
 	public class StatusList
 	{
-		public const int SUCCESS = 201;
+		public const int Success = 201;
 
-		public const int VALIDATION_ERROR = 401;
-		public const int PROCESS_ERROR = 402;
+		public const int ValidationError = 401;
+		public const int ProcessError = 402;
 	}
 }

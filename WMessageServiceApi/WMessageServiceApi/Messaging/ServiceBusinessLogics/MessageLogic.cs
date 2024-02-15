@@ -1,18 +1,15 @@
-﻿using MessageDbCore.DbRepositoryInterfaces;
-using MessageDbCore.RepoEntity;
+﻿using MessageDbCore.RepoEntity;
 using MessageDbCore.Repositories;
 using MessageDbLib.Configurations;
-using MessageDbLib.Constants;
 using MessageDbLib.DbRepositoryFactories;
 using System;
-using System.Diagnostics.Contracts;
 using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 using WMessageServiceApi.Messaging.DataEnumerations;
 using Transaction = MessageDbLib.DbRepositoryFactories.RepoTransactionFactory;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public class MessageServiceBl : BaseBusinessLayer
+	public class MessageLogic : BaseLogic
 	{
 		public MessageRequestTokenContract CreateMessage(IMessageRequest request)
 		{
@@ -22,8 +19,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			var requestToken = new MessageRequestTokenContract
 			{
 				MessageRecievedState = MessageReceivedState.AcknowledgedRequest,
-				Message = "Message was successfully acknowledged and persisted" +
-				"in our system."
+				Message = "Message was successfully acknowledged and persisted in our system"
 			};
 			return requestToken;
 		}
@@ -32,8 +28,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		{
 			if (request.EmailAccounts == null || request.EmailAccounts.Count <= 0)
 			{
-				throw new InvalidOperationException("Message request does not have" +
-					" any emails attached.");
+				throw new InvalidOperationException(
+					"Message request does not have any emails attached.");
 			}
 		}
 
@@ -50,25 +46,26 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			};
 			ProcessTransaction(msg, request);
 			//PersistMessageToMongoDbService(msg);
+			LogInfo("Request successful");
 		}
 
 		private void ProcessTransaction(Message msg, IMessageRequest request)
 		{
-			using (IRepoTransaction repoTransaction = Transaction.GetRepoTransaction(
-				DatabaseOption.DatabaseEngine,
+			using (var transaction =
+				Transaction.GetRepoTransaction(DatabaseOption.DatabaseEngine,
 				DatabaseOption.DbConnectionString))
 			{
 				try
 				{
-					repoTransaction.BeginTransaction();
-					PersistMessage(msg, repoTransaction);
-					ProcessMessageDispatch(request, msg, repoTransaction);
-					repoTransaction.Commit();
+					transaction.BeginTransaction();
+					PersistMessage(msg, transaction);
+					ProcessMessageDispatch(request, msg, transaction);
+					transaction.Commit();
 				}
 				catch (Exception exception)
 				{
 					LogError("Could not save request to DB", exception);
-					repoTransaction.Callback();
+					transaction.Callback();
 					throw;
 				}
 			}
@@ -76,32 +73,27 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 		private User RetrieveUser(string userName)
 		{
-			IUserRepository userRepo = UserRepoFactory.GetUserRepository(
-				DatabaseOption.DatabaseEngine,
+			var userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine,
 				DatabaseOption.DbConnectionString);
 			User user = userRepo.GetUserMatchingUsername(userName);
-			return user ?? throw new InvalidOperationException("Sender could not" +
-				"be found in our current repo");
+			return user ?? throw new InvalidOperationException(
+				"Sender could not be found in our current repo");
 		}
 
-		private void PersistMessage(Message message,
-			IRepoTransaction repoTransaction)
+		private void PersistMessage(Message message, IRepoTransaction repoTransaction)
 		{
-			DatabaseEngineConstant databaseEngine = DatabaseOption.DatabaseEngine;
+			var databaseEngine = DatabaseOption.DatabaseEngine;
 			var messageRepo = MessageRepoFactory.GetMessageRepository(databaseEngine,
-				DatabaseOption.DbConnectionString,
-				repoTransaction);
+				DatabaseOption.DbConnectionString, repoTransaction);
 			messageRepo.InsertMessage(message);
-			LogInfo("Message persisting was successful");
 		}
 
 		private void ProcessMessageDispatch(IMessageRequest messageContract,
-			Message message,
-			IRepoTransaction repoTransaction)
+			Message message, IRepoTransaction repoTransaction)
 		{
 			foreach (string emailAddress in messageContract.EmailAccounts)
 			{
-				MessageDispatch messageDispatch = new MessageDispatch
+				var messageDispatch = new MessageDispatch
 				{
 					EmailAddress = emailAddress,
 					MessageId = message.Id,

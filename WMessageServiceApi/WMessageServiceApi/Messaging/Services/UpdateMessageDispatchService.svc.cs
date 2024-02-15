@@ -15,11 +15,11 @@ namespace WMessageServiceApi.Messaging.Services
 		{
 			try
 			{
-				UpdateMessageDispatchServiceFacade.UpdateDispatchAsReceived(dispatchId, receivedDateTime);
+				UpdateMessageDispatchLogic.UpdateDispatchAsReceived(dispatchId, receivedDateTime);
 			}
 			catch (Exception exception)
 			{
-				ErrorContract error = new ErrorContract(exception.Message, StatusList.PROCESS_ERROR);
+				ErrorContract error = new ErrorContract(exception.Message, StatusList.ProcessError);
 				LogError("Error encountered when executing Update-dispatch-As-Received.", exception);
 				throw new FaultException<ErrorContract>(error);
 			}

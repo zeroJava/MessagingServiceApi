@@ -13,7 +13,7 @@ namespace WMessageServiceApi.Messaging.Services
 		{
 			try
 			{
-				CreateUserServiceBl createUserBl = new CreateUserServiceBl();
+				CreateUserLogic createUserBl = new CreateUserLogic();
 				createUserBl.CreateNewAdvancedUser(advanceUserContract);
 			}
 			catch (InvalidOperationException exception)
@@ -22,7 +22,7 @@ namespace WMessageServiceApi.Messaging.Services
 			}
 			catch (Exception exception)
 			{
-				ThrowErrorMessage(exception.Message, StatusList.PROCESS_ERROR);
+				ThrowErrorMessage(exception.Message, StatusList.ProcessError);
 			}
 		}
 
@@ -30,7 +30,7 @@ namespace WMessageServiceApi.Messaging.Services
 		{
 			try
 			{
-				CreateUserServiceBl createUserBL = new CreateUserServiceBl();
+				CreateUserLogic createUserBL = new CreateUserLogic();
 				createUserBL.CreateNewUser(userContract);
 			}
 			catch (InvalidOperationException exception)
@@ -39,7 +39,7 @@ namespace WMessageServiceApi.Messaging.Services
 			}
 			catch (Exception exception)
 			{
-				ThrowErrorMessage(exception.Message, StatusList.PROCESS_ERROR);
+				ThrowErrorMessage(exception.Message, StatusList.ProcessError);
 			}
 		}
 

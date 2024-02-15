@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.ServiceModel;
 using WMessageServiceApi.Exceptions.Datacontacts;
 using WMessageServiceApi.Messaging.DataContracts.LoginContracts;
@@ -15,13 +16,15 @@ namespace WMessageServiceApi.Messaging.Services
 		{
 			try
 			{
-				LoginServiceBl loginBL = new LoginServiceBl();
-				return loginBL.ExecuteEncryptedLoginIn(encryptedUser, encryptedPassword);
+				LoginLogic login = new LoginLogic();
+				return login.ExecuteEncryptedLoginIn(encryptedUser, encryptedPassword);
 			}
 			catch (Exception exception)
 			{
-				ThrowErrorMessage<LoginErrorContract>(exception.Message);
-				return null;
+				throw new FaultException<LoginErrorContract>(new LoginErrorContract
+				{
+					Message = exception.Message,
+				});
 			}
 		}
 

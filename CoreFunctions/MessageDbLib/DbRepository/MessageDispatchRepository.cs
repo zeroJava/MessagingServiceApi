@@ -165,7 +165,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			return new QueryBody(query, parameters);
 		}
 
-		public List<MessageDispatch> GetDispatchesNotReceivedMatchingEmail(string email)
+		public List<MessageDispatch> GetDispatchesNotReceived(string email)
 		{
 			try
 			{
@@ -181,7 +181,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepository.GetDispatchesNotReceivedMatchingEmail", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.GetDispatchesNotReceived", exception);
 			}
 		}
 

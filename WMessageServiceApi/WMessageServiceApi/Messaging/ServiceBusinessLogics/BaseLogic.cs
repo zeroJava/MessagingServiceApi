@@ -4,7 +4,7 @@ using WMessageServiceApi.Logging;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public abstract class BaseBusinessLayer
+	public abstract class BaseLogic
 	{
 		protected virtual void ValidateAccessToken(string encryptedToken)
 		{
