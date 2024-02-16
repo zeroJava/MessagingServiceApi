@@ -4,7 +4,7 @@ using WMessageServiceApi.Messaging.DataEnumerations;
 namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 {
 	[DataContract]
-	public class MessageRequestTokenContract : IMessageRequestTokenContract
+	public class MessageRequestToken : IMessageRequestToken
 	{
 		[DataMember]
 		public long MessageId { get; set; }

@@ -8,6 +8,6 @@ namespace WMessageServiceApi.Messaging.ServiceInterfaces
 	public interface ILoginService
 	{
 		[OperationContract]
-		LoginTokenContract ExecuteEncryptedLoginIn(string encryptedUser, string encryptedPassword);
+		LoginToken ExecuteEncryptedLoginIn(string encryptedUser, string encryptedPassword);
 	}
 }

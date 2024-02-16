@@ -2,7 +2,7 @@
 
 namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 {
-	public interface IMessageDispatchInfoContract
+	public interface IMessageDispatchInfo
 	{
 		string SenderName { get; set; }
 		string ReceiverName { get; set; }

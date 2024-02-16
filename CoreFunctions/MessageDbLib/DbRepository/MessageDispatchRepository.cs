@@ -40,7 +40,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			//this.transactionModeEnabled = true;
 		}
 
-		public List<MessageDispatch> GetAllDispatches()
+		public List<MessageDispatch> GetDispatches()
 		{
 			try
 			{
@@ -56,11 +56,11 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepository.GetAllDispatches", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.GetDispatchesMessageId", exception);
 			}
 		}
 
-		public MessageDispatch GetDispatchMatchingId(long dispatchId)
+		public MessageDispatch GetDispatch(long dispatchId)
 		{
 			try
 			{
@@ -76,7 +76,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepository.GetDispatchMatchingId", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.GetDispatch", exception);
 			}
 		}
 
@@ -96,7 +96,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			return new QueryBody(query, parameters);
 		}
 
-		public List<MessageDispatch> GetDispatchesMatchingEmail(string email)
+		public List<MessageDispatch> GetDispatchesEmail(string email)
 		{
 			try
 			{
@@ -131,7 +131,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			return new QueryBody(query, parameters);
 		}
 
-		public List<MessageDispatch> GetDispatchesMatchingMessageId(long messageId)
+		public List<MessageDispatch> GetDispatchesMessageId(long messageId)
 		{
 			try
 			{
@@ -171,8 +171,8 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			{
 				QueryBody queryBody = GetDispatchesNotReceivedMatchingEmailQuery(email);
 
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query, queryBody.Parameters,
-					connectionString))
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody.Query,
+					queryBody.Parameters, connectionString))
 				{
 					List<MessageDispatch> dispatches = new List<MessageDispatch>();
 					mssqlDbEngine.ExecuteReaderQuery(dispatches, OnPopulateResultListCallBack);
@@ -200,7 +200,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			return new QueryBody(query, parameters);
 		}
 
-		public List<MessageDispatch> GetDispatchesBetweenSenderReceiver(string senderEmailAddress,
+		public List<MessageDispatch> GetDispatchesSenderReceiver(string senderEmailAddress,
 			string receiverEmailAddress,
 			long messageIdThreshold,
 			int numberOfMessages)
@@ -220,7 +220,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageDispatchRepository.GetDispatchesBetweenSenderReceiver", exception);
+				throw new RepoDbException("Error while executing MessageDispatchRepository.GetDispatchesSenderReceiver", exception);
 			}
 		}
 

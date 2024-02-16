@@ -3,7 +3,7 @@
 namespace WMessageServiceApi.Messaging.DataContracts.LoginContracts
 {
 	[DataContract]
-	public class LoginTokenContract : ILoginTokenContract
+	public class LoginToken : ILoginToken
 	{
 		[DataMember]
 		public bool LoginSuccessful { get; set; }

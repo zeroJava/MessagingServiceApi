@@ -11,12 +11,12 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
 	public class MessageLogic : BaseLogic
 	{
-		public MessageRequestTokenContract CreateMessage(IMessageRequest request)
+		public MessageRequestToken CreateMessage(IMessageRequest request)
 		{
 			ValidateAccessToken(request.AccessToken);
 			CheckMessageContent(request);
 			ProcessMessage(request);
-			var requestToken = new MessageRequestTokenContract
+			var requestToken = new MessageRequestToken
 			{
 				MessageRecievedState = MessageReceivedState.AcknowledgedRequest,
 				Message = "Message was successfully acknowledged and persisted in our system"

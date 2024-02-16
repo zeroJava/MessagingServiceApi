@@ -9,9 +9,9 @@ namespace WMessageServiceApi.Messaging.ServiceInterfaces
 	public interface IRetrieveMessageService
 	{
 		[OperationContract]
-		List<MessageDispatchInfoContract> GetMessageDipatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest);
+		List<MessageDispatchInfo> GetMessageDipatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest);
 
 		[OperationContract]
-		List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest);
+		List<MessageDispatchInfo> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest);
 	}
 }

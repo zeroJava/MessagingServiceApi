@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.ServiceModel;
 using WMessageServiceApi.Exceptions.Datacontacts;
 using WMessageServiceApi.Messaging.DataContracts.LoginContracts;
@@ -12,7 +11,7 @@ namespace WMessageServiceApi.Messaging.Services
 	// NOTE: In order to launch WCF Test Client for testing this service, please select LoginService.svc or LoginService.svc.cs at the Solution Explorer and start debugging.
 	public class LoginService : ILoginService
 	{
-		public LoginTokenContract ExecuteEncryptedLoginIn(string encryptedUser, string encryptedPassword)
+		public LoginToken ExecuteEncryptedLoginIn(string encryptedUser, string encryptedPassword)
 		{
 			try
 			{

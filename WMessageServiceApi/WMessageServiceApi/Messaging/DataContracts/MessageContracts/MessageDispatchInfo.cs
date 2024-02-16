@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 {
 	[DataContract]
-	public class MessageDispatchInfoContract : IMessageDispatchInfoContract
+	public class MessageDispatchInfo : IMessageDispatchInfo
 	{
 		[DataMember]
 		public string SenderName { get; set; }

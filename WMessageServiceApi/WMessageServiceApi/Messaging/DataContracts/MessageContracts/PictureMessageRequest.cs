@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 {
 	[DataContract(Name = "PictureMessageRequest")]
-	public class PictureMessageRequest : MessageRequest, IMultiMediaMessageContract
+	public class PictureMessageRequest : MessageRequest, IMultiMediaMessage
 	{
 		[DataMember(Name = "UniqueGuid")]
 		public Guid UniqueGuid { get; set; }

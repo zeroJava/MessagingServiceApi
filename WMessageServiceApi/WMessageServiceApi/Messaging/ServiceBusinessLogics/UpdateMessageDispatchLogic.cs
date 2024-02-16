@@ -14,7 +14,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			WriteInfoLog($"Recieved dispatch update request for dispatch (id): {dispatchId}");
 
 			IMessageDispatchRepository dispatchRepo = GetDispatchRepository();
-			MessageDispatch dispatch = dispatchRepo.GetDispatchMatchingId(dispatchId);
+			MessageDispatch dispatch = dispatchRepo.GetDispatch(dispatchId);
 
 			if (dispatch != null)
 			{

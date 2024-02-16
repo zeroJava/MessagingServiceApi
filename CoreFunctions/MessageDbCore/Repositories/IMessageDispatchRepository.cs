@@ -10,12 +10,12 @@ namespace MessageDbCore.DbRepositoryInterfaces
 		void UpdateDispatch(MessageDispatch dispatch); // Tuple<string, IDbDataParameter[]> query where TParameter : IDbDataParameter;
 		void DeleteDispatch(MessageDispatch dispatch);
 
-		MessageDispatch GetDispatchMatchingId(long dispatchId);
-		List<MessageDispatch> GetAllDispatches();
-		List<MessageDispatch> GetDispatchesMatchingMessageId(long messageId);
-		List<MessageDispatch> GetDispatchesMatchingEmail(string email);
+		MessageDispatch GetDispatch(long dispatchId);
+		List<MessageDispatch> GetDispatches();
+		List<MessageDispatch> GetDispatchesMessageId(long messageId);
+		List<MessageDispatch> GetDispatchesEmail(string email);
 		List<MessageDispatch> GetDispatchesNotReceived(string email);
-		List<MessageDispatch> GetDispatchesBetweenSenderReceiver(string senderEmailAddress, string receiverEmailAddress,
+		List<MessageDispatch> GetDispatchesSenderReceiver(string senderEmailAddress, string receiverEmailAddress,
 			 long messageIdThreshold,
 			 int numberOfMessages);
 	}

@@ -12,7 +12,7 @@ namespace WMessageServiceApi.Messaging.Services
 {
 	public class RetrieveMessageService : IRetrieveMessageService
 	{
-		public List<MessageDispatchInfoContract> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
+		public List<MessageDispatchInfo> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
 		{
 			try
 			{
@@ -33,7 +33,7 @@ namespace WMessageServiceApi.Messaging.Services
 			}
 		}
 
-		public List<MessageDispatchInfoContract> GetMessageDipatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest)
+		public List<MessageDispatchInfo> GetMessageDipatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest)
 		{
 			try
 			{

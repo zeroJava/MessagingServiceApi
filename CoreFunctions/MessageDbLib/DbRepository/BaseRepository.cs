@@ -1,6 +1,7 @@
 ﻿using MessageDbCore.Repositories;
 using MessageDbLib.DbEngine;
 using MessageDbLib.Utility;
+using System;
 using System.Data.SqlClient;
 
 namespace MessageDbLib.DbRepository
@@ -26,6 +27,23 @@ namespace MessageDbLib.DbRepository
 		protected virtual MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
 			string connectionString)
 		{
+			if (transactionModeEnabled && repoTransaction != null)
+			{
+				MssqlDbEngine transactionMssqlEngine = new MssqlDbEngine(query, mssqlParameters,
+					connectionString,
+					repoTransaction);
+				return transactionMssqlEngine;
+			}
+
+			MssqlDbEngine mssqlDbEngine = new MssqlDbEngine(query, mssqlParameters, connectionString);
+			return mssqlDbEngine;
+		}
+
+		protected virtual MssqlDbEngine GetMssqlDbEngine(QueryBody queryBody,
+			string connectionString)
+		{
+			string query = queryBody.Query;
+			SqlParameter[] mssqlParameters = queryBody.Parameters;
 			if (transactionModeEnabled && repoTransaction != null)
 			{
 				MssqlDbEngine transactionMssqlEngine = new MssqlDbEngine(query, mssqlParameters,

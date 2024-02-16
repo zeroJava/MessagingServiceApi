@@ -2,7 +2,7 @@
 
 namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 {
-	public interface IMultiMediaMessageContract
+	public interface IMultiMediaMessage
 	{
 		Guid UniqueGuid { get; set; }
 		string FileName { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace WMessageServiceApi.Messaging.DataContracts.LoginContracts
 {
-	public interface ILoginTokenContract
+	public interface ILoginToken
 	{
 		bool LoginSuccessful { get; set; }
 		string UserName { get; set; }

@@ -11,7 +11,7 @@ namespace WMessageServiceApi.Messaging.Services
 {
 	public class CreateMessageService : BaseService, ICreateMessageService
 	{
-		public MessageRequestTokenContract CreateMessage(MessageRequest message)
+		public MessageRequestToken CreateMessage(MessageRequest message)
 		{
 			try
 			{
@@ -28,12 +28,12 @@ namespace WMessageServiceApi.Messaging.Services
 			catch (Exception exception)
 			{
 				LogError("Error creating message\n" + exception.ToString());
-				var tokenContract = new MessageRequestTokenContract
+				var tokenContract = new MessageRequestToken
 				{
 					MessageRecievedState = MessageReceivedState.FailedToProcessRequest,
 					Message = exception.Message,
 				};
-				throw new FaultException<MessageRequestTokenContract>(tokenContract);
+				throw new FaultException<MessageRequestToken>(tokenContract);
 			}
 		}
 	}

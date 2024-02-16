@@ -2,7 +2,7 @@
 
 namespace WMessageServiceApi.Messaging.DataContracts.MessageContracts
 {
-	public interface IMessageRequestTokenContract
+	public interface IMessageRequestToken
 	{
 		long MessageId { get; set; }
 		string Message { get; set; }

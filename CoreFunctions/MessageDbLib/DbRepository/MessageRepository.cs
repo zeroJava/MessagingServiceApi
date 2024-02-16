@@ -29,13 +29,14 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 		}
 
-		public Message GetMessageMatchingId(long messageId)
+		public Message GetMessage(long messageId)
 		{
 			try
 			{
-				Tuple<string, SqlParameter[]> query = GetMessageMatchingIdQuery(messageId);
+				Tuple<string, SqlParameter[]> query = GetMessagQuery(messageId);
 
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1, query.Item2, connectionString))
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Item1,
+					query.Item2, connectionString))
 				{
 					List<Message> messages = new List<Message>();
 					mssqlDbEngine.ExecuteReaderQuery(messages, OnPopulateResultListCallBack);
@@ -44,11 +45,11 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageRepository.GetMessageMatchingId", exception);
+				throw new RepoDbException("Error while executing MessageRepository.GetMessage", exception);
 			}
 		}
 
-		private Tuple<string, SqlParameter[]> GetMessageMatchingIdQuery(long messageId)
+		private Tuple<string, SqlParameter[]> GetMessagQuery(long messageId)
 		{
 			SqlParameter[] sqlParameters = new SqlParameter[]
 			{
@@ -62,14 +63,15 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			return Tuple.Create(query, sqlParameters);
 		}
 
-		public List<Message> GetAllMessages()
+		public List<Message> GetMessages()
 		{
 			try
 			{
 				string columns = GetSelectColumns();
 				string query = string.Format("SELECT {0} FROM {1}", columns, TableName);
 
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query, null, connectionString))
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query, null,
+					connectionString))
 				{
 					List<Message> messages = new List<Message>();
 					mssqlDbEngine.ExecuteReaderQuery(messages, OnPopulateResultListCallBack);
@@ -78,8 +80,43 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing MessageRepository.GetAllMessages", exception);
+				throw new RepoDbException("Error while executing MessageRepository.GetMessages", exception);
 			}
+		}
+
+		public List<Message> GetMessages(long[] messageids)
+		{
+			try
+			{
+				QueryBody queryBody = GetMessagQuery(messageids);
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(queryBody,
+					connectionString))
+				{
+					List<Message> messages = new List<Message>();
+					mssqlDbEngine.ExecuteReaderQuery(messages, OnPopulateResultListCallBack);
+					return messages;
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new RepoDbException("Error while executing MessageRepository.GetMessages" +
+					"-ids", exception);
+			}
+		}
+
+		private QueryBody GetMessagQuery(long[] messageids)
+		{
+			string idList = string.Join(",", messageids);
+			SqlParameter[] sqlParameters = new SqlParameter[]
+			{
+				new SqlParameter(Prmetr.ID, idList)
+			};
+
+			string columns = GetSelectColumns();
+			string query = string.Format("SELECT {0} FROM {1} WHERE ID in ({2})", columns, TableName,
+				Prmetr.ID);
+
+			return new QueryBody(query, sqlParameters);
 		}
 
 		public List<Message> GetMessagesMatchingText(string text)

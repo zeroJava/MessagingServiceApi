@@ -4,10 +4,14 @@ using System.Configuration;
 
 namespace MessageDbLib.Configurations
 {
-	public static class DatabaseOption
+	public sealed class DatabaseOption
 	{
 		public static readonly DatabaseEngineConstant DatabaseEngine;
 		public static readonly string DbConnectionString;
+		public static readonly DatabaseOption DbOption;
+
+		public DatabaseEngineConstant Engine {  get; private set; }
+		public string ConnectionString { get; private set; }
 
 		static DatabaseOption()
 		{
@@ -31,6 +35,12 @@ namespace MessageDbLib.Configurations
 
 			DatabaseEngine = databaseEngineResult;
 			DbConnectionString = appConnectionString;
+
+			DbOption = new DatabaseOption
+			{
+				Engine = DatabaseEngine,
+				ConnectionString = DbConnectionString,
+			};
 
 			Console.WriteLine(string.Format("DatabaseEngine: {0}", databaseEngineResult));
 		}

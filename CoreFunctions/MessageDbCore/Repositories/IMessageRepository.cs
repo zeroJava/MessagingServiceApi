@@ -10,8 +10,9 @@ namespace MessageDbCore.DbRepositoryInterfaces
 		void UpdateMessage(Message message); // Tuple<string, TParameter[]> query where TParameter : IDbDataParameter;
 		void DeleteMessage(Message message);
 
-		Message GetMessageMatchingId(long messageId);
+		Message GetMessage(long messageId);
 		List<Message> GetMessagesMatchingText(string text);
-		List<Message> GetAllMessages();
+		List<Message> GetMessages();
+		List<Message> GetMessages(long[] messageids);
 	}
 }

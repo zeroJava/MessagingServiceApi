@@ -8,7 +8,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
 	public class LoginLogic : BaseLogic
 	{
-		public LoginTokenContract ExecuteEncryptedLoginIn(string encryptedUser, string encryptedPassword)
+		public LoginToken ExecuteEncryptedLoginIn(string encryptedUser, string encryptedPassword)
 		{
 			string decryptedUsername = encryptedUser;
 			string decryptedPassword = encryptedPassword;
@@ -16,7 +16,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
 			User user = userRepo.GetUserMatchingUsernameAndPassword(decryptedUsername, decryptedPassword);
 
-			LoginTokenContract loginTokenContract = new LoginTokenContract();
+			LoginToken loginTokenContract = new LoginToken();
 			if (user != null)
 			{
 				loginTokenContract.LoginSuccessful = true;

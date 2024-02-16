@@ -11,8 +11,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
 	public class RetrieveMessageLogic : BaseLogic
 	{
-		public List<MessageDispatchInfoContract> GetMessagesSentToUser(
-			IRetrieveMessageRequest messageRequest)
+		public List<MessageDispatchInfo> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
 		{
 			ValidateAccessToken(messageRequest.UserAccessToken);
 			CheckRequestContent(messageRequest);
@@ -48,61 +47,67 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			return userRepo;
 		}
 
-		private List<MessageDispatchInfoContract> MessagesSentToUser(long? userId,
-			string receiverEmailAddress)
+		private List<MessageDispatchInfo> MessagesSentToUser(long? userId,
+			string receiverEmail)
 		{
-			List<MessageDispatch> messageDispathes = null;
-
-			long[] messageIds = GetMessageIds(receiverEmailAddress, ref messageDispathes);
-			if (messageDispathes == null || messageIds == null)
+			IMessageDispatchRepository dispatchRepo = GetDispatchRepository();
+			List<MessageDispatch> dispatches = 
+				dispatchRepo.GetDispatchesNotReceived(receiverEmail);
+			if (dispatches == null)
 			{
 				return null;
 			}
-			AssignMessagesToDispatch(messageDispathes, messageIds);
-			List<MessageDispatchInfoContract> dispatchInfos = 
-				GetDispatchInfo(messageDispathes, userId);
-
-			return dispatchInfos;
+			AssignMessagesToDispatch(dispatches);
+			return GetDispatchInfo(dispatches, userId);
 		}
 
-		private long[] GetMessageIds(string receiverEmailAddress,
-			ref List<MessageDispatch> messageDispatches)
+		private long[] GetMessageIds(List<MessageDispatch> dispatches)
 		{
-			IMessageDispatchRepository dispatchRepo = GetMessageDispatchRepository();
-			messageDispatches = dispatchRepo.GetDispatchesNotReceived(receiverEmailAddress);
-			long[] messageids = messageDispatches?.Where(mt => mt.MessageId != null)
-				.Select(mt => mt.MessageId.Value)
-				.Distinct()
-				.ToArray();
-			return messageids;
+			List<long> messageIds = new List<long>();
+			for (int i = 0; i < dispatches?.Count; i++)
+			{
+				if (dispatches[i]?.MessageId == null)
+				{
+					continue;
+				}
+				long messageid = dispatches[i].MessageId.Value;
+				if (!messageIds.Contains(messageid))
+				{
+					messageIds.Add(messageid);
+				}
+			}
+			return messageIds.ToArray();
 		}
 
-		private IMessageDispatchRepository GetMessageDispatchRepository()
+		private IMessageDispatchRepository GetDispatchRepository()
 		{
 			return MessageDispatchRepoFactory.GetDispatchRepository(DatabaseOption.DatabaseEngine,
 				DatabaseOption.DbConnectionString);
 		}
 
-		private void AssignMessagesToDispatch(List<MessageDispatch> messageDispatches,
-			long[] messageIds)
+		private void AssignMessagesToDispatch(List<MessageDispatch> dispatches)
 		{
-			IMessageRepository messageRepo = GetMessageRepository();
-			List<Message> messages = messageRepo.GetAllMessages()
-				?.Where(m => messageIds.Any(mi => mi == m.Id))
-				.ToList();
-			if (messages == null)
+			long[] messageIds = GetMessageIds(dispatches);
+			List<Message> messages = null;
+
+			if (messageIds?.Length > 0)
 			{
-				return;
+				IMessageRepository messageRepo = GetMessageRepository();
+				messages = messageRepo.GetMessages(messageIds);
 			}
-			foreach (var dispatch in messageDispatches)
+
+			if (messages != null)
 			{
-				Message message = messages.FirstOrDefault(m => m.Id == dispatch.MessageId);
-				if (message != null)
+				foreach (MessageDispatch dispatch in dispatches)
 				{
-					dispatch.Message = message;
+					Message message = messages
+						.FirstOrDefault(m => m.Id == dispatch.MessageId);
+					if (message != null)
+					{
+						dispatch.Message = message;
+					}
 				}
 			}
-			LogInfo("Completed assigning message to message-dispatch");
 		}
 
 		private IMessageRepository GetMessageRepository()
@@ -111,18 +116,28 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				DatabaseOption.DbConnectionString);
 		}
 
-		private List<MessageDispatchInfoContract> GetDispatchInfo(
-			List<MessageDispatch> messageDispatches, long? userId)
+		private List<MessageDispatchInfo> GetDispatchInfo(List<MessageDispatch> messageDispatches,
+			long? userId)
 		{
 			try
 			{
-				var msgDispatchinfos = new List<MessageDispatchInfoContract>();
+				var msgDispatchinfos = new List<MessageDispatchInfo>();
 				foreach (MessageDispatch dispatch in messageDispatches)
 				{
 					bool isSender = dispatch.Message.SenderId == userId;
-					MessageDispatchInfoContract dispatchInfo = 
-						CreateMessageDispatchInfoObj(dispatch, dispatch.Message,
-						isSender);
+					Message message = dispatch.Message;
+					var dispatchInfo = new MessageDispatchInfo
+					{
+						SenderName = message.SenderEmailAddress,
+						ReceiverName = dispatch.EmailAddress,
+						MessageSentDate = message.MessageCreated,
+						MessageReceivedDate = dispatch.MessageReceivedTime,
+						MessageReceived = dispatch.MessageReceived,
+						MessageContent = message.MessageText,
+						SenderCurrentUser = isSender,
+						DispatchId = dispatch.Id,
+						MessageId = message.Id
+					};
 					msgDispatchinfos.Add(dispatchInfo);
 				}
 				return msgDispatchinfos;
@@ -135,26 +150,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			}
 		}
 
-		private MessageDispatchInfoContract CreateMessageDispatchInfoObj(
-			MessageDispatch messageDispatch, Message message, bool senderCurrentUser)
-		{
-			LogInfo("Creating message dispatch info contract.");
-			return new MessageDispatchInfoContract
-			{
-				SenderName = message.SenderEmailAddress,
-				ReceiverName = messageDispatch.EmailAddress,
-				MessageSentDate = message.MessageCreated,
-				MessageReceivedDate = messageDispatch.MessageReceivedTime,
-				MessageReceived = messageDispatch.MessageReceived,
-				MessageContent = message.MessageText,
-				SenderCurrentUser = senderCurrentUser,
-				DispatchId = messageDispatch.Id,
-				MessageId = message.Id
-			};
-		}
-
-		public List<MessageDispatchInfoContract> GetMsgDispatchesBetweenSenderReceiver(
-			IRetrieveMessageRequest messageRequest)
+		public List<MessageDispatchInfo> GetMsgDispatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest)
 		{
 			ValidateAccessToken(messageRequest.UserAccessToken);
 
@@ -165,26 +161,26 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			}
 			User user = GetUserMatchingUsername(username) ??
 				throw new ApplicationException($"Could not find user matching {username}");
-			List<MessageDispatchInfoContract> dispatchInfos =
+			List<MessageDispatchInfo> dispatchInfos =
 				GetDispatchesBetweenSenderReceiver(messageRequest, user);
 
 			return dispatchInfos;
 		}
 
-		private List<MessageDispatchInfoContract> GetDispatchesBetweenSenderReceiver(
-			IRetrieveMessageRequest messageRequest, User user)
+		private List<MessageDispatchInfo> GetDispatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest,
+			User user)
 		{
 			LogInfo($"Getting messages between {messageRequest.SenderEmailAddress} and" +
 				$" {messageRequest.ReceiverEmailAddress}");
 
-			IMessageDispatchRepository dispatchRepo = GetMessageDispatchRepository();
+			IMessageDispatchRepository dispatchRepo = GetDispatchRepository();
 			List<MessageDispatch> dispatches =
-				dispatchRepo.GetDispatchesBetweenSenderReceiver(
+				dispatchRepo.GetDispatchesSenderReceiver(
 					messageRequest.SenderEmailAddress,
 					messageRequest.ReceiverEmailAddress,
 					messageRequest.MessageIdThreshold,
 					messageRequest.NumberOfMessages);
-			List<MessageDispatchInfoContract> dispatchInfos = GetDispatchInfo(dispatches,
+			List<MessageDispatchInfo> dispatchInfos = GetDispatchInfo(dispatches,
 				user.Id);
 			return dispatchInfos;
 		}
