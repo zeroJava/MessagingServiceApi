@@ -11,7 +11,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
 	public class RetrieveMessageLogic : BaseLogic
 	{
-		public List<MessageDispatchInfo> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)
+		public List<MessageDispatchInfo> GetMessagesSentToUser(
+			IRetrieveMessageRequest messageRequest)
 		{
 			ValidateAccessToken(messageRequest.UserAccessToken);
 			CheckRequestContent(messageRequest);
@@ -43,7 +44,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		private IUserRepository GetUserRepository()
 		{
 			IUserRepository userRepo = UserRepoFactory.GetUserRepository(
-				DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
+				DatabaseOption.DatabaseEngine,
+				DatabaseOption.DbConnectionString);
 			return userRepo;
 		}
 
@@ -81,7 +83,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 		private IMessageDispatchRepository GetDispatchRepository()
 		{
-			return MessageDispatchRepoFactory.GetDispatchRepository(DatabaseOption.DatabaseEngine,
+			return MessageDispatchRepoFactory.GetDispatchRepository(
+				DatabaseOption.DatabaseEngine,
 				DatabaseOption.DbConnectionString);
 		}
 
@@ -112,11 +115,13 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 		private IMessageRepository GetMessageRepository()
 		{
-			return MessageRepoFactory.GetMessageRepository(DatabaseOption.DatabaseEngine,
+			return MessageRepoFactory.GetMessageRepository(
+				DatabaseOption.DatabaseEngine,
 				DatabaseOption.DbConnectionString);
 		}
 
-		private List<MessageDispatchInfo> GetDispatchInfo(List<MessageDispatch> messageDispatches,
+		private List<MessageDispatchInfo> GetDispatchInfo(
+			List<MessageDispatch> messageDispatches,
 			long? userId)
 		{
 			try
@@ -144,13 +149,14 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			}
 			catch (Exception exception)
 			{
-				LogError("Error encountered when executing Convert-Message-Dispatch-To-Contract.",
-					exception);
+				LogError("Error encountered when executing Convert-Message-Dispatch" +
+					"-To-Contract.", exception);
 				return null;
 			}
 		}
 
-		public List<MessageDispatchInfo> GetMsgDispatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest)
+		public List<MessageDispatchInfo> GetMsgDispatchesBetweenSenderReceiver(
+			IRetrieveMessageRequest messageRequest)
 		{
 			ValidateAccessToken(messageRequest.UserAccessToken);
 
@@ -167,11 +173,12 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			return dispatchInfos;
 		}
 
-		private List<MessageDispatchInfo> GetDispatchesBetweenSenderReceiver(IRetrieveMessageRequest messageRequest,
+		private List<MessageDispatchInfo> GetDispatchesBetweenSenderReceiver(
+			IRetrieveMessageRequest messageRequest,
 			User user)
 		{
-			LogInfo($"Getting messages between {messageRequest.SenderEmailAddress} and" +
-				$" {messageRequest.ReceiverEmailAddress}");
+			LogInfo($"Getting messages between {messageRequest.SenderEmailAddress}" +
+				$" and {messageRequest.ReceiverEmailAddress}");
 
 			IMessageDispatchRepository dispatchRepo = GetDispatchRepository();
 			List<MessageDispatch> dispatches =
