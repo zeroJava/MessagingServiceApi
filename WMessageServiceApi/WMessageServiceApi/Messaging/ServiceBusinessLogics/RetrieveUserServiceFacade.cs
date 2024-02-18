@@ -18,7 +18,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 
 		private IUserRepository GetUserRepository()
 		{
-			return UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
+			return UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine,
+				DatabaseOption.DbConnectionString);
 		}
 
 		private List<UserInfoContract> CreateUserContractList(List<User> users)
@@ -54,7 +55,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			};
 		}
 
-		private AdvancedUserInfoContract ConvertAdvancedUserToContract(AdvancedUser advancedUser)
+		private AdvancedUserInfoContract ConvertAdvancedUserToContract(
+			AdvancedUser advancedUser)
 		{
 			return new AdvancedUserInfoContract
 			{
@@ -69,10 +71,12 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			};
 		}
 
-		public UserInfoContract GetUserMatchingUsernamePassword(string username, string password)
+		public UserInfoContract GetUserMatchingUsernamePassword(string username,
+			string password)
 		{
 			IUserRepository userRepo = GetUserRepository();
-			User user = userRepo.GetUserMatchingUsernameAndPassword(username, password);
+			User user = userRepo.GetUserMatchingUsernameAndPassword(username,
+				password);
 			if (user is AdvancedUser advancedUser)
 			{
 				return ConvertAdvancedUserToContract(advancedUser);

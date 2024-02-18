@@ -20,7 +20,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			string username = messageRequest.Username;
 			LogInfo($"Getting messages sent to user: {username};");
 			User user = GetUserMatchingUsername(username) ??
-				throw new ApplicationException("Could not find a matching Username.");
+				throw new ApplicationException("Could not find a matching " +
+				"Username.");
 
 			return MessagesSentToUser(user.Id, messageRequest.ReceiverEmailAddress);
 		}
@@ -150,7 +151,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			catch (Exception exception)
 			{
 				LogError("Error encountered when executing Convert-Message-Dispatch" +
-					"-To-Contract.", exception);
+					"-To-Contract.",
+					exception);
 				return null;
 			}
 		}
@@ -166,7 +168,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				throw new ApplicationException("Username value passed is empty.");
 			}
 			User user = GetUserMatchingUsername(username) ??
-				throw new ApplicationException($"Could not find user matching {username}");
+				throw new ApplicationException($"Could not find user matching " +
+				$"{username}");
 			List<MessageDispatchInfo> dispatchInfos =
 				GetDispatchesBetweenSenderReceiver(messageRequest, user);
 
@@ -177,8 +180,9 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			IRetrieveMessageRequest messageRequest,
 			User user)
 		{
-			LogInfo($"Getting messages between {messageRequest.SenderEmailAddress}" +
-				$" and {messageRequest.ReceiverEmailAddress}");
+			LogInfo($"Getting messages between " +
+				$"{messageRequest.SenderEmailAddress} and" +
+				$"{messageRequest.ReceiverEmailAddress}");
 
 			IMessageDispatchRepository dispatchRepo = GetDispatchRepository();
 			List<MessageDispatch> dispatches =
