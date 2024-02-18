@@ -40,17 +40,20 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			try
 			{
 				QueryBody query = GetAuthorisationMatchingAuthCodeQuery(guid);
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query,
+					query.Parameters,
 					connectionString))
 				{
 					List<Authorisation> authorisations = new List<Authorisation>();
-					mssqlDbEngine.ExecuteReaderQuery(authorisations, OnPopulateResultListCallBack);
+					mssqlDbEngine.ExecuteReaderQuery(authorisations,
+						OnPopulateResultListCallBack);
 					return authorisations.FirstOrDefault();
 				}
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AuthorisationRepository.GetAuthorisationMatchingAuthCode", exception);
+				throw new RepoDbException("Error while executing Authorisation" +
+					"Repository.GetAuthorisationMatchingAuthCode", exception);
 			}
 		}
 
@@ -62,7 +65,8 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			};
 
 			string columns = GetSelectColumns();
-			string query = string.Format("SELECT {0} FROM {1} WHERE AUTHORISATIONCODE = {2}",
+			string query = string.Format("SELECT {0} FROM {1} WHERE " +
+				"AUTHORISATIONCODE = {2}",
 				columns,
 				TableName,
 				Prmetr.AUTHORISATION_CODE);
@@ -75,17 +79,20 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			try
 			{
 				QueryBody query = GetAuthorisationMatchingIdQuery(id);
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query,
+					query.Parameters,
 					connectionString))
 				{
 					List<Authorisation> authorisations = new List<Authorisation>();
-					mssqlDbEngine.ExecuteReaderQuery(authorisations, OnPopulateResultListCallBack);
+					mssqlDbEngine.ExecuteReaderQuery(authorisations,
+						OnPopulateResultListCallBack);
 					return authorisations.FirstOrDefault();
 				}
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AuthorisationRepository.GetAuthorisationMatchingId", exception);
+				throw new RepoDbException("Error while executing Authorisation" +
+					"Repository.GetAuthorisationMatchingId", exception);
 			}
 		}
 
@@ -97,7 +104,8 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			};
 
 			string columns = GetSelectColumns();
-			string query = string.Format("SELECT {0} FROM {1} WHERE ID = {2}", columns,
+			string query = string.Format("SELECT {0} FROM {1} WHERE ID = {2}",
+				columns,
 				TableName,
 				Prmetr.ID);
 
@@ -109,7 +117,8 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			try
 			{
 				QueryBody query = GetAuthorisationGreaterThanEndTimeQuery(endtime);
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query,
+					query.Parameters,
 					connectionString))
 				{
 					List<Authorisation> authorisations = new List<Authorisation>();
@@ -119,7 +128,8 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AuthorisationRepository.GetAuthorisationsGreaterThanEndTime", exception);
+				throw new RepoDbException("Error while executing Authorisation" +
+					"Repository.GetAuthorisationsGreaterThanEndTime", exception);
 			}
 		}
 
@@ -131,7 +141,8 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			};
 
 			string columns = GetSelectColumns();
-			string query = string.Format("SELECT {0} FROM {1} WHERE ENDTIME >= {2}", columns,
+			string query = string.Format("SELECT {0} FROM {1} WHERE ENDTIME >= {2}",
+				columns,
 				TableName,
 				Prmetr.END_TIME);
 
@@ -143,15 +154,18 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			try
 			{
 				QueryBody query = GetInsertAuthorisationQuery(authorisation);
-				using (DbSqlEngine sqlEngine = GetMssqlDbEngine(query.Query, query.Parameters,
+				using (DbSqlEngine sqlEngine = GetMssqlDbEngine(query.Query,
+					query.Parameters,
 					connectionString))
 				{
-					sqlEngine.ExecuteQueryInsertCallback(authorisation, OnPopulatedIdCallback);
+					sqlEngine.ExecuteQueryInsertCallback(authorisation,
+						OnPopulatedIdCallback);
 				}
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AuthorisationRepository.InsertAuthorisation", exception);
+				throw new RepoDbException("Error while executing Authorisation" +
+					"Repository.InsertAuthorisation", exception);
 			}
 		}
 
@@ -159,19 +173,26 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter(Prmetr.AUTHORISATION_CODE, GetDBValue(authorisation.AuthorisationCode)),
-				new SqlParameter(Prmetr.START_TIME, GetDBValue(authorisation.StartTime)),
-				new SqlParameter(Prmetr.END_TIME, GetDBValue(authorisation.EndTime)),
-				new SqlParameter(Prmetr.USER_ID, GetDBValue(authorisation.UserId)),
+				new SqlParameter(Prmetr.AUTHORISATION_CODE,
+					GetDBValue(authorisation.AuthorisationCode)),
+				new SqlParameter(Prmetr.START_TIME,
+					GetDBValue(authorisation.StartTime)),
+				new SqlParameter(Prmetr.END_TIME,
+					GetDBValue(authorisation.EndTime)),
+				new SqlParameter(Prmetr.USER_ID,
+					GetDBValue(authorisation.UserId)),
 			};
 
-			string insertSection = string.Format("INSERT INTO {0}({1}, {2}, {3}, {4})", TableName,
+			string insertSection = string.Format("INSERT INTO {0}({1}, {2}, {3}, " +
+				"{4})",
+				TableName,
 				Column.AUTHORISATION_CODE,
 				Column.START_TIME,
 				Column.END_TIME,
 				Column.USER_ID);
 
-			string valueSection = string.Format("VALUES ({0}, {1}, {2}, {3})", Prmetr.AUTHORISATION_CODE,
+			string valueSection = string.Format("VALUES ({0}, {1}, {2}, {3})",
+				Prmetr.AUTHORISATION_CODE,
 				Prmetr.START_TIME,
 				Prmetr.END_TIME,
 				Prmetr.USER_ID);
@@ -181,7 +202,8 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			return new QueryBody(query, parameters);
 		}
 
-		private void OnPopulatedIdCallback(Authorisation authorisation, object result)
+		private void OnPopulatedIdCallback(Authorisation authorisation,
+			object result)
 		{
 			long id = Convert.ToInt64(result);
 			authorisation.Id = id;
@@ -192,7 +214,8 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			try
 			{
 				QueryBody query = GetUpdateAuthorisationQuery(authorisation);
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query,
+					query.Parameters,
 					connectionString))
 				{
 					mssqlDbEngine.ExecuteQuery();
@@ -200,7 +223,8 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AuthorisationRepository.UpdateAuthorisation", exception);
+				throw new RepoDbException("Error while executing Authorisation" +
+					"Repository.UpdateAuthorisation", exception);
 			}
 		}
 
@@ -208,23 +232,40 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter(Prmetr.ID, GetDBValue(authorisation.Id)),
-				new SqlParameter(Prmetr.AUTHORISATION_CODE, GetDBValue(authorisation.AuthorisationCode)),
-				new SqlParameter(Prmetr.START_TIME, GetDBValue(authorisation.StartTime)),
-				new SqlParameter(Prmetr.END_TIME, GetDBValue(authorisation.EndTime)),
-				new SqlParameter(Prmetr.USER_ID, GetDBValue(authorisation.UserId)),
+				new SqlParameter(Prmetr.ID,
+					GetDBValue(authorisation.Id)),
+				new SqlParameter(Prmetr.AUTHORISATION_CODE,
+					GetDBValue(authorisation.AuthorisationCode)),
+				new SqlParameter(Prmetr.START_TIME,
+					GetDBValue(authorisation.StartTime)),
+				new SqlParameter(Prmetr.END_TIME,
+					GetDBValue(authorisation.EndTime)),
+				new SqlParameter(Prmetr.USER_ID,
+					GetDBValue(authorisation.UserId)),
 			};
 
 			string updateStr = string.Format("UPDATE {0} SET", TableName);
 
-			string setAuthCode = string.Format("{0} = {1}", Column.AUTHORISATION_CODE, Prmetr.AUTHORISATION_CODE);
-			string setStartTime = string.Format("{0} = {1}", Column.START_TIME, Prmetr.START_TIME);
-			string setEndTime = string.Format("{0} = {1}", Column.END_TIME, Prmetr.END_TIME);
-			string setUserId = string.Format("{0} = {1}", Column.USER_ID, Prmetr.USER_ID);
+			string setAuthCode = string.Format("{0} = {1}",
+				Column.AUTHORISATION_CODE,
+				Prmetr.AUTHORISATION_CODE);
+			string setStartTime = string.Format("{0} = {1}",
+				Column.START_TIME,
+				Prmetr.START_TIME);
+			string setEndTime = string.Format("{0} = {1}",
+				Column.END_TIME,
+				Prmetr.END_TIME);
+			string setUserId = string.Format("{0} = {1}",
+				Column.USER_ID,
+				Prmetr.USER_ID);
 
-			string whereId = string.Format("WHERE {0} = {1}", Column.ID, GetDBValue(authorisation.Id));
+			string whereId = string.Format("WHERE {0} = {1}",
+				Column.ID,
+				GetDBValue(authorisation.Id));
 
-			string query = string.Format("{0} {1}, {2}, {3}, {4} {5}", updateStr, setAuthCode,
+			string query = string.Format("{0} {1}, {2}, {3}, {4} {5}",
+				updateStr,
+				setAuthCode,
 				setStartTime,
 				setEndTime,
 				setUserId,
@@ -238,7 +279,8 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			try
 			{
 				QueryBody query = GetDeletionAuthorisationQuery(authorisation);
-				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query, query.Parameters,
+				using (MssqlDbEngine mssqlDbEngine = GetMssqlDbEngine(query.Query,
+					query.Parameters,
 					connectionString))
 				{
 					mssqlDbEngine.ExecuteQuery();
@@ -246,7 +288,8 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 			}
 			catch (Exception exception)
 			{
-				throw new RepoDbException("Error while executing AuthorisationRepository.DeleteAuthorisation", exception);
+				throw new RepoDbException("Error while executing Authorisation" +
+					"Repository.DeleteAuthorisation", exception);
 			}
 		}
 
