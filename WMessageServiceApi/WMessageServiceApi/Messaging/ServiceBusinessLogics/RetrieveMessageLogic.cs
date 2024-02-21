@@ -56,10 +56,6 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			IMessageDispatchRepository dispatchRepo = GetDispatchRepository();
 			List<MessageDispatch> dispatches = 
 				dispatchRepo.GetDispatchesNotReceived(receiverEmail);
-			if (dispatches == null)
-			{
-				return null;
-			}
 			AssignMessagesToDispatch(dispatches);
 			return GetDispatchInfo(dispatches, userId);
 		}
