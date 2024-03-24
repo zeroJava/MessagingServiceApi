@@ -17,25 +17,29 @@ namespace MessageDbLib.DbRepository
 			this.connectionString = connectionString;
 		}
 
-		public BaseRepository(string connectionString, IRepoTransaction repoTransaction)
+		public BaseRepository(string connectionString,
+			IRepoTransaction repoTransaction)
 		{
 			this.connectionString = connectionString;
 			this.repoTransaction = repoTransaction;
 			this.transactionModeEnabled = true;
 		}
 
-		protected virtual MssqlDbEngine GetMssqlDbEngine(string query, SqlParameter[] mssqlParameters,
+		protected virtual MssqlDbEngine GetMssqlDbEngine(string query,
+			SqlParameter[] mssqlParameters,
 			string connectionString)
 		{
 			if (transactionModeEnabled && repoTransaction != null)
 			{
-				MssqlDbEngine transactionMssqlEngine = new MssqlDbEngine(query, mssqlParameters,
+				MssqlDbEngine transactionMssqlEngine = new MssqlDbEngine(query,
+					mssqlParameters,
 					connectionString,
 					repoTransaction);
 				return transactionMssqlEngine;
 			}
 
-			MssqlDbEngine mssqlDbEngine = new MssqlDbEngine(query, mssqlParameters, connectionString);
+			MssqlDbEngine mssqlDbEngine = new MssqlDbEngine(query,
+				mssqlParameters, connectionString);
 			return mssqlDbEngine;
 		}
 
@@ -46,13 +50,15 @@ namespace MessageDbLib.DbRepository
 			SqlParameter[] mssqlParameters = queryBody.Parameters;
 			if (transactionModeEnabled && repoTransaction != null)
 			{
-				MssqlDbEngine transactionMssqlEngine = new MssqlDbEngine(query, mssqlParameters,
+				MssqlDbEngine transactionMssqlEngine = new MssqlDbEngine(query,
+					mssqlParameters,
 					connectionString,
 					repoTransaction);
 				return transactionMssqlEngine;
 			}
-
-			MssqlDbEngine mssqlDbEngine = new MssqlDbEngine(query, mssqlParameters, connectionString);
+			MssqlDbEngine mssqlDbEngine = new MssqlDbEngine(query,
+				mssqlParameters,
+				connectionString);
 			return mssqlDbEngine;
 		}
 
