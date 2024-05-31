@@ -18,12 +18,12 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		//protected readonly string connectionString;
 		//protected readonly IRepoTransaction repoTransaction;
 		//protected readonly bool transactionModeEnabled = false;
-		public virtual string TableName { get; protected set; } = "dbo.UserTable";
+		protected override string TableName { get; set; } = "dbo.UserTable";
 
 		public UserRepository(string connectionString) :
 			base(connectionString)
 		{
-			this.connectionString = connectionString;
+			//this.connectionString = connectionString;
 		}
 
 		public UserRepository(string connectionString, IRepoTransaction repoTransaction) :

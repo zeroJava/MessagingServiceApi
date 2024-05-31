@@ -18,7 +18,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		//protected readonly IRepoTransaction repoTransaction;
 		//protected readonly bool transactionModeEnabled = false;
 
-		public virtual string TableName { get; protected set; } = "dbo.AuthorisationTable";
+		protected override string TableName { get; set; } = "dbo.AuthorisationTable";
 
 		public AuthorisationRepository(string connectionString) :
 			base(connectionString)

@@ -8,7 +8,7 @@ namespace MessageDbLib.DbRepository
 {
 	public abstract class BaseRepository
 	{
-		protected string connectionString;
+		protected readonly string connectionString;
 		protected readonly IRepoTransaction repoTransaction;
 		protected readonly bool transactionModeEnabled = false;
 
@@ -66,5 +66,7 @@ namespace MessageDbLib.DbRepository
 		{
 			return DbValueUtil.GetValidValue(value);
 		}
+
+		protected abstract string TableName { get; set; }
 	}
 }

@@ -23,7 +23,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		//protected readonly IRepoTransaction repoTransaction;
 		//protected readonly bool transactionModeEnabled = false;
 
-		public virtual string TableName { get; protected set; } = "messagedbo.MessageDispatchTable";
+		protected override string TableName { get; set; } = "messagedbo.MessageDispatchTable";
 
 		public MessageDispatchRepository(string connectionString) :
 			base(connectionString)

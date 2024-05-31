@@ -18,7 +18,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 {
 	public class MessageRepository : BaseRepository, IMessageRepository
 	{
-		public virtual string TableName { get; protected set; } = "messagedbo.MessageTable";
+		protected override string TableName { get; set; } = "messagedbo.MessageTable";
 
 		public MessageRepository(string connectionString) : base(connectionString)
 		{

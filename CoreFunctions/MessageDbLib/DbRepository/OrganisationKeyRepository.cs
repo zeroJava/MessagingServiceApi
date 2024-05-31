@@ -17,7 +17,7 @@ namespace MessageDbLib.DbRepository.ADO.MsSql
 		//protected readonly string connectionString;
 		//protected readonly IRepoTransaction repoTransaction;
 		//protected readonly bool transactionModeEnabled = false;
-		public virtual string TableName { get; protected set; } = "dbo.OrganisationKeyTable";
+		protected override string TableName { get; set; } = "dbo.OrganisationKeyTable";
 
 		public OrganisationKeyRepository(string connectionString) :
 			base(connectionString)
