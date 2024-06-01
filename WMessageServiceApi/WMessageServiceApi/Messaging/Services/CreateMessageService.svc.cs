@@ -30,7 +30,7 @@ namespace WMessageServiceApi.Messaging.Services
 				LogError("Error creating message\n" + exception.ToString());
 				var tokenContract = new MessageRequestToken
 				{
-					MessageRecievedState = MessageReceivedState.FailedToProcessRequest,
+					MessageRecievedState = MessageReceivedState.FailedToProcess,
 					Message = exception.Message,
 				};
 				throw new FaultException<MessageRequestToken>(tokenContract);

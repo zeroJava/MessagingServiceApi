@@ -6,9 +6,9 @@ namespace WMessageServiceApi.Messaging.DataEnumerations
 	public enum MessageReceivedState
 	{
 		[EnumMember]
-		AcknowledgedRequest,
+		Successful,
 
 		[EnumMember]
-		FailedToProcessRequest,
+		FailedToProcess,
 	}
 }

@@ -21,7 +21,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			ProcessMessage(request);
 			return new MessageRequestToken
 			{
-				MessageRecievedState = MessageReceivedState.AcknowledgedRequest,
+				MessageRecievedState = MessageReceivedState.Successful,
 				Message = "Message was successfully acknowledged and persisted in " +
 				"our system"
 			};
