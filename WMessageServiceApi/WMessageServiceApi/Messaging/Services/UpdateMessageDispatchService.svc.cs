@@ -2,7 +2,7 @@
 using System.ServiceModel;
 using WMessageServiceApi.Exceptions.Datacontacts;
 using WMessageServiceApi.Logging;
-using WMessageServiceApi.Messaging.ServiceBusinessLogics;
+using WMessageServiceApi.Messaging.Facades;
 using WMessageServiceApi.Messaging.ServiceInterfaces;
 
 namespace WMessageServiceApi.Messaging.Services

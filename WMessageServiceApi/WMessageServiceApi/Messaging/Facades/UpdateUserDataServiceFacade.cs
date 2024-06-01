@@ -8,7 +8,7 @@ using WMessageServiceApi.Exceptions.Datacontacts;
 using WMessageServiceApi.Messaging.DataContracts.UserContracts;
 using stringCheck = WMessageServiceApi.Extensions.StringExtension;
 
-namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
+namespace WMessageServiceApi.Messaging.Facades
 {
 	public class UpdateUserDataServiceFacade
 	{

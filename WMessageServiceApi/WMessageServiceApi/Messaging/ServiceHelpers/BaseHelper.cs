@@ -2,18 +2,13 @@
 using WMessageServiceApi.Authentication;
 using WMessageServiceApi.Logging;
 
-namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
+namespace WMessageServiceApi.Messaging.ServiceHelpers
 {
-	public abstract class BaseFacade
+	public abstract class BaseHelper
 	{
 		protected virtual void ValidToken(string encryptedToken)
 		{
 			string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
-			/*if (string.IsNullOrEmpty(userAccessToken))
-			{
-				Console.WriteLine("This is a debug bypass, will be removed later.");
-				return;
-			}*/
 			IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory
 				.GetAccessTokenValidator(option);
 			TokenValidationResult result = tokenValidator.IsTokenValid(encryptedToken);

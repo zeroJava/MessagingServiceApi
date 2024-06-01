@@ -5,7 +5,7 @@ using MessageDbLib.DbRepositoryFactories;
 using System.Collections.Generic;
 using WMessageServiceApi.Messaging.DataContracts.UserContracts;
 
-namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
+namespace WMessageServiceApi.Messaging.Facades
 {
 	public class RetrieveUserServiceFacade
 	{

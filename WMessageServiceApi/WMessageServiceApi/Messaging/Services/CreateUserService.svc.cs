@@ -1,61 +1,21 @@
-﻿using System;
-using System.ServiceModel;
-using WMessageServiceApi.Exceptions.Datacontacts;
-using WMessageServiceApi.Messaging.DataContracts.UserContracts;
-using WMessageServiceApi.Messaging.ServiceBusinessLogics;
+﻿using WMessageServiceApi.Messaging.DataContracts.UserContracts;
+using WMessageServiceApi.Messaging.ServiceHelpers;
 using WMessageServiceApi.Messaging.ServiceInterfaces;
 
 namespace WMessageServiceApi.Messaging.Services
 {
-	public class CreateUserService : ICreateUserService
+	public class CreateUserService : BaseService, ICreateUserService
 	{
-		public void CreateNewAdvancedUser(NewAdvancedUserDataContract advanceUserContract)
+		public void CreateNewAdvancedUser(NewAdvancedUserDataContract advanceUser)
 		{
-			try
-			{
-				CreateUserLogic createUserBl = new CreateUserLogic();
-				createUserBl.CreateNewAdvancedUser(advanceUserContract);
-			}
-			catch (InvalidOperationException exception)
-			{
-				ThrowUserExistErrorMessage(exception.Message);
-			}
-			catch (Exception exception)
-			{
-				ThrowErrorMessage(exception.Message, StatusList.ProcessError);
-			}
+			CreateUserServiceHelper serviceHelper = new CreateUserServiceHelper();
+			serviceHelper.CreateNewAdvancedUser(GetToken(), advanceUser);
 		}
 
 		public void CreateNewUser(NewUserDataContract userContract)
 		{
-			try
-			{
-				CreateUserLogic createUserBL = new CreateUserLogic();
-				createUserBL.CreateNewUser(userContract);
-			}
-			catch (InvalidOperationException exception)
-			{
-				ThrowUserExistErrorMessage(exception.Message);
-			}
-			catch (Exception exception)
-			{
-				ThrowErrorMessage(exception.Message, StatusList.ProcessError);
-			}
-		}
-
-		private void ThrowErrorMessage(string message, int status)
-		{
-			ErrorContract error = new ErrorContract(message, status);
-			throw new FaultException<ErrorContract>(error);
-		}
-
-		private void ThrowUserExistErrorMessage(string message)
-		{
-			UserExistErrorContract error = new UserExistErrorContract
-			{
-				Message = message
-			};
-			throw new FaultException<UserExistErrorContract>(error);
+			CreateUserServiceHelper serviceHelper = new CreateUserServiceHelper();
+			serviceHelper.CreateNewUser(GetToken(), userContract);
 		}
 	}
 }

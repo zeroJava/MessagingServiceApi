@@ -7,16 +7,15 @@ using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 using WMessageServiceApi.Messaging.DataEnumerations;
 using Transaction = MessageDbLib.DbRepositoryFactories.RepoTransactionFactory;
 
-namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
+namespace WMessageServiceApi.Messaging.Facades
 {
 	/// <summary>
 	/// Message facade class for saving messages to the server.
 	/// </summary>
-	public class MessageFcd : BaseFacade
+	public static class MessageFacade
 	{
-		public MessageRequestToken CreateMessage(IMessageRequest request)
+		public static MessageRequestToken CreateMessage(IMessageRequest request)
 		{
-			ValidToken(request.AccessToken);
 			ValidMessage(request);
 			ProcessMessage(request);
 			return new MessageRequestToken
@@ -27,7 +26,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			};
 		}
 
-		private void ValidMessage(IMessageRequest request)
+		private static void ValidMessage(IMessageRequest request)
 		{
 			if (request.EmailAccounts != null && request.EmailAccounts.Count != 0)
 			{
@@ -37,9 +36,8 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				"Message request does not have any emails attached.");
 		}
 
-		private void ProcessMessage(IMessageRequest request)
+		private static void ProcessMessage(IMessageRequest request)
 		{
-			LogInfo("Saving request");
 			User user = RetrieveUser(request.UserName);
 			Message msg = new Message
 			{
@@ -50,10 +48,9 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			};
 			ProcessTransaction(msg, request);
 			//PersistMessageToMongoDbService(msg);
-			LogInfo("Request successful");
 		}
 
-		private void ProcessTransaction(Message msg, IMessageRequest request)
+		private static void ProcessTransaction(Message msg, IMessageRequest request)
 		{
 			using (var transaction =
 				Transaction.GetRepoTransaction(DatabaseOption.DatabaseEngine,
@@ -66,25 +63,26 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 					ProcessMessageDispatch(request, msg, transaction);
 					transaction.Commit();
 				}
-				catch (Exception exception)
+				catch
 				{
-					LogError("Could not save request to DB", exception);
 					transaction.Callback();
 					throw;
 				}
 			}
 		}
 
-		private User RetrieveUser(string userName)
+		private static User RetrieveUser(string userName)
 		{
-			var userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine,
+			var userRepo = UserRepoFactory.GetUserRepository(
+				DatabaseOption.DatabaseEngine,
 				DatabaseOption.DbConnectionString);
 			User user = userRepo.GetUserMatchingUsername(userName);
 			return user ?? throw new InvalidOperationException(
 				"Sender could not be found in our current repo");
 		}
 
-		private void PersistMessage(Message message, IRepoTransaction repoTransaction)
+		private static void PersistMessage(Message message,
+			IRepoTransaction repoTransaction)
 		{
 			var databaseEngine = DatabaseOption.DatabaseEngine;
 			var messageRepo = MessageRepoFactory.GetMessageRepository(databaseEngine,
@@ -92,7 +90,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			messageRepo.InsertMessage(message);
 		}
 
-		private void ProcessMessageDispatch(IMessageRequest messageContract,
+		private static void ProcessMessageDispatch(IMessageRequest messageContract,
 			Message message, IRepoTransaction repoTransaction)
 		{
 			foreach (string emailAddress in messageContract.EmailAccounts)
@@ -107,14 +105,13 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			}
 		}
 
-		private void PersistMessagedispatch(MessageDispatch messageDispatch,
+		private static void PersistMessagedispatch(MessageDispatch messageDispatch,
 			IRepoTransaction repoTransaction)
 		{
 			var dispatchRepo = MessageDispatchRepoFactory.GetDispatchRepository(
 				DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString,
 				repoTransaction);
 			dispatchRepo.InsertDispatch(messageDispatch);
-			LogInfo("Message-Dispatch persisting was successful");
 		}
 
 		/*private void PersistMessageToMongoDbService(Message request)

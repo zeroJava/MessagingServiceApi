@@ -2,9 +2,9 @@
 {
 	public abstract class BaseService
 	{
-		protected virtual void LogError(string message)
+		protected virtual string GetToken()
 		{
-			Logging.AppLog.LogError(message);
+			return string.Empty;
 		}
 	}
 }

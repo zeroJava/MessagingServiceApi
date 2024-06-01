@@ -5,7 +5,7 @@ using MessageDbLib.DbRepositoryFactories;
 using System;
 using WMessageServiceApi.Logging;
 
-namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
+namespace WMessageServiceApi.Messaging.Facades
 {
 	public static class UpdateMessageDispatchLogic
 	{

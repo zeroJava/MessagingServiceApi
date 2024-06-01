@@ -6,11 +6,11 @@ using MessageDbLib.SecurityOperations;
 using System;
 using WMessageServiceApi.Messaging.DataContracts.UserContracts;
 
-namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
+namespace WMessageServiceApi.Messaging.Facades
 {
-	public class CreateUserLogic : BaseFacade
+	public static class CreateUserFacade
 	{
-		public void CreateNewAdvancedUser(NewAdvancedUserDataContract advanceUserContract)
+		public static void CreateNewAdvancedUser(NewAdvancedUserDataContract advanceUserContract)
 		{
 			if (advanceUserContract.UserName != null &&
 				 advanceUserContract.UserName != "" &&
@@ -23,7 +23,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			//PersistUserToMongoDbService(user);
 		}
 
-		public void CreateNewUser(INewUserDataContract userContract)
+		public static void CreateNewUser(INewUserDataContract userContract)
 		{
 			if (userContract.UserName != null && userContract.UserName != "" &&
 				UsernameAlreadyExist(userContract.UserName))
@@ -35,7 +35,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			//PersistUserToMongoDbService(user);
 		}
 
-		private User ConstructUser(INewUserDataContract userContract)
+		private static User ConstructUser(INewUserDataContract userContract)
 		{
 			if (userContract is NewAdvancedUserDataContract)
 			{
@@ -65,20 +65,20 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 			}
 		}
 
-		private void PersistNewUser(User user)
+		private static void PersistNewUser(User user)
 		{
 			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
 			userRepo.InsertUser(user);
 		}
 
 		/*private void PersistUserToMongoDbService(User user)
-	 {
-		 RabbitMqProducerClass rabbitMqProducer = new RabbitMqProducerClass(QueueTypeConstant.MongoDbPersistentUserService,
-			 QueueTypeConstant.MongoDbPersistentUserService);
-		 rabbitMqProducer.ExecuteMessageQueueing(user);
-	 }*/
+		 {
+			 RabbitMqProducerClass rabbitMqProducer = new RabbitMqProducerClass(QueueTypeConstant.MongoDbPersistentUserService,
+				 QueueTypeConstant.MongoDbPersistentUserService);
+			 rabbitMqProducer.ExecuteMessageQueueing(user);
+		 }*/
 
-		private bool UsernameAlreadyExist(string userName)
+		private static bool UsernameAlreadyExist(string userName)
 		{
 			IUserRepository userRepo = UserRepoFactory.GetUserRepository(
 				DatabaseOption.DatabaseEngine,
