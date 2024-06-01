@@ -15,8 +15,8 @@ namespace WMessageServiceApi.Messaging.Services
 		{
 			try
 			{
-				MessageLogic createMessageFacade = new MessageLogic();
-				return createMessageFacade.CreateMessage(message);
+				MessageFcd messageFcd = new MessageFcd();
+				return messageFcd.CreateMessage(message);
 			}
 			catch (TokenValidationException exception)
 			{

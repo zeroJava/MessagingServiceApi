@@ -4,9 +4,9 @@ using WMessageServiceApi.Logging;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public abstract class BaseLogic
+	public abstract class BaseFacade
 	{
-		protected virtual void ValidateAccessToken(string encryptedToken)
+		protected virtual void ValidToken(string encryptedToken)
 		{
 			string option = AccessTokenValidatorFactory.ACCESS_TOKEN_WCF;
 			/*if (string.IsNullOrEmpty(userAccessToken))
@@ -14,12 +14,14 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 				Console.WriteLine("This is a debug bypass, will be removed later.");
 				return;
 			}*/
-			IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory.GetAccessTokenValidator(option);
+			IAccessTokenValidator tokenValidator = AccessTokenValidatorFactory
+				.GetAccessTokenValidator(option);
 			TokenValidationResult result = tokenValidator.IsTokenValid(encryptedToken);
-			if (!result.IsValidationSuccess)
+			if (result.IsValidationSuccess)
 			{
-				throw new TokenValidationException(result.Message, result.Status);
+				return;
 			}
+			throw new TokenValidationException(result.Message, result.Status);
 		}
 
 		protected virtual void LogError(string message)

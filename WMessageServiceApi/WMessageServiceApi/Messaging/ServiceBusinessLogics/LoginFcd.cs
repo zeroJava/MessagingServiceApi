@@ -6,15 +6,15 @@ using WMessageServiceApi.Messaging.DataContracts.LoginContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public class LoginLogic : BaseLogic
+	public class LoginFcd : BaseFacade
 	{
-		public LoginToken ExecuteEncryptedLoginIn(string encryptedUser, string encryptedPassword)
+		public LoginToken Login(string encryptedUser, string encryptedPassword)
 		{
 			string decryptedUsername = encryptedUser;
 			string decryptedPassword = encryptedPassword;
 
 			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
-			User user = userRepo.GetUserMatchingUsernameAndPassword(decryptedUsername, decryptedPassword);
+			User user = userRepo.GetUserMatchingUsername(decryptedUsername);
 
 			LoginToken loginTokenContract = new LoginToken();
 			if (user != null)

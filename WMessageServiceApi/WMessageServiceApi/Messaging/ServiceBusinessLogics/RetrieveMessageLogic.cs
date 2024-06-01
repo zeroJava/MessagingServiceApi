@@ -9,12 +9,12 @@ using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public class RetrieveMessageLogic : BaseLogic
+	public class RetrieveMessageLogic : BaseFacade
 	{
 		public List<MessageDispatchInfo> GetMessagesSentToUser(
 			IRetrieveMessageRequest messageRequest)
 		{
-			ValidateAccessToken(messageRequest.UserAccessToken);
+			ValidToken(messageRequest.UserAccessToken);
 			CheckRequestContent(messageRequest);
 
 			string username = messageRequest.Username;
@@ -156,7 +156,7 @@ namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 		public List<MessageDispatchInfo> GetMsgDispatchesBetweenSenderReceiver(
 			IRetrieveMessageRequest messageRequest)
 		{
-			ValidateAccessToken(messageRequest.UserAccessToken);
+			ValidToken(messageRequest.UserAccessToken);
 
 			string username = messageRequest.Username;
 			if (string.IsNullOrEmpty(username))

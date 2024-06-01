@@ -15,8 +15,8 @@ namespace WMessageServiceApi.Messaging.Services
 		{
 			try
 			{
-				LoginLogic login = new LoginLogic();
-				return login.ExecuteEncryptedLoginIn(encryptedUser, encryptedPassword);
+				LoginFcd login = new LoginFcd();
+				return login.Login(encryptedUser, encryptedPassword);
 			}
 			catch (Exception exception)
 			{

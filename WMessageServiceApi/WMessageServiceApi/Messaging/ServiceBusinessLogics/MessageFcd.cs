@@ -9,28 +9,32 @@ using Transaction = MessageDbLib.DbRepositoryFactories.RepoTransactionFactory;
 
 namespace WMessageServiceApi.Messaging.ServiceBusinessLogics
 {
-	public class MessageLogic : BaseLogic
+	/// <summary>
+	/// Message facade class for saving messages to the server.
+	/// </summary>
+	public class MessageFcd : BaseFacade
 	{
 		public MessageRequestToken CreateMessage(IMessageRequest request)
 		{
-			ValidateAccessToken(request.AccessToken);
-			CheckMessageContent(request);
+			ValidToken(request.AccessToken);
+			ValidMessage(request);
 			ProcessMessage(request);
-			var requestToken = new MessageRequestToken
+			return new MessageRequestToken
 			{
 				MessageRecievedState = MessageReceivedState.AcknowledgedRequest,
-				Message = "Message was successfully acknowledged and persisted in our system"
+				Message = "Message was successfully acknowledged and persisted in " +
+				"our system"
 			};
-			return requestToken;
 		}
 
-		private void CheckMessageContent(IMessageRequest request)
+		private void ValidMessage(IMessageRequest request)
 		{
-			if (request.EmailAccounts == null || request.EmailAccounts.Count <= 0)
+			if (request.EmailAccounts != null && request.EmailAccounts.Count != 0)
 			{
-				throw new InvalidOperationException(
-					"Message request does not have any emails attached.");
+				return;
 			}
+			throw new InvalidOperationException(
+				"Message request does not have any emails attached.");
 		}
 
 		private void ProcessMessage(IMessageRequest request)
