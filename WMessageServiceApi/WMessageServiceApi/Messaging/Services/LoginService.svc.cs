@@ -1,8 +1,8 @@
-﻿using WMessageServiceApi.Messaging.DataContracts.LoginContracts;
-using WMessageServiceApi.Messaging.ServiceHelpers;
-using WMessageServiceApi.Messaging.ServiceInterfaces;
+﻿using MessagingServiceApi.Messaging.ServiceLogics;
+using MessagingServiceInterfaces.Contracts.Login;
+using MessagingServiceInterfaces.Services;
 
-namespace WMessageServiceApi.Messaging.Services
+namespace MessagingServiceApi.Messaging.Services
 {
 	// NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "LoginService" in code, svc and config file together.
 	// NOTE: In order to launch WCF Test Client for testing this service, please select LoginService.svc or LoginService.svc.cs at the Solution Explorer and start debugging.
@@ -11,7 +11,7 @@ namespace WMessageServiceApi.Messaging.Services
 		public LoginToken ExecuteEncryptedLoginIn(string encryptedUser,
 			string encryptedPassword)
 		{
-			LoginServiceHelper serviceHelper = new LoginServiceHelper();
+			LoginServiceLogic serviceHelper = new LoginServiceLogic();
 			return serviceHelper.ExecuteEncryptedLoginIn(encryptedUser,
 				encryptedPassword);
 		}

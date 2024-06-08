@@ -1,7 +1,6 @@
 ﻿using MessageDbCore.Repositories;
 using MessageDbLib.DbEngine;
 using MessageDbLib.Utility;
-using System;
 using System.Data.SqlClient;
 
 namespace MessageDbLib.DbRepository

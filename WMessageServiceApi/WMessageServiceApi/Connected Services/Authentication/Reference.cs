@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WMessageServiceApi.Authentication {
+namespace MessagingServiceApi.Authentication {
     using System.Runtime.Serialization;
     using System;
     
@@ -204,25 +204,25 @@ namespace WMessageServiceApi.Authentication {
     public interface IAccessService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAccessService/GetAccessToken", ReplyAction="http://tempuri.org/IAccessService/GetAccessTokenResponse")]
-        WMessageServiceApi.Authentication.AccessToken GetAccessToken(WMessageServiceApi.Authentication.AccessRequest accessRequest);
+        MessagingServiceApi.Authentication.AccessToken GetAccessToken(MessagingServiceApi.Authentication.AccessRequest accessRequest);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAccessService/GetAccessToken", ReplyAction="http://tempuri.org/IAccessService/GetAccessTokenResponse")]
-        System.Threading.Tasks.Task<WMessageServiceApi.Authentication.AccessToken> GetAccessTokenAsync(WMessageServiceApi.Authentication.AccessRequest accessRequest);
+        System.Threading.Tasks.Task<MessagingServiceApi.Authentication.AccessToken> GetAccessTokenAsync(MessagingServiceApi.Authentication.AccessRequest accessRequest);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAccessService/GetAccessTokenImplicit", ReplyAction="http://tempuri.org/IAccessService/GetAccessTokenImplicitResponse")]
-        WMessageServiceApi.Authentication.AccessToken GetAccessTokenImplicit(string encryptedUsername, string encryptedPassword);
+        MessagingServiceApi.Authentication.AccessToken GetAccessTokenImplicit(string encryptedUsername, string encryptedPassword);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAccessService/GetAccessTokenImplicit", ReplyAction="http://tempuri.org/IAccessService/GetAccessTokenImplicitResponse")]
-        System.Threading.Tasks.Task<WMessageServiceApi.Authentication.AccessToken> GetAccessTokenImplicitAsync(string encryptedUsername, string encryptedPassword);
+        System.Threading.Tasks.Task<MessagingServiceApi.Authentication.AccessToken> GetAccessTokenImplicitAsync(string encryptedUsername, string encryptedPassword);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface IAccessServiceChannel : WMessageServiceApi.Authentication.IAccessService, System.ServiceModel.IClientChannel {
+    public interface IAccessServiceChannel : MessagingServiceApi.Authentication.IAccessService, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class AccessServiceClient : System.ServiceModel.ClientBase<WMessageServiceApi.Authentication.IAccessService>, WMessageServiceApi.Authentication.IAccessService {
+    public partial class AccessServiceClient : System.ServiceModel.ClientBase<MessagingServiceApi.Authentication.IAccessService>, MessagingServiceApi.Authentication.IAccessService {
         
         public AccessServiceClient() {
         }
@@ -243,19 +243,19 @@ namespace WMessageServiceApi.Authentication {
                 base(binding, remoteAddress) {
         }
         
-        public WMessageServiceApi.Authentication.AccessToken GetAccessToken(WMessageServiceApi.Authentication.AccessRequest accessRequest) {
+        public MessagingServiceApi.Authentication.AccessToken GetAccessToken(MessagingServiceApi.Authentication.AccessRequest accessRequest) {
             return base.Channel.GetAccessToken(accessRequest);
         }
         
-        public System.Threading.Tasks.Task<WMessageServiceApi.Authentication.AccessToken> GetAccessTokenAsync(WMessageServiceApi.Authentication.AccessRequest accessRequest) {
+        public System.Threading.Tasks.Task<MessagingServiceApi.Authentication.AccessToken> GetAccessTokenAsync(MessagingServiceApi.Authentication.AccessRequest accessRequest) {
             return base.Channel.GetAccessTokenAsync(accessRequest);
         }
         
-        public WMessageServiceApi.Authentication.AccessToken GetAccessTokenImplicit(string encryptedUsername, string encryptedPassword) {
+        public MessagingServiceApi.Authentication.AccessToken GetAccessTokenImplicit(string encryptedUsername, string encryptedPassword) {
             return base.Channel.GetAccessTokenImplicit(encryptedUsername, encryptedPassword);
         }
         
-        public System.Threading.Tasks.Task<WMessageServiceApi.Authentication.AccessToken> GetAccessTokenImplicitAsync(string encryptedUsername, string encryptedPassword) {
+        public System.Threading.Tasks.Task<MessagingServiceApi.Authentication.AccessToken> GetAccessTokenImplicitAsync(string encryptedUsername, string encryptedPassword) {
             return base.Channel.GetAccessTokenImplicitAsync(encryptedUsername, encryptedPassword);
         }
     }

@@ -1,30 +1,21 @@
-﻿using WMessageServiceApi.Messaging.DataContracts.UserContracts;
-using WMessageServiceApi.Messaging.ServiceHelpers;
-using WMessageServiceApi.Messaging.ServiceInterfaces;
+﻿using MessagingServiceApi.Messaging.ServiceLogics;
+using MessagingServiceInterfaces.Contracts.User;
+using MessagingServiceInterfaces.Services;
 
-namespace WMessageServiceApi.Messaging.Services
+namespace MessagingServiceApi.Messaging.Services
 {
-	public class CreateUserService : BaseService, ICreateUserService
+	public class CreateUserService : ServiceBase, ICreateUserService
 	{
-		public void CreateNewAdvancedUser(NewAdvancedUserDataContract advanceUser)
+		public void CreateNewAdvancedUser(NewAdvancedUserData user)
 		{
-			CreateUserServiceHelper serviceHelper = new CreateUserServiceHelper();
-			serviceHelper.CreateNewAdvancedUser(GetToken(), advanceUser);
+			CreateUserServiceLogic serviceHelper = new CreateUserServiceLogic();
+			serviceHelper.CreateNewAdvancedUser(GetToken(), user);
 		}
 
-		public void CreateNewUser(NewUserDataContract userContract)
+		public void CreateNewUser(NewUserData user)
 		{
-			CreateUserServiceHelper serviceHelper = new CreateUserServiceHelper();
-			serviceHelper.CreateNewUser(GetToken(), userContract);
+			CreateUserServiceLogic serviceHelper = new CreateUserServiceLogic();
+			serviceHelper.CreateNewUser(GetToken(), user);
 		}
 	}
 }
-
-/*var advanceUser = new AdvancedUser()
-{
-	USERNAME = user.USERNAME,
-	Password = user.Password,
-	DOB = user.DOB,
-	ADVANCEENDDATETIME = DateTime.Now.AddDays(50d),
-	ADVANCESTARTDATETIME = DateTime.Now
-};*/

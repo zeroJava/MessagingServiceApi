@@ -1,1 +1,1 @@
-﻿<%@ ServiceHost Language="C#" Debug="true" Service="WMessageServiceApi.Messaging.Services.TestRestService" CodeBehind="TestRestService.svc.cs" %>
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="MessagingServiceApi.Messaging.Services.TestRestService" CodeBehind="TestRestService.svc.cs" %>

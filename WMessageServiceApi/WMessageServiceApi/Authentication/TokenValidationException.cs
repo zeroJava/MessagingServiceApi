@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WMessageServiceApi.Authentication
+namespace MessagingServiceApi.Authentication
 {
 	public class TokenValidationException : Exception
 	{

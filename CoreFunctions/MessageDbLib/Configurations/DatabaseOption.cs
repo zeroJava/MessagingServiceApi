@@ -10,7 +10,7 @@ namespace MessageDbLib.Configurations
 		public static readonly string DbConnectionString;
 		public static readonly DatabaseOption DbOption;
 
-		public DatabaseEngineConstant Engine {  get; private set; }
+		public DatabaseEngineConstant Engine { get; private set; }
 		public string ConnectionString { get; private set; }
 
 		static DatabaseOption()

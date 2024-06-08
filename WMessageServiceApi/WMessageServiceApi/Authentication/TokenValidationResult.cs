@@ -1,4 +1,4 @@
-﻿namespace WMessageServiceApi.Authentication
+﻿namespace MessagingServiceApi.Authentication
 {
 	public struct TokenValidationResult
 	{

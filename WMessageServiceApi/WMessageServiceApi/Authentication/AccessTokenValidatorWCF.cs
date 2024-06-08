@@ -1,12 +1,12 @@
-﻿using WMessageServiceApi.ValidationService;
+﻿using MessagingServiceApi.ValidationService;
 
-namespace WMessageServiceApi.Authentication
+namespace MessagingServiceApi.Authentication
 {
 	public class AccessTokenValidatorWcf : IAccessTokenValidator
 	{
-		public TokenValidationResult IsTokenValid(string encryptedToken)
+		public TokenValidationResult Validate(string encryptedToken)
 		{
-			ValidationResponse result = Validate(encryptedToken);
+			ValidationResponse result = ValidateToken(encryptedToken);
 			return new TokenValidationResult
 			{
 				IsValidationSuccess = result.ValidationIsSuccess,
@@ -15,14 +15,16 @@ namespace WMessageServiceApi.Authentication
 			};
 		}
 
-		private ValidationResponse Validate(string encrptedToken)
+		private ValidationResponse ValidateToken(string encrptedToken)
 		{
-			ValidationServiceClient serviceClient = new ValidationServiceClient();
-			ValidationResponse response = serviceClient.AccessTokenValidation(encrptedToken);
+			ValidationServiceClient serviceClient =
+				new ValidationServiceClient();
+			ValidationResponse response =
+				serviceClient.AccessTokenValidation(encrptedToken);
 			return response;
 		}
 
-		public TokenValidationResult IsUserCredentialValid(string encryptedUserCred)
+		public TokenValidationResult IsUserValid(string encryptedUserCred)
 		{
 			ValidationResponse result = ValidateUserCredential(encryptedUserCred);
 			return new TokenValidationResult

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WMessageServiceApi.Authentication
+namespace MessagingServiceApi.Authentication
 {
 	public static class AccessTokenValidatorFactory
 	{

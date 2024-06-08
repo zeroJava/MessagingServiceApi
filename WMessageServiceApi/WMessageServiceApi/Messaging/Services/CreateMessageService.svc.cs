@@ -1,14 +1,14 @@
-﻿using WMessageServiceApi.Messaging.DataContracts.MessageContracts;
-using WMessageServiceApi.Messaging.ServiceHelpers;
-using WMessageServiceApi.Messaging.ServiceInterfaces;
+﻿using MessagingServiceApi.Messaging.ServiceLogics;
+using MessagingServiceInterfaces.Contracts.Message;
+using MessagingServiceInterfaces.Services;
 
-namespace WMessageServiceApi.Messaging.Services
+namespace MessagingServiceApi.Messaging.Services
 {
-	public class CreateMessageService : BaseService, ICreateMessageService
+	public class CreateMessageService : ServiceBase, ICreateMessageService
 	{
 		public MessageRequestToken CreateMessage(MessageRequest message)
 		{
-			CreateMessageServiceHelper serviceHelper = new CreateMessageServiceHelper();
+			CreateMessageServiceLogic serviceHelper = new CreateMessageServiceLogic();
 			return serviceHelper.CreateMessage(GetToken(), message);
 		}
 	}
