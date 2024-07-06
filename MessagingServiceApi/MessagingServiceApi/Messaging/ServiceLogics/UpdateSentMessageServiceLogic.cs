@@ -1,9 +1,6 @@
 ﻿using MessagingServiceApi.Authentication;
 using MessagingServiceFunctions.Message;
-using MessagingServiceInterfaces.Constants;
-using MessagingServiceInterfaces.Contracts.Errors;
 using System;
-using System.ServiceModel;
 
 namespace MessagingServiceApi.Messaging.ServiceLogics
 {

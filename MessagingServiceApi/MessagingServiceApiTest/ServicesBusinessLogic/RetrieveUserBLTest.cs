@@ -1,5 +1,4 @@
-﻿using MessagingServiceApi.Messaging.Services;
-using MessagingServiceFunctions.User;
+﻿using MessagingServiceFunctions.User;
 using MessagingServiceInterfaces.Contracts.User;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;

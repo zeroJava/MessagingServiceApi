@@ -1,9 +1,5 @@
 ﻿using MessageDbCore.DbRepositoryInterfaces;
-using MessageDbLib.Configurations;
-using MessageDbLib.Constants;
 using MessageDbLib.DbRepositoryFactories;
-using MessagingServiceInterfaces.Constants;
-using MessagingServiceInterfaces.Contracts.Errors;
 using MessagingServiceInterfaces.IContracts.User;
 using System;
 

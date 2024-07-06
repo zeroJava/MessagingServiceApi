@@ -1,6 +1,4 @@
 ﻿using MessagingServiceFunctions.User;
-using MessagingServiceInterfaces.Constants;
-using MessagingServiceInterfaces.Contracts.Message;
 using MessagingServiceInterfaces.Contracts.User;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;

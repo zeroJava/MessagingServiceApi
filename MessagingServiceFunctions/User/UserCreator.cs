@@ -1,13 +1,12 @@
 ﻿using Cryptography;
 using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.RepoEntity;
-using MessageDbLib.Configurations;
 using MessageDbLib.DbRepositoryFactories;
 using MessagingServiceInterfaces.Contracts.User;
 using MessagingServiceInterfaces.IContracts.User;
 using System;
 
-using DbUser = MessageDbCore.RepoEntity.User; 
+using DbUser = MessageDbCore.RepoEntity.User;
 
 namespace MessagingServiceFunctions.User
 {

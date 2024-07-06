@@ -1,6 +1,5 @@
 ﻿using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.RepoEntity;
-using MessageDbLib.Configurations;
 using MessageDbLib.DbRepositoryFactories;
 using System;
 

@@ -1,5 +1,4 @@
 ﻿using MessageDbCore.DbRepositoryInterfaces;
-using MessageDbCore.RepoEntity;
 using MessageDbLib.Configurations;
 using MessageDbLib.DbRepositoryFactories;
 using System;
@@ -48,7 +47,7 @@ namespace MessagingServiceFunctions.User
 		{
 			var engine = DatabaseOption.DatabaseEngine;
 			var connectionstring = DatabaseOption.DbConnectionString;
-			IUserRepository userRepo =	UserRepoFactory.GetUserRepository(engine,
+			IUserRepository userRepo = UserRepoFactory.GetUserRepository(engine,
 				connectionstring);
 			DbUser user = userRepo.GetUserMatchingUsername(userName);
 			return user != null;

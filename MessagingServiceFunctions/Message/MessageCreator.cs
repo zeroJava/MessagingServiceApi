@@ -1,16 +1,14 @@
 ﻿using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.RepoEntity;
 using MessageDbCore.Repositories;
-using MessageDbLib.DbRepository.ADO.MsSql;
 using MessageDbLib.DbRepositoryFactories;
 using MessagingServiceInterfaces.Constants;
 using MessagingServiceInterfaces.Contracts.Message;
 using MessagingServiceInterfaces.IContracts.Message;
 using System;
 using System.Collections.Generic;
-
-using Dboption = MessageDbLib.Configurations.DatabaseOption;
 using DbMessage = MessageDbCore.RepoEntity.Message;
+using Dboption = MessageDbLib.Configurations.DatabaseOption;
 using DbUser = MessageDbCore.RepoEntity.User;
 using Transaction = MessageDbLib.DbRepositoryFactories.RepoTransactionFactory;
 
@@ -18,12 +16,12 @@ namespace MessagingServiceFunctions.Message
 {
 	public class MessageCreator : FunctionBase
 	{
-		private static readonly MessageRequestToken MessageCreationSuccess = new MessageRequestToken
-		{
-			MessageRecievedState = MessageReceivedState.Successful,
-			Message = "Message was successfully acknowledged and persisted in " +
-				"our system"
-		};
+		private static readonly MessageRequestToken MessageSuccess =
+			new MessageRequestToken
+			{
+				MessageRecievedState = MessageReceivedState.Successful,
+				Message = "Message was successfully acknowledged and stored"
+			};
 
 		private readonly IUserRepository userRepository;
 
@@ -39,7 +37,7 @@ namespace MessagingServiceFunctions.Message
 			Validate(request);
 			DbUser user = GetUser(request.UserName);
 			CreateMessage(request, user);
-			return MessageCreationSuccess;
+			return MessageSuccess;
 		}
 
 		private void Validate(IMessageRequest request)
