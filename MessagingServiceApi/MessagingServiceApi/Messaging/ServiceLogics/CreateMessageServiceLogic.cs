@@ -13,7 +13,7 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			try
 			{
 				ValidateToken(token);
-				LogMethodICalled(nameof(CreateMessage));
+				LogMethodInvoked(nameof(CreateMessage));
 				MessageCreator messageCreator = new MessageCreator();
 				return messageCreator.Create(message);
 			}

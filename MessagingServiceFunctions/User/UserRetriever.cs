@@ -1,5 +1,6 @@
 ﻿using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.RepoEntity;
+using MessageDbLib.Constants;
 using MessageDbLib.DbRepositoryFactories;
 using MessagingServiceInterfaces.Contracts.User;
 using System.Collections.Generic;
@@ -16,6 +17,19 @@ namespace MessagingServiceFunctions.User
 		{
 			userRepository = UserRepoFactory.GetUserRepository(engine,
 				connectionString);
+		}
+
+		public UserRetriever(DatabaseEngineConstant engine,
+			string connectionString) :
+			base(engine, connectionString)
+		{
+			userRepository = UserRepoFactory.GetUserRepository(engine,
+				connectionString);
+		}
+
+		public UserRetriever(IUserRepository userRepository)
+		{
+			this.userRepository = userRepository;
 		}
 
 		public List<UserInfo> GetAllUsers()

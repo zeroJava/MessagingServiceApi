@@ -1,4 +1,5 @@
 ﻿using MessageDbCore.DbRepositoryInterfaces;
+using MessageDbLib.Constants;
 using MessageDbLib.DbRepositoryFactories;
 using MessagingServiceInterfaces.IContracts.User;
 using System;
@@ -10,6 +11,27 @@ namespace MessagingServiceFunctions.User
 {
 	public class UserUpdater : FunctionBase
 	{
+		private readonly IUserRepository userRepository;
+
+		public UserUpdater()
+		{
+			userRepository = UserRepoFactory.GetUserRepository(engine,
+				connectionString);
+		}
+
+		public UserUpdater(DatabaseEngineConstant engine,
+			string connectionString) :
+			base(engine, connectionString)
+		{
+			userRepository = UserRepoFactory.GetUserRepository(engine,
+				connectionString);
+		}
+
+		public UserUpdater(IUserRepository userRepo)
+		{
+			this.userRepository = userRepo;
+		}
+
 		public void UpdateUser(INewUserData userContract)
 		{
 			if (string.IsNullOrEmpty(userContract.UserName))
@@ -22,16 +44,12 @@ namespace MessagingServiceFunctions.User
 				throw new ApplicationException($"Could not find user with" +
 					$" username: {userContract.UserName}");
 			UpdateUserData(user, userContract);
-			IUserRepository userRepo = UserRepoFactory.GetUserRepository(engine,
-				connectionString);
-			userRepo.UpdateUser(user);
+			userRepository.UpdateUser(user);
 		}
 
 		private DbUser GetUser(string userName)
 		{
-			IUserRepository userRepo = UserRepoFactory.GetUserRepository(engine,
-				connectionString);
-			return userRepo.GetUserMatchingUsername(userName);
+			return userRepository.GetUserMatchingUsername(userName);
 		}
 
 		private void UpdateUserData(DbUser user, INewUserData userContract)

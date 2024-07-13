@@ -1,11 +1,12 @@
 ﻿using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.RepoEntity;
+using MessageDbLib.Constants;
+using MessageDbLib.DbRepositoryFactories;
 using MessagingServiceInterfaces.Contracts.Message;
 using MessagingServiceInterfaces.IContracts.Message;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using DbMessage = MessageDbCore.RepoEntity.Message;
 using DbUser = MessageDbCore.RepoEntity.User;
 
@@ -17,6 +18,22 @@ namespace MessagingServiceFunctions.Message
 		private readonly IMessageDispatchRepository dispatchRepository;
 		private readonly IUserRepository userRepository;
 
+		public MessageRetriever()
+		{
+			messageRepository = GetMessageRepository();
+			dispatchRepository = GetDispatchRepository();
+			userRepository = GetUserRepository();
+		}
+
+		public MessageRetriever(DatabaseEngineConstant engine,
+			string connectionString) :
+			base (engine, connectionString)
+		{
+			messageRepository = GetMessageRepository();
+			dispatchRepository = GetDispatchRepository();
+			userRepository = GetUserRepository();
+		}
+
 		public MessageRetriever(IMessageRepository messageRepository,
 			IMessageDispatchRepository dispatchRepository,
 			IUserRepository userRepository)
@@ -24,6 +41,23 @@ namespace MessagingServiceFunctions.Message
 			this.messageRepository = messageRepository;
 			this.dispatchRepository = dispatchRepository;
 			this.userRepository = userRepository;
+		}
+
+		private IMessageRepository GetMessageRepository()
+		{
+			return MessageRepoFactory.GetMessageRepository(engine,
+				connectionString);
+		}
+
+		private IMessageDispatchRepository GetDispatchRepository()
+		{
+			return MessageDispatchRepoFactory.GetDispatchRepository(engine,
+				connectionString);
+		}
+
+		private IUserRepository GetUserRepository()
+		{
+			return UserRepoFactory.GetUserRepository(engine, connectionString);
 		}
 
 		public List<PostedMessageInfo> GetMessagesSentToUser(IRetrieveMessageRequest messageRequest)

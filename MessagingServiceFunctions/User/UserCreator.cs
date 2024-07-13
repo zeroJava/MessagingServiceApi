@@ -1,6 +1,7 @@
 ﻿using Cryptography;
 using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.RepoEntity;
+using MessageDbLib.Constants;
 using MessageDbLib.DbRepositoryFactories;
 using MessagingServiceInterfaces.Contracts.User;
 using MessagingServiceInterfaces.IContracts.User;
@@ -12,6 +13,27 @@ namespace MessagingServiceFunctions.User
 {
 	public class UserCreator : FunctionBase
 	{
+		private readonly IUserRepository userRepository;
+
+		public UserCreator()
+		{
+			userRepository = UserRepoFactory.GetUserRepository(engine,
+				connectionString);
+		}
+
+		public UserCreator(DatabaseEngineConstant engine,
+			string connectionString) :
+			base(engine, connectionString)
+		{
+			userRepository = UserRepoFactory.GetUserRepository(engine,
+				connectionString);
+		}
+
+		public UserCreator(IUserRepository userRepository)
+		{
+			this.userRepository = userRepository;
+		}
+
 		public void CreateNewAdvancedUser(NewAdvancedUserData advanceUser)
 		{
 			UsernameChecker.Check(advanceUser.UserName);
@@ -60,9 +82,7 @@ namespace MessagingServiceFunctions.User
 
 		private void SaveUser(DbUser user)
 		{
-			IUserRepository userRepo = UserRepoFactory.GetUserRepository(engine,
-				connectionString);
-			userRepo.InsertUser(user);
+			userRepository.InsertUser(user);
 		}
 
 		/*private void PersistUserToMongoDbService(User user)

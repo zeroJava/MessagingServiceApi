@@ -1,5 +1,6 @@
 ﻿using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.RepoEntity;
+using MessageDbLib.Constants;
 using MessageDbLib.DbRepositoryFactories;
 using System;
 
@@ -10,6 +11,13 @@ namespace MessagingServiceFunctions.Message
 		private readonly IMessageDispatchRepository dispatchRepository;
 
 		public MessageDispatchUpdater()
+		{
+			dispatchRepository = GetDispatchRepository();
+		}
+
+		public MessageDispatchUpdater(DatabaseEngineConstant engine,
+			string connectionString) :
+			base(engine, connectionString)
 		{
 			dispatchRepository = GetDispatchRepository();
 		}

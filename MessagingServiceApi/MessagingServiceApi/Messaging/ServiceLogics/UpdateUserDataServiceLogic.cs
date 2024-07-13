@@ -12,7 +12,7 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			try
 			{
 				ValidateToken(token);
-				LogMethodICalled(nameof(UpdateUser));
+				LogMethodInvoked(nameof(UpdateUser));
 				UserUpdater updateUserDataBL = new UserUpdater();
 				updateUserDataBL.UpdateUser(user);
 			}

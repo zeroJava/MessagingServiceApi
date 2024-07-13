@@ -5,8 +5,21 @@ namespace MessagingServiceFunctions
 {
 	public abstract class FunctionBase
 	{
-		protected readonly DatabaseEngineConstant engine = DatabaseOption.DatabaseEngine;
-		protected readonly string connectionString = DatabaseOption.DbConnectionString;
+		protected readonly DatabaseEngineConstant engine;
+		protected readonly string connectionString;
+
+		protected FunctionBase()
+		{
+			engine = DatabaseOption.DatabaseEngine;
+			connectionString = DatabaseOption.DbConnectionString;
+		}
+
+		protected FunctionBase(DatabaseEngineConstant engine,
+			string connectionString)
+		{
+			this.engine = engine;
+			this.connectionString = connectionString;
+		}
 
 		/*protected virtual void ValidateToken(string encryptedToken)
 		{

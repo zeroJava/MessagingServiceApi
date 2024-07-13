@@ -1,6 +1,7 @@
 ﻿using MessageDbCore.DbRepositoryInterfaces;
 using MessageDbCore.RepoEntity;
 using MessageDbCore.Repositories;
+using MessageDbLib.Constants;
 using MessageDbLib.DbRepositoryFactories;
 using MessagingServiceInterfaces.Constants;
 using MessagingServiceInterfaces.Contracts.Message;
@@ -8,7 +9,6 @@ using MessagingServiceInterfaces.IContracts.Message;
 using System;
 using System.Collections.Generic;
 using DbMessage = MessageDbCore.RepoEntity.Message;
-using Dboption = MessageDbLib.Configurations.DatabaseOption;
 using DbUser = MessageDbCore.RepoEntity.User;
 using Transaction = MessageDbLib.DbRepositoryFactories.RepoTransactionFactory;
 
@@ -27,9 +27,21 @@ namespace MessagingServiceFunctions.Message
 
 		public MessageCreator()
 		{
-			userRepository =
-				UserRepoFactory.GetUserRepository(Dboption.DatabaseEngine,
-					Dboption.DbConnectionString);
+			userRepository = UserRepoFactory.GetUserRepository(engine,
+				connectionString);
+		}
+
+		public MessageCreator(DatabaseEngineConstant engine,
+			string connectionString) :
+			base(engine, connectionString)
+		{
+			userRepository = UserRepoFactory.GetUserRepository(engine,
+				connectionString);
+		}
+
+		public MessageCreator(IUserRepository userRepository)
+		{
+			this.userRepository = userRepository;
 		}
 
 		public MessageRequestToken Create(IMessageRequest request)
@@ -65,8 +77,7 @@ namespace MessagingServiceFunctions.Message
 		private void ProcessTransaction(DbMessage msg, IMessageRequest request)
 		{
 			using (var transaction =
-				Transaction.GetRepoTransaction(Dboption.DatabaseEngine,
-				Dboption.DbConnectionString))
+				Transaction.GetRepoTransaction(engine, connectionString))
 			{
 				try
 				{
@@ -126,10 +137,8 @@ namespace MessagingServiceFunctions.Message
 			dispatchRepo.InsertDispatch(messageDispatch);
 		}
 
-		private static IMessageDispatchRepository GetDispatchRepo(IRepoTransaction repoTransaction)
+		private IMessageDispatchRepository GetDispatchRepo(IRepoTransaction repoTransaction)
 		{
-			var engine = Dboption.DatabaseEngine;
-			var connectionString = Dboption.DbConnectionString;
 			return MessageDispatchRepoFactory.GetDispatchRepository(engine,
 				connectionString, repoTransaction);
 		}

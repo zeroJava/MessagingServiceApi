@@ -13,7 +13,7 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			try
 			{
 				ValidateToken(token);
-				LogMethodICalled(nameof(GetAllUsers));
+				LogMethodInvoked(nameof(GetAllUsers));
 				UserRetriever userRetriever = new UserRetriever();
 				return userRetriever.GetAllUsers();
 			}

@@ -69,9 +69,9 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			Log.Info(message + ".");
 		}
 
-		protected virtual void LogMethodICalled(string methodname)
+		protected virtual void LogMethodInvoked(string methodname)
 		{
-			Log.Info($"Method invoked: {methodname}");
+			Log.Info($"Method invoked: {methodname} at {DateTime.Now}");
 		}
 	}
 }

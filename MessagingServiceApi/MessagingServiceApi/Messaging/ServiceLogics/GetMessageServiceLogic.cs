@@ -6,7 +6,6 @@ using MessagingServiceInterfaces.Contracts.Message;
 using MessagingServiceInterfaces.IContracts.Message;
 using System;
 using System.Collections.Generic;
-
 using Dboption = MessageDbLib.Configurations.DatabaseOption;
 
 namespace MessagingServiceApi.Messaging.ServiceLogics
@@ -19,7 +18,7 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			try
 			{
 				ValidateToken(token);
-				LogMethodICalled(nameof(GetMessagesSentToUser));
+				LogMethodInvoked(nameof(GetMessagesSentToUser));
 				MessageRetriever messageRetriever = GetMessageRetriever();
 				return messageRetriever.GetMessagesSentToUser(messageRequest);
 			}
@@ -33,18 +32,17 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 
 		private MessageRetriever GetMessageRetriever()
 		{
-			IMessageRepository messageRepository =
-				MessageRepoFactory.GetMessageRepository(Dboption.DatabaseEngine,
-					Dboption.DbConnectionString);
-			IMessageDispatchRepository dispatchRepository =
-				MessageDispatchRepoFactory.GetDispatchRepository(Dboption.DatabaseEngine,
-					Dboption.DbConnectionString);
-			IUserRepository userRepository =
-				UserRepoFactory.GetUserRepository(Dboption.DatabaseEngine,
-					Dboption.DbConnectionString);
+			var engine = Dboption.DatabaseEngine;
+			var connectionString = Dboption.DbConnectionString;
+			var messageRepository =
+				MessageRepoFactory.GetMessageRepository(engine,	connectionString);
+			var dispatchRepository =
+				MessageDispatchRepoFactory.GetDispatchRepository(engine,
+				connectionString);
+			var userRepository =
+				UserRepoFactory.GetUserRepository(engine, connectionString);
 			return new MessageRetriever(messageRepository,
-				dispatchRepository,
-				userRepository);
+				dispatchRepository, userRepository);
 		}
 
 		public List<PostedMessageInfo> GetConveration(string token,
@@ -53,7 +51,7 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			try
 			{
 				ValidateToken(token);
-				LogMethodICalled(nameof(GetConveration));
+				LogMethodInvoked(nameof(GetConveration));
 				MessageRetriever messageRetriever = GetMessageRetriever();
 				return messageRetriever.GetConversation(messageRequest);
 			}

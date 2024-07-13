@@ -12,7 +12,7 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			try
 			{
 				ValidateToken(token);
-				LogMethodICalled(nameof(UpdateDispatchAsReceived));
+				LogMethodInvoked(nameof(UpdateDispatchAsReceived));
 				MessageDispatchUpdater dispatchUpdater = new MessageDispatchUpdater();
 				dispatchUpdater.UpdateDispatchAsReceived(dispatchId, receivedDateTime);
 			}

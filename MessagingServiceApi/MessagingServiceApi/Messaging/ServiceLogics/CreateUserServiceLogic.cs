@@ -23,7 +23,7 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			try
 			{
 				ValidateToken(token);
-				LogMethodICalled(nameof(CreateNewAdvancedUser));
+				LogMethodInvoked(nameof(CreateNewAdvancedUser));
 				UserCreator userCreator = new UserCreator();
 				userCreator.CreateNewAdvancedUser(user);
 			}
@@ -44,7 +44,7 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			try
 			{
 				ValidateToken(token);
-				LogMethodICalled(nameof(CreateNewUser));
+				LogMethodInvoked(nameof(CreateNewUser));
 				UserCreator userCreator = new UserCreator();
 				userCreator.CreateNewUser(user);
 			}
