@@ -1,5 +1,4 @@
-﻿using MessagingServiceApi.Messaging.ServiceLogics;
-using MessagingServiceInterfaces.Contracts.User;
+﻿using MessagingServiceInterfaces.Contracts.User;
 using MessagingServiceInterfaces.Services;
 using System.Collections.Generic;
 
@@ -9,7 +8,7 @@ namespace MessagingServiceApi.Messaging.Services
 	{
 		public List<UserInfo> GetAllUsers()
 		{
-			GetUserServiceLogic serviceHelper = new GetUserServiceLogic();
+			var serviceHelper = new ServiceLogics.GetUserService();
 			return serviceHelper.GetAllUsers(GetToken());
 		}
 	}

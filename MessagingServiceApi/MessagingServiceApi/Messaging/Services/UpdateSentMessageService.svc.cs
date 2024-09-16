@@ -1,5 +1,4 @@
-﻿using MessagingServiceApi.Messaging.ServiceLogics;
-using MessagingServiceInterfaces.Services;
+﻿using MessagingServiceInterfaces.Services;
 using System;
 
 namespace MessagingServiceApi.Messaging.Services
@@ -10,8 +9,7 @@ namespace MessagingServiceApi.Messaging.Services
 	{
 		public void UpdateMessageAsReceived(long dispatchId, DateTime receivedDateTime)
 		{
-			UpdateSentMessageServiceLogic serviceHelper =
-				new UpdateSentMessageServiceLogic();
+			var serviceHelper = new ServiceLogics.UpdateSentMessageService();
 			serviceHelper.UpdateDispatchAsReceived(GetToken(), dispatchId,
 				receivedDateTime);
 		}

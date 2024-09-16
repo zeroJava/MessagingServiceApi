@@ -1,5 +1,4 @@
-﻿using MessagingServiceApi.Messaging.ServiceLogics;
-using MessagingServiceInterfaces.Contracts.Login;
+﻿using MessagingServiceInterfaces.Contracts.Login;
 using MessagingServiceInterfaces.Services;
 
 namespace MessagingServiceApi.Messaging.Services
@@ -11,7 +10,7 @@ namespace MessagingServiceApi.Messaging.Services
 		public LoginToken ExecuteEncryptedLoginIn(string encryptedUser,
 			string encryptedPassword)
 		{
-			LoginServiceLogic serviceHelper = new LoginServiceLogic();
+			ServiceLogics.LoginService serviceHelper = new ServiceLogics.LoginService();
 			return serviceHelper.ExecuteEncryptedLoginIn(encryptedUser,
 				encryptedPassword);
 		}

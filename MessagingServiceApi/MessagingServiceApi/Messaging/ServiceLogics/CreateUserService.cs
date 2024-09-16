@@ -7,7 +7,7 @@ using System.ServiceModel;
 
 namespace MessagingServiceApi.Messaging.ServiceLogics
 {
-	public class CreateUserServiceLogic : LogicBase
+	public class CreateUserService : LogicBase
 	{
 		protected readonly Func<string, FaultException<UserCheckError>> usercheckError = (string m) =>
 		{
@@ -24,7 +24,7 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			{
 				ValidateToken(token);
 				LogMethodInvoked(nameof(CreateNewAdvancedUser));
-				UserCreator userCreator = new UserCreator();
+				var userCreator = new UserCreator();
 				userCreator.CreateNewAdvancedUser(user);
 			}
 			catch (TokenValidationException) { throw; }
@@ -45,7 +45,7 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			{
 				ValidateToken(token);
 				LogMethodInvoked(nameof(CreateNewUser));
-				UserCreator userCreator = new UserCreator();
+				var userCreator = new UserCreator();
 				userCreator.CreateNewUser(user);
 			}
 			catch (TokenValidationException) { throw; }

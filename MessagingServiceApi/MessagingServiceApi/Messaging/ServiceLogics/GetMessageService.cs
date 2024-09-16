@@ -1,5 +1,4 @@
-﻿using MessageDbCore.DbRepositoryInterfaces;
-using MessageDbLib.DbRepositoryFactories;
+﻿using MessageDbLib.DbRepositoryFactories;
 using MessagingServiceApi.Authentication;
 using MessagingServiceFunctions.Message;
 using MessagingServiceInterfaces.Contracts.Message;
@@ -10,7 +9,7 @@ using Dboption = MessageDbLib.Configurations.DatabaseOption;
 
 namespace MessagingServiceApi.Messaging.ServiceLogics
 {
-	public class GetMessageServiceLogic : LogicBase
+	public class GetMessageService : LogicBase
 	{
 		public List<PostedMessageInfo> GetMessagesSentToUser(string token,
 			IRetrieveMessageRequest messageRequest)
@@ -35,7 +34,7 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			var engine = Dboption.DatabaseEngine;
 			var connectionString = Dboption.DbConnectionString;
 			var messageRepository =
-				MessageRepoFactory.GetMessageRepository(engine,	connectionString);
+				MessageRepoFactory.GetMessageRepository(engine, connectionString);
 			var dispatchRepository =
 				MessageDispatchRepoFactory.GetDispatchRepository(engine,
 				connectionString);

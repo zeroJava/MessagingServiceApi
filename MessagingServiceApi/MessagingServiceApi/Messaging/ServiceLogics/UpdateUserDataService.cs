@@ -5,7 +5,7 @@ using System;
 
 namespace MessagingServiceApi.Messaging.ServiceLogics
 {
-	public class UpdateUserDataServiceLogic : LogicBase
+	public class UpdateUserDataService : LogicBase
 	{
 		public void UpdateUser(string token, NewUserData user)
 		{
@@ -13,8 +13,8 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			{
 				ValidateToken(token);
 				LogMethodInvoked(nameof(UpdateUser));
-				UserUpdater updateUserDataBL = new UserUpdater();
-				updateUserDataBL.UpdateUser(user);
+				UserUpdater userUpdater = new UserUpdater();
+				userUpdater.UpdateUser(user);
 			}
 			catch (TokenValidationException) { throw; }
 			catch (Exception exception)

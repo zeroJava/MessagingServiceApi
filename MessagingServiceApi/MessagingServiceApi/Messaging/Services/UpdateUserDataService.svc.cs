@@ -1,5 +1,4 @@
-﻿using MessagingServiceApi.Messaging.ServiceLogics;
-using MessagingServiceInterfaces.Contracts.User;
+﻿using MessagingServiceInterfaces.Contracts.User;
 using MessagingServiceInterfaces.Services;
 
 namespace MessagingServiceApi.Messaging.Services
@@ -8,7 +7,7 @@ namespace MessagingServiceApi.Messaging.Services
 	{
 		public void UpdateUser(NewUserData user)
 		{
-			UpdateUserDataServiceLogic serviceHelper = new UpdateUserDataServiceLogic();
+			var serviceHelper = new ServiceLogics.UpdateUserDataService();
 			serviceHelper.UpdateUser(GetToken(), user);
 		}
 	}

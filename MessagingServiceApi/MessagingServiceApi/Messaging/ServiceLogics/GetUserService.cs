@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace MessagingServiceApi.Messaging.ServiceLogics
 {
-	public class GetUserServiceLogic : LogicBase
+	public class GetUserService : LogicBase
 	{
 		public List<UserInfo> GetAllUsers(string token)
 		{

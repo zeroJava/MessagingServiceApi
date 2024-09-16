@@ -9,7 +9,7 @@ using System.ServiceModel;
 
 namespace MessagingServiceApi.Messaging.ServiceLogics
 {
-	public class LoginServiceLogic
+	public class LoginService
 	{
 		public LoginToken ExecuteEncryptedLoginIn(string encryptedUser, string encryptedPassword)
 		{
@@ -31,7 +31,9 @@ namespace MessagingServiceApi.Messaging.ServiceLogics
 			string decryptedUsername = encryptedUser;
 			string decryptedPassword = encryptedPassword;
 
-			IUserRepository userRepo = UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine, DatabaseOption.DbConnectionString);
+			IUserRepository userRepo =
+				UserRepoFactory.GetUserRepository(DatabaseOption.DatabaseEngine,
+				DatabaseOption.DbConnectionString);
 			User user = userRepo.GetUserMatchingUsername(decryptedUsername);
 
 			LoginToken loginTokenContract = new LoginToken();

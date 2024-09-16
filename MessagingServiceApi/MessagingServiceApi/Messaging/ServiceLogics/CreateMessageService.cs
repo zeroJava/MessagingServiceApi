@@ -5,7 +5,7 @@ using System;
 
 namespace MessagingServiceApi.Messaging.ServiceLogics
 {
-	public class CreateMessageServiceLogic : LogicBase
+	public class CreateMessageService : LogicBase
 	{
 		public MessageRequestToken CreateMessage(string token,
 			MessageRequest message)

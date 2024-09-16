@@ -1,5 +1,4 @@
-﻿using MessagingServiceApi.Messaging.ServiceLogics;
-using MessagingServiceInterfaces.Contracts.User;
+﻿using MessagingServiceInterfaces.Contracts.User;
 using MessagingServiceInterfaces.Services;
 
 namespace MessagingServiceApi.Messaging.Services
@@ -8,14 +7,14 @@ namespace MessagingServiceApi.Messaging.Services
 	{
 		public void CreateNewAdvancedUser(NewAdvancedUserData user)
 		{
-			CreateUserServiceLogic serviceHelper = new CreateUserServiceLogic();
-			serviceHelper.CreateNewAdvancedUser(GetToken(), user);
+			var createUserService = new ServiceLogics.CreateUserService();
+			createUserService.CreateNewAdvancedUser(GetToken(), user);
 		}
 
 		public void CreateNewUser(NewUserData user)
 		{
-			CreateUserServiceLogic serviceHelper = new CreateUserServiceLogic();
-			serviceHelper.CreateNewUser(GetToken(), user);
+			var createUserService = new ServiceLogics.CreateUserService();
+			createUserService.CreateNewUser(GetToken(), user);
 		}
 	}
 }

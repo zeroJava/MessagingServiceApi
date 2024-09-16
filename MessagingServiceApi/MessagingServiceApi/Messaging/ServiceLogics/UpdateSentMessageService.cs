@@ -4,7 +4,7 @@ using System;
 
 namespace MessagingServiceApi.Messaging.ServiceLogics
 {
-	public class UpdateSentMessageServiceLogic : LogicBase
+	public class UpdateSentMessageService : LogicBase
 	{
 		public void UpdateDispatchAsReceived(string token, long dispatchId,
 			DateTime receivedDateTime)

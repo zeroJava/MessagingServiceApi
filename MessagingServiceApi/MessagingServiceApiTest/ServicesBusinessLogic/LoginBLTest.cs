@@ -10,7 +10,7 @@ namespace WMessageServiceApiTest.ServicesBusinessLogic
 		[TestMethod]
 		public void ExecuteEncryptedLoginIn_BL_Test()
 		{
-			LoginServiceLogic loginLogic = new LoginServiceLogic();
+			LoginService loginLogic = new LoginService();
 			LoginToken loginToken = loginLogic.ExecuteEncryptedLoginIn("JonathanTest", "Test1");
 			if (loginToken == null ||
 				 loginToken.LoginSuccessful == false)
