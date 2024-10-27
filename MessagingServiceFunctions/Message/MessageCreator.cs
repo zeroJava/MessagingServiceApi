@@ -71,7 +71,6 @@ namespace MessagingServiceFunctions.Message
 				SenderEmailAddress = user.EmailAddress,
 				MessageCreated = request.MessageCreated
 			}, request);
-			//PersistMessageToMongoDbService(message);
 		}
 
 		private void ProcessTransaction(DbMessage msg, IMessageRequest request)
@@ -83,11 +82,7 @@ namespace MessagingServiceFunctions.Message
 				{
 					transaction.BeginTransaction();
 					SaveMessage(msg, transaction);
-					var dispatches = CreateDispatch(request, msg, transaction);
-					foreach (var dispatch in dispatches)
-					{
-						SaveDispatch(dispatch, transaction);
-					}
+					CreateDispatch(request, msg, transaction);
 					transaction.Commit();
 				}
 				catch
@@ -114,10 +109,9 @@ namespace MessagingServiceFunctions.Message
 			messageRepo.InsertMessage(message);
 		}
 
-		private List<MessageDispatch> CreateDispatch(IMessageRequest messageContract,
+		private void CreateDispatch(IMessageRequest messageContract,
 			DbMessage message, IRepoTransaction repoTransaction)
 		{
-			List<MessageDispatch> messageDispatches = new List<MessageDispatch>();
 			foreach (string emailAddress in messageContract.EmailAccounts)
 			{
 				SaveDispatch(new MessageDispatch
@@ -127,7 +121,6 @@ namespace MessagingServiceFunctions.Message
 					MessageReceived = false
 				}, repoTransaction);
 			}
-			return messageDispatches;
 		}
 
 		private void SaveDispatch(MessageDispatch messageDispatch,
@@ -142,26 +135,5 @@ namespace MessagingServiceFunctions.Message
 			return MessageDispatchRepoFactory.GetDispatchRepository(engine,
 				connectionString, repoTransaction);
 		}
-
-		/*private void PersistMessageToMongoDbService(Message request)
-		 {
-			 try
-			 {
-				 RabbitMqProducerClass rabbitMqProducer = new RabbitMqProducerClass(QueueTypeConstant.MongoDbPersistentUserService,
-					 QueueTypeConstant.MongoDbPersistentUserService);
-				 rabbitMqProducer.ExecuteMessageQueueing(request);
-				 LogInfo("Queueing request to Message-Queue was successful.");
-			 }
-			 catch (Exception exception)
-			 {
-				 MessageQueueErrorContract error = new MessageQueueErrorContract()
-				 {
-					 Message = "Error encountered when trying to queue to request queue.",
-					 ExceptionMessage = exception.Message
-				 };
-				 WriteErrorLog("Error encountered when queueing request to Message-Queue.", exception);
-				 //throw new FaultException<MessageQueueErrorContract>(error);
-			 }
-		 }*/
 	}
 }
